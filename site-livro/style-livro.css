@@ -1,0 +1,951 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 19px;
+    line-height: 1.6;
+    color: #333;
+    background-color: #ffffff;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.container-wide {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Seção de Fotos */
+.fotos-section {
+    padding: 0;
+    width: 100%;
+    position: relative;
+    overflow: visible;
+}
+
+.fotos-section .bg-abstract {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 140%;
+    z-index: 0;
+    overflow: visible;
+}
+
+.fotos-section .bg-abstract svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.fotos-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 15px;
+    padding: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.foto-item {
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.foto-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.foto-item img:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+/* Modal de Foto */
+.foto-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(128, 128, 128, 0.85);
+    align-items: center;
+    justify-content: center;
+}
+
+.foto-modal.active {
+    display: flex;
+}
+
+.foto-modal-content {
+    max-width: 90%;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.foto-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.foto-modal-close:hover {
+    color: #ccc;
+}
+
+/* Frase Impactante */
+.frase-section {
+    padding: 60px 0;
+    text-align: center;
+    position: relative;
+    background: transparent;
+}
+
+.frase-section-1 {
+    padding-top: 75px;
+}
+
+.frase-impactante {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 55px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #000;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.frase-impactante-1 {
+    font-family: 'Averia Serif Libre', serif;
+    font-size: 75px;
+    font-weight: 300;
+    max-width: 60%;
+}
+
+.frase-impactante-2 {
+    /* Estilos específicos da segunda frase */
+}
+
+/* Frase Meio Impactante */
+.frase-meio-impactante {
+    font-family: 'Averia Serif Libre', serif;
+    font-size: 58px;
+    font-weight: 300;
+    line-height: 1.2;
+    color: #000;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Seção Lado a Lado */
+.secao-lado-a-lado {
+    padding: 60px 0;
+}
+
+.lado-a-lado-container {
+    display: flex;
+    gap: 60px;
+    align-items: stretch;
+    width: 52.5%;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.lado-a-lado-esquerda {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lado-a-lado-esquerda .frase-meio-impactante {
+    text-align: center;
+}
+
+.lado-a-lado-direita {
+    flex: 1;
+}
+
+.lado-a-lado-direita p {
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 1.5em;
+    text-align: justify;
+    color: #333;
+}
+
+.link-compra {
+    color: #333;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.link-compra:hover {
+    color: #000;
+}
+
+/* Seção de Texto Introdutório */
+.texto-intro-section {
+    padding: 60px 0 20px 0;
+}
+
+.texto-intro-container {
+    width: 75%;
+    margin: 0 auto;
+}
+
+.texto-intro-content p {
+    font-size: 20px;
+    line-height: 1.8;
+    margin-bottom: 1.5em;
+    text-align: justify;
+    color: #333;
+}
+
+/* Divisor */
+.divisor {
+    width: 60%;
+    max-width: 600px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #d0d0d0, transparent);
+    margin: 33px auto 20px auto;
+}
+
+/* Seção de Compra */
+.compra-section {
+    padding-top: 0;
+}
+
+.compra-texto-intro {
+    font-size: 22px;
+    font-weight: 500;
+    color: #555;
+    text-align: center;
+    margin-bottom: 30px;
+    font-style: italic;
+}
+
+/* Popup de Compra */
+.popup-compra {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-compra.active {
+    display: flex;
+}
+
+.popup-compra-content {
+    background-color: #fff;
+    padding: 40px 50px;
+    border-radius: 16px;
+    max-width: 650px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.popup-compra-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.popup-compra-close:hover {
+    color: #333;
+}
+
+.popup-compra-titulo {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.popup-compra-texto {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+.popup-compra-content .btn-compra {
+    margin-top: 10px;
+}
+
+.popup-compra-alternativa {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #333;
+    margin-top: 25px;
+    text-align: justify;
+}
+
+.popup-compra-alternativa a {
+    color: #333;
+    text-decoration: underline;
+}
+
+.popup-compra-alternativa a:hover {
+    color: #000;
+}
+
+/* Seção Razões DSM */
+.lp-dsm-reasons {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.lp-dsm-reasons-title {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    text-align: center;
+    color: #2d3748;
+    margin-bottom: 50px;
+}
+
+.lp-dsm-reasons-list {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.col-top {
+    display: flex;
+    gap: 30px;
+}
+
+.col-top-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.col-top-right {
+    flex: 1;
+}
+
+.col-top-left-topcols {
+    display: flex;
+    gap: 30px;
+}
+
+.col-top-left-topcols .lp-dsm-reasons-item {
+    flex: 1;
+}
+
+.col-top-left-bottomcol {
+    flex: 1;
+}
+
+.col-bottom {
+    display: flex;
+    gap: 30px;
+}
+
+.col-bottom .lp-dsm-reasons-item {
+    flex: 1;
+}
+
+.lp-dsm-reasons-item {
+    background-color: #ffffff;
+    padding: 40px 35px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.lp-dsm-reasons-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.lp-dsm-reasons-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+}
+
+.lp-dsm-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+.lp-dsm-reasons-item-title {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 15px;
+    line-height: 1.3;
+}
+
+.lp-dsm-reasons-item-text {
+    font-size: 17px;
+    line-height: 1.7;
+    color: #4a5568;
+}
+
+/* Botão de Compra */
+.compra-section {
+    padding: 25px 0;
+    text-align: center;
+}
+
+.btn-compra {
+    display: inline-block;
+    background-color: #32373c;
+    color: #fff;
+    padding: 18px 40px;
+    font-size: 1.125em;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 0;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-compra:hover {
+    background-color: #1d2124;
+    transform: translateY(-2px);
+}
+
+.preco {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 20px;
+}
+
+.preco-info {
+    font-size: 16px;
+    color: #666;
+    margin-top: 15px;
+}
+
+/* Depoimentos */
+.depoimentos-section {
+    padding: 80px 0;
+    background-color: #fff;
+}
+
+.depoimentos-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.depoimentos-titulo {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 60px;
+    color: #000;
+}
+
+.depoimentos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 75px;
+    align-items: stretch;
+}
+
+.depoimento-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: transparent;
+    position: relative;
+}
+
+.depoimento-foto {
+    width: 150px;
+    height: 150px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+    margin-bottom: -20px;
+    margin-left: 31px;
+}
+
+.depoimento-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.depoimento-conteudo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #F7EBE3;
+    padding: 70px 31px 31px 31px;
+    border-radius: 8px;
+    text-align: left;
+    width: 100%;
+}
+
+.depoimento-sem-foto .depoimento-conteudo {
+    padding: 31px;
+}
+
+.depoimento-destaque {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #000;
+    margin-bottom: 15px;
+}
+
+.depoimento-texto {
+    flex: 1;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #444;
+    margin-bottom: 15px;
+    text-align: justify;
+}
+
+.depoimento-autor {
+    font-weight: 700;
+    font-size: 16px;
+    color: #000;
+    margin-top: auto;
+}
+
+/* Seção de Vídeo Background */
+.video-background-section {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+}
+
+.video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.6);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Seção Fale Comigo */
+.contact-section {
+    padding: 65px 0 65px 0;
+    background-color: #8FB3A9;
+    position: relative;
+}
+
+.contact-section .container {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+    margin: 0;
+    margin-left: 15%;
+}
+
+.contact-title {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: #3d4a47;
+    margin-bottom: 20px;
+}
+
+.contact-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #3d4a47;
+    max-width: 441px;
+}
+
+.contact-text p {
+    margin-bottom: 1em;
+}
+
+.contact-text a {
+    color: #3d4a47;
+    text-decoration: none;
+}
+
+.contact-text a:hover {
+    text-decoration: underline;
+}
+
+.contact-logo {
+    display: block;
+    margin-top: 34px;
+}
+
+.contact-shapes {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    z-index: 1;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.contact-shapes img {
+    height: 100%;
+    width: auto;
+    max-width: none;
+}
+
+/* Responsivo */
+@media (max-width: 1024px) {
+    body {
+        font-size: 17px;
+    }
+
+    .frase-impactante {
+        font-size: 47px;
+    }
+
+    .frase-impactante-1 {
+        font-size: 60px;
+    }
+
+    .frase-meio-impactante {
+        font-size: 49.5px;
+    }
+
+    .fotos-grid {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .depoimento-destaque {
+        font-size: 28px;
+    }
+
+    .depoimento-foto {
+        width: 120px;
+        height: 120px;
+    }
+
+    .depoimento-conteudo {
+        padding: 56px 31px 31px 31px;
+    }
+
+    .depoimento-texto {
+        font-size: 17px;
+    }
+}
+
+@media (max-width: 768px) {
+    .frase-section {
+        padding: 45px 0 36px 0;
+    }
+
+    .frase-section-1 {
+        padding-top: 94px;
+    }
+
+    .frase-impactante {
+        font-size: 36px;
+    }
+
+    .frase-impactante-1 {
+        font-size: 41px;
+        padding: 0 20px;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .frase-meio-impactante {
+        font-size: 37.5px;
+        padding: 0 20px;
+    }
+
+    .frase-section:not(.frase-section-1) {
+        padding-bottom: 25px;
+    }
+
+    .depoimentos-section {
+        padding-top: 56px;
+        padding-bottom: 56px;
+    }
+
+    .depoimento-item:nth-child(7),
+    .depoimento-item:nth-child(8),
+    .depoimento-item:nth-child(9) {
+        display: none;
+    }
+
+    .secao-lado-a-lado {
+        padding-top: 29px;
+    }
+
+    .lado-a-lado-container {
+        flex-direction: column;
+        gap: 51px;
+        width: 90%;
+    }
+
+    .lado-a-lado-esquerda .frase-meio-impactante {
+        text-align: center;
+    }
+
+    .depoimentos-container {
+        width: 90%;
+    }
+
+    .texto-intro-container {
+        width: 85%;
+    }
+
+    .texto-intro-content p {
+        font-size: 18px;
+    }
+
+    .col-top {
+        flex-direction: column;
+    }
+
+    .col-top-left-topcols {
+        flex-direction: column;
+    }
+
+    .col-bottom {
+        flex-direction: column;
+    }
+
+    .lp-dsm-reasons-item {
+        padding: 30px 25px;
+    }
+
+    .lp-dsm-reasons-item-title {
+        font-size: 22px;
+    }
+
+    .lp-dsm-reasons-item-text {
+        font-size: 16px;
+    }
+
+    .lp-dsm-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .fotos-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .depoimentos-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .depoimento-foto {
+        width: 140px;
+        height: 140px;
+    }
+
+    .depoimento-destaque {
+        font-size: 26px;
+    }
+
+    .depoimentos-titulo {
+        font-size: 26px;
+    }
+
+    .video-background-section {
+        height: 300px;
+    }
+
+    .contact-section .container {
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0 20px;
+    }
+
+    .contact-title {
+        font-size: 38px;
+    }
+
+    .contact-shapes {
+        width: 45%;
+    }
+
+    .popup-compra-content {
+        margin: 20px;
+        padding: 30px 25px;
+        max-width: calc(100% - 40px);
+    }
+
+    .popup-compra-titulo {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .popup-compra-texto {
+        font-size: 16px;
+    }
+
+    .popup-compra-alternativa {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 16px;
+    }
+
+    .frase-impactante {
+        font-size: 30px;
+    }
+
+    .frase-impactante-1 {
+        font-size: 27px;
+    }
+
+    .frase-meio-impactante {
+        font-size: 31.5px;
+    }
+
+    .preco {
+        font-size: 24px;
+    }
+
+    .btn-compra {
+        padding: 15px 30px;
+        font-size: 1em;
+    }
+
+    .texto-intro-container {
+        width: 90%;
+    }
+
+    .texto-intro-content p {
+        font-size: 17px;
+        line-height: 1.7;
+    }
+
+    .video-background-section {
+        height: 250px;
+    }
+
+    .contact-section .container {
+        margin-left: 5%;
+        max-width: 90%;
+    }
+
+    .contact-title {
+        font-size: 28px;
+    }
+
+    .contact-text {
+        font-size: 14px;
+    }
+
+    .contact-shapes {
+        display: none;
+    }
+
+    .popup-compra-content {
+        margin: 15px;
+        padding: 25px 20px;
+        max-width: calc(100% - 30px);
+    }
+
+    .popup-compra-close {
+        top: 10px;
+        right: 15px;
+        font-size: 24px;
+    }
+
+    .popup-compra-titulo {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .popup-compra-texto {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+
+    .popup-compra-alternativa {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-top: 20px;
+    }
+
+    .popup-compra-content .btn-compra {
+        padding: 12px 25px;
+        font-size: 0.9em;
+    }
+}
