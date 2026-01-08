@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Pedido - Meu Pedido</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #fff;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 17px;
+        }
+
+        .form-container {
+            background: #fff;
+            border: 1px solid #e6e6e6;
+            border-radius: 8px;
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e6e6e6;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #333;
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        .btn-consultar {
+            width: 100%;
+            padding: calc(.667em + 2px) calc(1.333em + 2px);
+            background: #32373c;
+            color: #fff;
+            border: none;
+            border-radius: 9999px;
+            font-size: 1.125em;
+            font-weight: 500;
+            font-family: 'Roboto', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .btn-consultar:hover {
+            background: #23282d;
+        }
+
+        .btn-consultar:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        .resultado {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: #fafafa;
+            border: 1px solid #e6e6e6;
+            border-radius: 8px;
+        }
+
+        .resultado.show {
+            display: block;
+        }
+
+        .resultado h3 {
+            font-family: 'Roboto Condensed', sans-serif;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .resultado h3.pedido-encontrado {
+            font-size: 25px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+        .info-item:last-of-type {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 15px;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+            text-align: right;
+            font-size: 15px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-paid {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-refunded {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-fulfilled {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-unfulfilled {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .codigo-rastreio {
+            background: #32373c;
+            color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .codigo-rastreio span {
+            display: block;
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .codigo-rastreio strong {
+            font-size: 22px;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .btn-copiar {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 9999px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            transition: background 0.2s ease;
+        }
+
+        .btn-copiar:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .erro {
+            background: #fff5f5;
+            border-color: #e6e6e6;
+        }
+
+        .erro h3 {
+            color: #c53030;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #e6e6e6;
+            border-top-color: #32373c;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer {
+            margin-top: auto;
+            padding: 30px 20px;
+            text-align: center;
+            color: #868787;
+            font-size: 12px;
+        }
+
+        .footer a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Pedido Card */
+        .pedido-card {
+            background: #fff;
+            border: 1px solid #e6e6e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .pedido-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pedido-numero {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .pedido-data {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .pedido-status {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pedido-itens {
+            border-top: 1px solid #e6e6e6;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .pedido-itens h4 {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .item-nome {
+            color: #333;
+        }
+
+        .item-preco {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .pedido-total {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 15px;
+            margin-top: 15px;
+            border-top: 2px solid #e6e6e6;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .btn-voltar {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .btn-voltar:hover {
+            color: #333;
+        }
+
+        .sem-pedidos {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+
+        .sem-pedidos h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .fotos-livro {
+            /* full-bleed: make section span the full viewport width */
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            margin-right: calc(50% - 50vw);
+            padding: 0 20px; /* match body padding */
+            box-sizing: border-box;
+
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .fotos-livro img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        /* Seção Fale Comigo */
+.contact-section {
+    padding: 65px 0 65px 0;
+    background-color: #8FB3A9;
+    position: relative;
+}
+
+.contact-section .container {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+    margin: 0;
+    margin-left: 15%;
+}
+
+.contact-title {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: #3d4a47;
+    margin-bottom: 20px;
+}
+
+.contact-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #3d4a47;
+    max-width: 441px;
+}
+
+.contact-text p {
+    margin-bottom: 1em;
+}
+
+.contact-text a {
+    color: #3d4a47;
+    text-decoration: none;
+}
+
+.contact-text a:hover {
+    text-decoration: underline;
+}
+
+.contact-logo {
+    display: block;
+    margin-top: 34px;
+}
+
+        .fotos-livro img:hover {
+            opacity: 0.85;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 30px auto;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .info-value {
+                text-align: left;
+            }
+
+            .pedido-header {
+                flex-direction: column;
+            }
+
+            .fotos-livro {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="fotos-livro">
+            <img src="https://programas.amuri.com.br/img-livro/foto-1.jpg" alt="Dinheiro Sem Medo - Foto 1">
+            <img src="https://programas.amuri.com.br/img-livro/foto-2.jpg" alt="Dinheiro Sem Medo - Foto 2">
+            <img src="https://programas.amuri.com.br/img-livro/foto-3.jpg" alt="Dinheiro Sem Medo - Foto 3">
+            <img src="https://programas.amuri.com.br/img-livro/foto-4.jpg" alt="Dinheiro Sem Medo - Foto 4">
+        </div>
+
+        <div class="header">
+            <h1>Busque aqui o rastreio do seu livro!</h1>
+            <p>Digite seus dados para visualizar seu pedido:</p>
+        </div>
+
+        <div class="form-container" id="formContainer">
+            <form id="formConsulta">
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Digite seu e-mail"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="cpf">CPF <span style="color: #999; font-weight: 400;">(opcional)</span></label>
+                    <input
+                        type="text"
+                        id="cpf"
+                        name="cpf"
+                        placeholder="000.000.000-00"
+                        maxlength="14"
+                    >
+                </div>
+
+                <button type="submit" class="btn-consultar" id="btnConsultar">Consultar</button>
+            </form>
+
+            <div id="resultado" class="resultado"></div>
+        </div>
+
+        <!-- Resultados -->
+        <div id="resultadosContainer" style="display: none;">
+            <button class="btn-voltar" onclick="voltarFormulario()">
+                <span>←</span> Voltar
+            </button>
+
+            <div id="listaPedidos"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2026 Amuri. Todos os direitos reservados.</p>
+    </div>
+
+    <script>
+        const API_URL = 'api.php';
+
+        // Mascara para CPF
+        document.getElementById('cpf').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+
+            if (value.length > 9) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            } else if (value.length > 6) {
+                value = value.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+            } else if (value.length > 3) {
+                value = value.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+            }
+
+            e.target.value = value;
+        });
+
+        // Envio do formulario
+        document.getElementById('formConsulta').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+            const resultado = document.getElementById('resultado');
+            const btn = document.getElementById('btnConsultar');
+
+            // Validar CPF apenas se foi preenchido
+            if (cpf.length > 0 && cpf.length !== 11) {
+                exibirErro('CPF invalido. Digite os 11 digitos.');
+                return;
+            }
+
+            // Mostrar loading
+            btn.disabled = true;
+            resultado.className = 'resultado show';
+            resultado.innerHTML = '<div class="loading">Consultando</div>';
+
+            try {
+                let url = `${API_URL}?action=customer_orders&email=${encodeURIComponent(email)}`;
+                if (cpf.length === 11) {
+                    url += `&cpf=${encodeURIComponent(cpf)}`;
+                }
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success) {
+                    const orders = data.data?.orders || [];
+                    exibirResultados(email, orders);
+                } else {
+                    exibirErro(data.error || 'Erro ao buscar pedidos');
+                }
+            } catch (error) {
+                exibirErro('Erro ao conectar com o servidor. Tente novamente.');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        function exibirResultados(email, orders) {
+            const resultado = document.getElementById('resultado');
+            resultado.className = 'resultado';
+            resultado.innerHTML = '';
+
+            document.getElementById('formContainer').style.display = 'none';
+            document.getElementById('resultadosContainer').style.display = 'block';
+            document.querySelector('.header').style.display = 'none';
+
+            const listaPedidos = document.getElementById('listaPedidos');
+
+            if (orders.length === 0) {
+                listaPedidos.innerHTML = `
+                    <div class="pedido-card">
+                        <div class="sem-pedidos">
+                            <h3>Nenhum pedido encontrado</h3>
+                            <p>Nao encontramos pedidos com os dados informados.<br>Verifique se o e-mail e CPF estao corretos.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const codigoRastreio = order => {
+                // Verificar campo direto do servidor
+                if (order['Numero de rastreamento']) {
+                    return order['Numero de rastreamento'];
+                }
+                if (order['numero_rastreamento']) {
+                    return order['numero_rastreamento'];
+                }
+                if (order.tracking_number) {
+                    return order.tracking_number;
+                }
+                // Verificar em fulfillments (formato Shopify) - busca fulfillment com status success
+                if (order.fulfillments && order.fulfillments.length > 0) {
+                    // Procura primeiro por fulfillment com status success que tenha tracking
+                    const successFulfillment = order.fulfillments.find(f => f.status === 'success' && f.tracking_number);
+                    if (successFulfillment) {
+                        return successFulfillment.tracking_number;
+                    }
+                    // Se não encontrou, tenta qualquer fulfillment com tracking
+                    const anyWithTracking = order.fulfillments.find(f => f.tracking_number);
+                    if (anyWithTracking) {
+                        return anyWithTracking.tracking_number;
+                    }
+                }
+                return 'Seu livro será enviado logo! O rastreio aparecerá por aqui! :)';
+            };
+
+            const getNomeComprador = order => {
+                if (order.customer) {
+                    const nome = `${order.customer.first_name || ''} ${order.customer.last_name || ''}`.trim();
+                    return nome || 'Cliente';
+                }
+                return 'Cliente';
+            };
+
+            listaPedidos.innerHTML = orders.map(order => `
+                <div class="resultado show">
+                    <h3 class="pedido-encontrado">Pedido Encontrado!</h3>
+                </div>
+                <div class="pedido-card">
+                    <div class="info-item">
+                        <span class="info-label">Pedido</span>
+                        <span class="info-value">#${order.order_number || order.name}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Nome</span>
+                        <span class="info-value">${getNomeComprador(order)}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Data da Compra</span>
+                        <span class="info-value">${formatarData(order.created_at)}</span>
+                    </div>
+                    <div class="codigo-rastreio">
+                        <span>Codigo de Rastreio dos Correios</span>
+                        <strong id="codigo-${order.id}">${codigoRastreio(order)}</strong>
+                        ${codigoRastreio(order) !== 'Seu livro será enviado logo! O rastreio aparecerá por aqui! :)' ? `
+                            <br>
+                            <button class="btn-copiar" onclick="copiarCodigo('${codigoRastreio(order)}', this)">Copiar codigo</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function exibirErro(mensagem) {
+            const resultado = document.getElementById('resultado');
+            resultado.className = 'resultado show erro';
+            resultado.innerHTML = `
+                <h3>Erro na consulta</h3>
+                <p style="color: #666; margin-top: 10px;">${mensagem}</p>
+                <p style="color: #868787; margin-top: 15px; font-size: 14px;">Verifique se os dados estao corretos e tente novamente.</p>
+            `;
+        }
+
+        function voltarFormulario() {
+            document.getElementById('formContainer').style.display = 'block';
+            document.getElementById('resultadosContainer').style.display = 'none';
+            document.getElementById('resultado').className = 'resultado';
+            document.getElementById('resultado').innerHTML = '';
+            document.querySelector('.header').style.display = 'block';
+        }
+
+        function copiarCodigo(codigo, btn) {
+            navigator.clipboard.writeText(codigo).then(() => {
+                btn.textContent = 'Copiado!';
+                setTimeout(() => {
+                    btn.textContent = 'Copiar codigo';
+                }, 2000);
+            });
+        }
+
+        function formatarData(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+        function formatarMoeda(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value || 0);
+        }
+
+        function traduzirStatusPagamento(status) {
+            const map = {
+                'paid': 'Pago',
+                'pending': 'Aguardando',
+                'refunded': 'Reembolsado',
+                'partially_refunded': 'Parcial',
+                'voided': 'Cancelado',
+                'authorized': 'Autorizado'
+            };
+            return map[status] || 'Pendente';
+        }
+
+        function traduzirStatusEnvio(status) {
+            const map = {
+                'fulfilled': 'Enviado',
+                'partial': 'Parcial',
+                'unfulfilled': 'Preparando',
+                'restocked': 'Devolvido'
+            };
+            return map[status] || 'Preparando';
+        }
+    </script>
+</body>
+</html>
