@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avalie o Livro - Dinheiro Sem Medo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@300;400;700&family=Roboto+Condensed:wght@400;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='20' y='15' width='60' height='70' rx='3' fill='%2334A853'/%3E%3Crect x='25' y='20' width='50' height='60' rx='2' fill='%2346B968'/%3E%3Cpath d='M50 20 L50 80' stroke='%232D8E44' stroke-width='2'/%3E%3Cpath d='M50 30 L70 30' stroke='%23ffffff' stroke-width='1.5' opacity='0.6'/%3E%3Cpath d='M50 40 L70 40' stroke='%23ffffff' stroke-width='1.5' opacity='0.6'/%3E%3Cpath d='M50 50 L70 50' stroke='%23ffffff' stroke-width='1.5' opacity='0.6'/%3E%3C/svg%3E">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 19px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #ffffff;
+        }
+
+        /* Seção de Fotos */
+        .fotos-section {
+            padding: 0;
+            width: 100%;
+            position: relative;
+            overflow: visible;
+        }
+
+        .fotos-section .bg-abstract {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 140%;
+            z-index: 0;
+            overflow: visible;
+        }
+
+        .fotos-section .bg-abstract svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .fotos-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            padding: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .foto-item {
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .foto-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .foto-item img:hover {
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+
+        /* Modal de Foto */
+        .foto-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(128, 128, 128, 0.85);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .foto-modal.active {
+            display: flex;
+        }
+
+        .foto-modal-content {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .foto-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .foto-modal-close:hover {
+            color: #ccc;
+        }
+
+        /* Frase Impactante */
+        .frase-section {
+            padding: 60px 0;
+            text-align: center;
+            position: relative;
+            background: transparent;
+        }
+
+        .frase-section-1 {
+            padding-top: 75px;
+        }
+
+        .frase-impactante-1 {
+            font-family: 'Averia Serif Libre', serif;
+            font-size: 75px;
+            font-weight: 300;
+            line-height: 1.2;
+            color: #000;
+            max-width: 60%;
+            margin: 0 auto;
+        }
+
+        .br-desktop {
+            display: none;
+        }
+
+        @media (min-width: 1920px) {
+            .br-desktop {
+                display: inline;
+            }
+        }
+
+        /* Formulário de Avaliação */
+        .avaliacao-section {
+            padding: 20px 0 80px 0;
+        }
+
+        .avaliacao-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .avaliacao-card {
+            background-color: #e8f4f1;
+            border-radius: 8px;
+            padding: 40px;
+        }
+
+        .rating-section {
+            margin-bottom: 14px;
+        }
+
+        .rating-label {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 11px;
+            display: block;
+            text-align: center;
+        }
+
+        .stars-container {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            padding: 8px 20px;
+        }
+
+        .star {
+            cursor: pointer;
+            font-size: 52px;
+            transition: all 0.2s ease;
+            color: #a8c9c1;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #f0b429;
+            transform: scale(1.1);
+        }
+
+        .star.active {
+            animation: pulse 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1.1); }
+        }
+
+        .rating-text {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 15px;
+            color: #666;
+            min-height: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #c5ddd7;
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            background-color: #fff;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8FB3A9;
+            box-shadow: 0 0 0 4px rgba(143, 179, 169, 0.15);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #999;
+        }
+
+        .form-group textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .btn-enviar {
+            display: block;
+            width: 100%;
+            background-color: #32373c;
+            color: #fff;
+            padding: 18px 40px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.125em;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-enviar:hover {
+            background-color: #1d2124;
+            transform: translateY(-2px);
+        }
+
+        .btn-enviar:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Mensagem de Sucesso */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #8FB3A9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 40px;
+            color: #fff;
+        }
+
+        .success-message h2 {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 12px;
+        }
+
+        .success-message p {
+            font-size: 17px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .form-content {
+            display: block;
+        }
+
+        .form-content.hide {
+            display: none;
+        }
+
+        /* Seção Fale Comigo */
+        .contact-section {
+            padding: 65px 0 65px 0;
+            background-color: #8FB3A9;
+            position: relative;
+        }
+
+        .contact-section .container {
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+            margin: 0;
+            margin-left: 15%;
+        }
+
+        .contact-title {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 48px;
+            font-weight: 800;
+            color: #3d4a47;
+            margin-bottom: 20px;
+        }
+
+        .contact-text {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #3d4a47;
+            max-width: 441px;
+        }
+
+        .contact-text p {
+            margin-bottom: 1em;
+        }
+
+        .contact-text a {
+            color: #3d4a47;
+            text-decoration: none;
+        }
+
+        .contact-text a:hover {
+            text-decoration: underline;
+        }
+
+        .contact-logo {
+            display: block;
+            margin-top: 34px;
+        }
+
+        /* Responsivo */
+        @media (max-width: 1024px) {
+            body {
+                font-size: 17px;
+            }
+
+            .frase-impactante-1 {
+                font-size: 60px;
+            }
+
+            .fotos-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 10px;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .frase-section {
+                padding: 45px 0 36px 0;
+            }
+
+            .frase-section-1 {
+                padding-top: 94px;
+            }
+
+            .frase-impactante-1 {
+                font-size: 41px;
+                padding: 0 20px;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .fotos-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .avaliacao-card {
+                padding: 30px 25px;
+            }
+
+            .star {
+                font-size: 44px;
+            }
+
+            .contact-section .container {
+                margin-left: 0;
+                margin-right: 0;
+                padding: 0 20px;
+            }
+
+            .contact-title {
+                font-size: 38px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                font-size: 16px;
+            }
+
+            .frase-impactante-1 {
+                font-size: 27px;
+            }
+
+            .avaliacao-card {
+                padding: 25px 20px;
+            }
+
+            .star {
+                font-size: 38px;
+                gap: 8px;
+            }
+
+            .stars-container {
+                gap: 8px;
+            }
+
+            .btn-enviar {
+                padding: 15px 30px;
+                font-size: 1em;
+            }
+
+            .contact-section .container {
+                margin-left: 5%;
+                max-width: 90%;
+            }
+
+            .contact-title {
+                font-size: 28px;
+            }
+
+            .contact-text {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Seção de Fotos (12 fotos) -->
+    <section class="fotos-section">
+        <div class="bg-abstract">
+            <svg viewBox="0 0 1440 700" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Camada base -->
+                <path fill="#F7EBE3" d="M0,0 L1440,0 L1440,500 Q1200,620 720,540 Q240,460 0,580 L0,0 Z"/>
+                <!-- Camada intermediária com movimento -->
+                <path fill="#EFE0D6" opacity="0.6" d="M0,0 L1440,0 L1440,450 Q1100,570 600,490 Q100,410 0,520 L0,0 Z"/>
+                <!-- Camada de destaque -->
+                <path fill="#FDF5F0" opacity="0.5" d="M0,0 L1440,0 L1440,400 Q1000,520 500,440 Q150,370 0,480 L0,0 Z"/>
+                <!-- Formas orgânicas flutuantes -->
+                <ellipse cx="200" cy="150" rx="180" ry="120" fill="#ffffff" opacity="0.4"/>
+                <ellipse cx="1200" cy="200" rx="220" ry="140" fill="#ffffff" opacity="0.3"/>
+                <ellipse cx="700" cy="100" rx="150" ry="100" fill="#ffffff" opacity="0.25"/>
+                <circle cx="1350" cy="80" r="60" fill="#ffffff" opacity="0.35"/>
+                <circle cx="100" cy="350" r="80" fill="#E8D5C9" opacity="0.4"/>
+            </svg>
+        </div>
+        <div class="fotos-grid">
+            <div class="foto-item">
+                <img src="img-avalia/foto-1.jpg" alt="Dinheiro Sem Medo - Foto 1">
+            </div>
+            <div class="foto-item">
+                <img src="img-avalia/foto-2.jpg" alt="Dinheiro Sem Medo - Foto 2">
+            </div>
+            <div class="foto-item">
+                <img src="img-avalia/foto-3.jpg" alt="Dinheiro Sem Medo - Foto 3">
+            </div>
+            <div class="foto-item">
+                <img src="img-avalia/foto-4.jpg" alt="Dinheiro Sem Medo - Foto 4">
+            </div>
+            <div class="foto-item">
+                <img src="img-avalia/foto-5.jpg" alt="Dinheiro Sem Medo - Foto 5">
+            </div>
+            <div class="foto-item">
+                <img src="img-avalia/foto-6.jpg" alt="Dinheiro Sem Medo - Foto 6">
+            </div>
+            <div class="foto-item">
+                <img src="img-avalia/foto-7.jpg" alt="Dinheiro Sem Medo - Foto 7">
+            </div>
+            <div class="foto-item">
+                <img src="img-avalia/foto-8.jpg" alt="Dinheiro Sem Medo - Foto 8">
+            </div>
+            <div class="foto-item">
+                <img src="img-avalia/foto-9.jpg" alt="Dinheiro Sem Medo - Foto 9">
+            </div>
+            <div class="foto-item">
+                <img src="img-avalia/foto-10.jpg" alt="Dinheiro Sem Medo - Foto 10">
+            </div>
+            <div class="foto-item">
+                <img src="img-avalia/foto-11.jpg" alt="Dinheiro Sem Medo - Foto 11">
+            </div>
+            <div class="foto-item">
+                <img src="img-avalia/foto-12.jpg" alt="Dinheiro Sem Medo - Foto 12">
+            </div>
+        </div>
+    </section>
+
+    <!-- Frase Impactante -->
+    <section class="frase-section frase-section-1">
+        <h1 class="frase-impactante-1">me conta o que você achou <br class="br-desktop">do dinheiro sem medo?</h1>
+    </section>
+
+    <!-- Formulário de Avaliação -->
+    <section class="avaliacao-section">
+        <div class="avaliacao-container">
+            <div class="avaliacao-card">
+                <div class="form-content" id="formContent">
+                    <form id="reviewForm">
+                        <div class="rating-section">
+                            <span class="rating-label">Qual sua nota para o livro?</span>
+                            <div class="stars-container">
+                                <span class="star" data-value="1">&#9733;</span>
+                                <span class="star" data-value="2">&#9733;</span>
+                                <span class="star" data-value="3">&#9733;</span>
+                                <span class="star" data-value="4">&#9733;</span>
+                                <span class="star" data-value="5">&#9733;</span>
+                            </div>
+                            <div class="rating-text" id="ratingText"></div>
+                            <input type="hidden" id="rating" name="rating" value="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="name">Seu nome</label>
+                            <input type="text" id="name" name="name" placeholder="Como você gostaria de ser chamado(a)?" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">E-mail</label>
+                            <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="testimonial">Seu depoimento</label>
+                            <textarea id="testimonial" name="testimonial" placeholder="O que você achou do livro? Como ele te ajudou? Quanto mais detalhes, melhor! :)" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-enviar" id="submitBtn">Enviar avaliação →</button>
+                    </form>
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    <div class="success-icon">✓</div>
+                    <h2>Muito obrigado!</h2>
+                    <p>Seguimos :)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fale Comigo -->
+    <section class="contact-section">
+        <div class="container">
+            <h2 class="contact-title">oi!</h2>
+            <div class="contact-text">
+                <p>Se surgir qualquer dúvida, você pode falar comigo através do eduardo@amuri.com.br ou do <a href="https://wa.me/5511991631373" target="_blank" rel="noopener">11-991631373</a>, é meu número pessoal, será um prazer :)</p>
+                <p>Um abraço grande!</p>
+            </div>
+            <img class="contact-logo" src="https://programas.amuri.com.br/wp-content/themes/amuri/public/images/lp-dsm/lp-dsm_amuri-logo.svg" width="120" height="30" alt="AMURI">
+        </div>
+    </section>
+
+    <!-- Modal de Foto -->
+    <div id="fotoModal" class="foto-modal">
+        <span class="foto-modal-close">&times;</span>
+        <img class="foto-modal-content" id="fotoModalImg" alt="Foto ampliada">
+    </div>
+
+    <script>
+        // Modal de fotos
+        const modal = document.getElementById('fotoModal');
+        const modalImg = document.getElementById('fotoModalImg');
+        const closeBtn = document.querySelector('.foto-modal-close');
+        const fotoItems = document.querySelectorAll('.foto-item img');
+
+        fotoItems.forEach(foto => {
+            foto.addEventListener('click', function() {
+                modal.classList.add('active');
+                modalImg.src = this.src;
+                modalImg.alt = this.alt;
+            });
+        });
+
+        closeBtn.addEventListener('click', function() {
+            modal.classList.remove('active');
+        });
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Sistema de Estrelas
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating');
+        const ratingText = document.getElementById('ratingText');
+        const form = document.getElementById('reviewForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const formContent = document.getElementById('formContent');
+        const successMessage = document.getElementById('successMessage');
+
+        const ratingMessages = {
+            0: '',
+            1: 'Não gostei...',
+            2: 'Poderia ser melhor',
+            3: 'Bom!',
+            4: 'Gostei demais!',
+            5: 'Amei! Excelente!'
+        };
+
+        let currentRating = 0;
+
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const value = parseInt(star.dataset.value);
+                currentRating = value;
+                ratingInput.value = value;
+                updateStars(value);
+                ratingText.textContent = ratingMessages[value];
+            });
+
+            star.addEventListener('mouseenter', () => {
+                const value = parseInt(star.dataset.value);
+                updateStars(value);
+            });
+
+            star.addEventListener('mouseleave', () => {
+                updateStars(currentRating);
+            });
+        });
+
+        function updateStars(rating) {
+            stars.forEach(star => {
+                const value = parseInt(star.dataset.value);
+                if (value <= rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        // Envio do Formulário
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (currentRating === 0) {
+                alert('Por favor, selecione uma nota de 1 a 5 estrelas.');
+                return;
+            }
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const testimonial = document.getElementById('testimonial').value.trim();
+
+            if (!name || !email || !testimonial) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            try {
+                // URL do Google Apps Script Web App
+                // Substitua pela URL do seu script publicado
+                const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOQ6kx-EQ1LV_j62yGFQTSenKDGQg0ALwWgGeU6tcZkt0wyS8c7oxhhNUEIt1N65Uv/exec';
+
+                const data = {
+                    rating: currentRating,
+                    name: name,
+                    email: email,
+                    testimonial: testimonial,
+                    date: new Date().toLocaleString('pt-BR')
+                };
+
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // Mostrar mensagem de sucesso
+                formContent.classList.add('hide');
+                successMessage.classList.add('show');
+
+            } catch (error) {
+                console.error('Erro ao enviar:', error);
+                alert('Ocorreu um erro ao enviar sua avaliação. Por favor, tente novamente.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar avaliação →';
+            }
+        });
+    </script>
+
+</body>
+</html>
