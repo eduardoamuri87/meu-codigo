@@ -3,7 +3,7 @@ import { Wallet } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { logoutAction } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
-import { KeyboardShortcuts } from "./keyboard-shortcuts";
+import { SuperRefreshButton } from "./super-refresh-button";
 
 export default async function AuthedLayout({
   children,
@@ -41,8 +41,15 @@ export default async function AuthedLayout({
             >
               Categorias
             </Link>
+            <Link
+              href="/centros-de-custo"
+              className="px-3 py-1.5 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition"
+            >
+              Centros de custo
+            </Link>
           </nav>
           <div className="ml-auto flex items-center gap-3">
+            <SuperRefreshButton />
             <div className="hidden sm:flex items-center gap-2">
               <div className="grid place-items-center size-8 rounded-full bg-gradient-to-br from-primary to-accent-foreground text-primary-foreground text-xs font-semibold">
                 {initials}
@@ -60,7 +67,6 @@ export default async function AuthedLayout({
       <main className="mx-auto max-w-5xl w-full px-6 py-10 md:py-12 flex-1">
         {children}
       </main>
-      <KeyboardShortcuts />
     </>
   );
 }

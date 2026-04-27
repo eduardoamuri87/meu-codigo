@@ -14,28 +14,28 @@ export function TotalsCards({
 }) {
   const items = [
     {
-      label: "Recebido",
-      value: recebido,
-      icon: CheckCircle2,
-      tone: "emerald",
-    },
-    {
       label: "A receber",
       value: aReceber,
       icon: ArrowUpRight,
       tone: "emerald-soft",
     },
     {
-      label: "Pago",
-      value: pago,
+      label: "Recebido",
+      value: recebido,
       icon: CheckCircle2,
-      tone: "rose",
+      tone: "emerald",
     },
     {
       label: "A pagar",
       value: aPagar,
       icon: Clock,
       tone: "rose-soft",
+    },
+    {
+      label: "Pago",
+      value: pago,
+      icon: CheckCircle2,
+      tone: "rose",
     },
   ] as const;
 

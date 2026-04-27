@@ -1,0 +1,9 @@
+node_modules
+.next
+.cache
+.env*
+*.db
+*.db-journal
+.git
+.DS_Store
+*.tsbuildinfo

@@ -43,7 +43,10 @@
       "Bash(curl -s http://localhost:3000/login)",
       "Bash(curl -s -o /dev/null -w \"status=%{http_code} redirect=%{redirect_url}\\\\n\" http://localhost:3000/categorias)",
       "Bash(curl -s -o /dev/null -w \"status=%{http_code} to=%{redirect_url}\\\\n\" http://localhost:3000/)",
-      "Bash(curl -s -o /dev/null -w \"status=%{http_code}\\\\n\" http://localhost:3000/login)"
+      "Bash(curl -s -o /dev/null -w \"status=%{http_code}\\\\n\" http://localhost:3000/login)",
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(openssl rand *)"
     ]
   }
 }

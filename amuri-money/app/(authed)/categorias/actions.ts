@@ -1,7 +1,7 @@
 "use server";
 
 import crypto from "node:crypto";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
@@ -10,6 +10,12 @@ import {
   transactions,
 } from "@/lib/db/schema";
 import { requireUser } from "@/lib/auth/session";
+import { CACHE_TAGS } from "@/lib/queries/page-data";
+
+function invalidateCategories() {
+  revalidateTag(CACHE_TAGS.categories, "max");
+  revalidatePath("/categorias");
+}
 
 export type CategoryType = "receita" | "despesa";
 
@@ -34,8 +40,28 @@ export async function createCategory(formData: FormData): Promise<ActionResult> 
     type,
     createdAt: Date.now(),
   });
-  revalidatePath("/categorias");
+  invalidateCategories();
   return { ok: true };
+}
+
+export async function createCategoryInline(
+  name: string,
+  type: string,
+): Promise<{ id: string; name: string; type: CategoryType }> {
+  await requireUser();
+  const validType = validate(name, type);
+  if (!validType) throw new Error("Nome ou tipo inválidos.");
+  const trimmed = name.trim();
+
+  const id = crypto.randomUUID();
+  await db.insert(categories).values({
+    id,
+    name: trimmed,
+    type: validType,
+    createdAt: Date.now(),
+  });
+  invalidateCategories();
+  return { id, name: trimmed, type: validType };
 }
 
 export async function updateCategory(formData: FormData): Promise<ActionResult> {
@@ -50,7 +76,9 @@ export async function updateCategory(formData: FormData): Promise<ActionResult> 
     .update(categories)
     .set({ name, type })
     .where(eq(categories.id, id));
-  revalidatePath("/categorias");
+  invalidateCategories();
+  revalidateTag(CACHE_TAGS.transactions, "max");
+  revalidatePath("/");
   return { ok: true };
 }
 
@@ -58,31 +86,20 @@ export async function deleteCategory(id: string): Promise<ActionResult> {
   await requireUser();
   if (!id) return { ok: false, error: "Categoria inválida." };
 
-  const [ref] = await db
-    .select({ id: transactions.id })
-    .from(transactions)
-    .where(eq(transactions.categoryId, id))
-    .limit(1);
-  if (ref) {
-    return {
-      ok: false,
-      error: "Categoria em uso em transações — não pode ser excluída.",
-    };
-  }
+  await db.transaction(async (tx) => {
+    await tx
+      .update(transactions)
+      .set({ categoryId: null, updatedAt: Date.now() })
+      .where(eq(transactions.categoryId, id));
+    await tx
+      .update(recurrences)
+      .set({ categoryId: null })
+      .where(eq(recurrences.categoryId, id));
+    await tx.delete(categories).where(eq(categories.id, id));
+  });
 
-  const [refRec] = await db
-    .select({ id: recurrences.id })
-    .from(recurrences)
-    .where(eq(recurrences.categoryId, id))
-    .limit(1);
-  if (refRec) {
-    return {
-      ok: false,
-      error: "Categoria em uso em recorrências — não pode ser excluída.",
-    };
-  }
-
-  await db.delete(categories).where(eq(categories.id, id));
-  revalidatePath("/categorias");
+  invalidateCategories();
+  revalidateTag(CACHE_TAGS.transactions, "max");
+  revalidatePath("/");
   return { ok: true };
 }

@@ -37,6 +37,12 @@ export const categories = sqliteTable(
   ],
 );
 
+export const costCenters = sqliteTable("cost_centers", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  createdAt: integer("created_at").notNull(),
+});
+
 export const recurrences = sqliteTable(
   "recurrences",
   {
@@ -44,9 +50,10 @@ export const recurrences = sqliteTable(
     description: text("description").notNull(),
     amount: real("amount").notNull(),
     categoryId: text("category_id").references(() => categories.id),
+    costCenterId: text("cost_center_id").references(() => costCenters.id),
     type: text("type", { enum: ["receita", "despesa"] }).notNull(),
     startDate: text("start_date").notNull(),
-    totalParcels: integer("total_parcels").notNull(),
+    totalParcels: integer("total_parcels"),
     dayOfMonth: integer("day_of_month").notNull(),
     createdAt: integer("created_at").notNull(),
   },
@@ -63,6 +70,7 @@ export const transactions = sqliteTable(
     description: text("description").notNull(),
     amount: real("amount").notNull(),
     categoryId: text("category_id").references(() => categories.id),
+    costCenterId: text("cost_center_id").references(() => costCenters.id),
     type: text("type", { enum: ["receita", "despesa"] }).notNull(),
     paid: integer("paid", { mode: "boolean" }).notNull().default(false),
     recurrenceId: text("recurrence_id").references(() => recurrences.id),
@@ -74,6 +82,10 @@ export const transactions = sqliteTable(
   (t) => [
     index("idx_transactions_date").on(t.date),
     index("idx_transactions_paid").on(t.paid),
+    index("idx_transactions_recurrence_parcel").on(
+      t.recurrenceId,
+      t.parcelNumber,
+    ),
     check("transactions_type_check", sql`${t.type} IN ('receita', 'despesa')`),
   ],
 );
@@ -84,6 +96,8 @@ export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
 export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;
+export type CostCenter = typeof costCenters.$inferSelect;
+export type NewCostCenter = typeof costCenters.$inferInsert;
 export type Recurrence = typeof recurrences.$inferSelect;
 export type NewRecurrence = typeof recurrences.$inferInsert;
 export type Transaction = typeof transactions.$inferSelect;

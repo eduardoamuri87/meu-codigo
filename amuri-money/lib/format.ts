@@ -59,3 +59,9 @@ export function formatMonthLabel(year: number, month: number): string {
     year: "numeric",
   });
 }
+
+export function parseDecimalBR(s: string): number | null {
+  const cleaned = s.trim().replace(/\./g, "").replace(",", ".");
+  const n = Number.parseFloat(cleaned);
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}

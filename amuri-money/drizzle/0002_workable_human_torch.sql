@@ -1,0 +1,1 @@
+CREATE INDEX `idx_transactions_recurrence_parcel` ON `transactions` (`recurrence_id`,`parcel_number`);
