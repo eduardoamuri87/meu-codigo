@@ -175,6 +175,8 @@ export default async function HomePage({
   const today = currentYearMonth();
   const viewIsFuture =
     year > today.year || (year === today.year && month > today.month);
+  const viewIsPast =
+    year < today.year || (year === today.year && month < today.month);
   // Saldo zero em 1º de abril/2026; tudo posterior acumula o delta de cada
   // mês para que saldoInicial(M+1) = saldoFinalProjetado(M) e o "saldo atual"
   // do mês corrente seja saldoInicial + (recebido − pago) realizado.
@@ -234,7 +236,11 @@ export default async function HomePage({
         <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
           <div className="space-y-1.5">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">
-              {viewIsFuture ? "Saldo inicial" : "Saldo atual"}
+              {viewIsFuture
+                ? "Saldo inicial"
+                : viewIsPast
+                  ? "Saldo efetivado no fim do mês"
+                  : "Saldo atual"}
             </div>
             <div
               className={`text-4xl font-semibold tabular-nums tracking-tight ${
