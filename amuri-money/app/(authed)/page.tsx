@@ -236,11 +236,7 @@ export default async function HomePage({
         <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
           <div className="space-y-1.5">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">
-              {viewIsFuture
-                ? "Saldo inicial"
-                : viewIsPast
-                  ? "Saldo efetivado no fim do mês"
-                  : "Saldo atual"}
+              {viewIsFuture ? "Saldo inicial" : "Saldo atual"}
             </div>
             <div
               className={`text-4xl font-semibold tabular-nums tracking-tight ${
@@ -250,9 +246,12 @@ export default async function HomePage({
               {formatCurrency(saldoPrincipal)}
             </div>
             <div className="text-sm text-muted-foreground">
-              Saldo projetado para o fim do mês:{" "}
+              {viewIsPast
+                ? "Saldo efetivado no fim do mês"
+                : "Saldo projetado para o fim do mês"}
+              :{" "}
               <span className="tabular-nums font-medium text-foreground">
-                {formatCurrency(saldoProjetado)}
+                {formatCurrency(viewIsPast ? saldoAtual : saldoProjetado)}
               </span>
             </div>
           </div>
