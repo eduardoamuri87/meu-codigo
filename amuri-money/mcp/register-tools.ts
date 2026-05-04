@@ -4,6 +4,7 @@ import { z } from "zod";
 import { and, asc, eq, gte, lte } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { categories, costCenters, recurrences, transactions } from "@/lib/db/schema";
+import { CACHE_TAGS } from "@/lib/queries/page-data";
 import {
   getStripeBooksMonthTotals,
   getStripeMonthTotals,
@@ -139,6 +140,22 @@ async function computeMonthSummary(year: number, month: number) {
   };
 }
 
+// MCP roda dentro do Next.js (app/api/mcp/[token]/route.ts), então mutações
+// precisam invalidar o unstable_cache da home senão a UI continua estale.
+// Em modo stdio (npm run mcp via tsx) não há Next.js context — o import
+// dinâmico falha e a função vira no-op.
+async function invalidateNextCache(): Promise<void> {
+  try {
+    const { revalidateTag, revalidatePath } = await import("next/cache");
+    revalidateTag(CACHE_TAGS.transactions, "max");
+    revalidateTag(CACHE_TAGS.categories, "max");
+    revalidateTag(CACHE_TAGS.costCenters, "max");
+    revalidatePath("/", "layout");
+  } catch {
+    // sem Next.js context (ex: modo stdio dev): ignora
+  }
+}
+
 export function registerTools(server: McpServer) {
   server.registerTool(
     "list_transactions",
@@ -248,6 +265,7 @@ export function registerTools(server: McpServer) {
         createdAt: now,
         updatedAt: now,
       });
+      await invalidateNextCache();
       return textResult({ ok: true, id });
     },
   );
@@ -295,6 +313,7 @@ export function registerTools(server: McpServer) {
       }
 
       await db.update(transactions).set(patch).where(eq(transactions.id, id));
+      await invalidateNextCache();
       return textResult({ ok: true, id });
     },
   );
@@ -327,10 +346,12 @@ export function registerTools(server: McpServer) {
                 eq(transactions.paid, false),
               ),
             );
+          await invalidateNextCache();
           return textResult({ ok: true, scope, deleted: result.rowsAffected ?? null });
         }
       }
       const result = await db.delete(transactions).where(eq(transactions.id, id));
+      await invalidateNextCache();
       return textResult({ ok: true, scope, deleted: result.rowsAffected ?? null });
     },
   );
@@ -350,6 +371,7 @@ export function registerTools(server: McpServer) {
         .update(transactions)
         .set({ paid, updatedAt: Date.now() })
         .where(eq(transactions.id, id));
+      await invalidateNextCache();
       return textResult({ ok: true, id, paid });
     },
   );
@@ -385,6 +407,7 @@ export function registerTools(server: McpServer) {
     async ({ name, type }) => {
       const id = crypto.randomUUID();
       await db.insert(categories).values({ id, name: name.trim(), type, createdAt: Date.now() });
+      await invalidateNextCache();
       return textResult({ ok: true, id, name, type });
     },
   );
@@ -420,6 +443,7 @@ export function registerTools(server: McpServer) {
         .update(transactions)
         .set({ costCenterId, updatedAt: Date.now() })
         .where(eq(transactions.id, transaction_id));
+      await invalidateNextCache();
 
       return textResult({
         ok: true,
@@ -485,6 +509,7 @@ export function registerTools(server: McpServer) {
         .update(transactions)
         .set({ costCenterId, updatedAt: Date.now() })
         .where(and(...conds));
+      await invalidateNextCache();
 
       return textResult({
         ok: true,
@@ -526,6 +551,7 @@ export function registerTools(server: McpServer) {
       await db
         .insert(costCenters)
         .values({ id, name: name.trim(), createdAt: Date.now() });
+      await invalidateNextCache();
       return textResult({ ok: true, id, name });
     },
   );
@@ -618,6 +644,7 @@ export function registerTools(server: McpServer) {
       }));
 
       await db.insert(transactions).values(rows);
+      await invalidateNextCache();
 
       return textResult({
         ok: true,
