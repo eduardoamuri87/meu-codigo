@@ -1,8 +1,6 @@
 import "server-only";
-import { withTtlCache } from "./memory-cache";
+import { withCheckpointCache } from "./memory-cache";
 import type { IuguDetailItem } from "./types";
-
-const ONE_HOUR = 60 * 60 * 1000;
 
 const IUGU_BASE = "https://api.iugu.com";
 
@@ -139,9 +137,8 @@ function windowKey(): string {
   return isoDate(from);
 }
 
-const cachedWindowInvoices = withTtlCache(
+const cachedWindowInvoices = withCheckpointCache(
   "iugu-invoices-window-v1",
-  ONE_HOUR,
   async (fromDate: string): Promise<IuguInvoice[]> => {
     const tomorrow = new Date(Date.now() + 86400 * 1000);
     return fetchAllPaidInvoices(fromDate, isoDate(tomorrow));
@@ -156,9 +153,8 @@ async function computeIuguMonth(
   return computeMonth(invoices, year, month);
 }
 
-const cachedComputeIuguMonth = withTtlCache(
+const cachedComputeIuguMonth = withCheckpointCache(
   "iugu-month-v3",
-  ONE_HOUR,
   computeIuguMonth,
 );
 
@@ -242,19 +238,23 @@ export async function listIuguCustomersWithInstallments(): Promise<{
   return { count: customers.length, customers };
 }
 
+function emptyIuguMonth(): IuguMonthTotals {
+  return {
+    recebido: { total: 0, items: [] },
+    aReceber: { total: 0, items: [] },
+  };
+}
+
 export async function getIuguMonthTotals(
   year: number,
   month: number,
 ): Promise<IuguMonthTotals> {
+  if (!process.env.IUGU_API_TOKEN) return emptyIuguMonth();
   try {
     return await cachedComputeIuguMonth(year, month);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("[iugu] falhou:", msg);
-    return {
-      recebido: { total: 0, items: [] },
-      aReceber: { total: 0, items: [] },
-      error: msg,
-    };
+    return { ...emptyIuguMonth(), error: msg };
   }
 }

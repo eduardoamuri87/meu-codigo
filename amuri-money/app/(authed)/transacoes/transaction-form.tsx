@@ -3,23 +3,20 @@
 import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
+import { toast } from "sonner";
 import type { Category, CostCenter, Transaction } from "@/lib/db/schema";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
   createTransaction,
   updateTransaction,
   type FormState,
 } from "./actions";
+import { createCategoryInline } from "../categorias/actions";
+import { createCostCenterInline } from "../centros-de-custo/actions";
 
 const NO_CATEGORY = "__none__";
 
@@ -86,10 +83,20 @@ export function TransactionForm({
   const [costCenterId, setCostCenterId] = useState<string>(
     transaction?.costCenterId ?? NO_CATEGORY,
   );
+  const [extraCategories, setExtraCategories] = useState<Category[]>([]);
+  const [extraCostCenters, setExtraCostCenters] = useState<CostCenter[]>([]);
   const today = new Date().toISOString().slice(0, 10);
   const defaultDay = (transaction?.date ?? today).slice(8, 10);
 
-  const filtered = categories.filter((c) => c.type === type);
+  const mergedCategories = [
+    ...categories,
+    ...extraCategories.filter((c) => !categories.some((x) => x.id === c.id)),
+  ];
+  const mergedCostCenters = [
+    ...costCenters,
+    ...extraCostCenters.filter((c) => !costCenters.some((x) => x.id === c.id)),
+  ];
+  const filtered = mergedCategories.filter((c) => c.type === type);
 
   useEffect(() => {
     if (
@@ -106,6 +113,7 @@ export function TransactionForm({
         <input type="hidden" name="id" value={transaction.id} />
       ) : null}
       <input type="hidden" name="type" value={type} />
+      <input type="hidden" name="categoryId" value={categoryId} />
       <input
         type="hidden"
         name="costCenterId"
@@ -190,53 +198,67 @@ export function TransactionForm({
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="categoryId">Categoria</Label>
-          <Select
-            name="categoryId"
-            value={categoryId}
-            onValueChange={(v) => setCategoryId(v ?? NO_CATEGORY)}
-            items={[
-              { value: NO_CATEGORY, label: "Sem categoria" },
-              ...filtered.map((c) => ({ value: c.id, label: c.name })),
-            ]}
-          >
-            <SelectTrigger id="categoryId" className="w-full">
-              <SelectValue placeholder="Sem categoria" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={NO_CATEGORY}>Sem categoria</SelectItem>
-              {filtered.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            id="categoryId"
+            value={categoryId === NO_CATEGORY ? null : categoryId}
+            onChange={(v) => setCategoryId(v ?? NO_CATEGORY)}
+            options={filtered}
+            noneLabel="Sem categoria"
+            placeholder="Sem categoria"
+            onCreate={async (name) => {
+              const created = await createCategoryInline(name, type);
+              setExtraCategories((prev) => [
+                ...prev,
+                {
+                  id: created.id,
+                  name: created.name,
+                  type: created.type,
+                  createdAt: Date.now(),
+                },
+              ]);
+              return { id: created.id, name: created.name };
+            }}
+            onCreateError={(err) =>
+              toast.error(
+                err instanceof Error
+                  ? err.message
+                  : "Não foi possível criar a categoria.",
+              )
+            }
+          />
         </div>
       </div>
 
       {type === "despesa" ? (
         <div className="flex flex-col gap-2">
           <Label htmlFor="costCenterId">Centro de custo</Label>
-          <Select
-            value={costCenterId}
-            onValueChange={(v) => setCostCenterId(v ?? NO_CATEGORY)}
-            items={[
-              { value: NO_CATEGORY, label: "Sem centro de custo" },
-              ...costCenters.map((c) => ({ value: c.id, label: c.name })),
-            ]}
-          >
-            <SelectTrigger id="costCenterId" className="w-full">
-              <SelectValue placeholder="Sem centro de custo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={NO_CATEGORY}>Sem centro de custo</SelectItem>
-              {costCenters.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            id="costCenterId"
+            value={costCenterId === NO_CATEGORY ? null : costCenterId}
+            onChange={(v) => setCostCenterId(v ?? NO_CATEGORY)}
+            options={mergedCostCenters}
+            noneLabel="Sem centro de custo"
+            placeholder="Sem centro de custo"
+            onCreate={async (name) => {
+              const created = await createCostCenterInline(name);
+              setExtraCostCenters((prev) => [
+                ...prev,
+                {
+                  id: created.id,
+                  name: created.name,
+                  createdAt: Date.now(),
+                },
+              ]);
+              return created;
+            }}
+            onCreateError={(err) =>
+              toast.error(
+                err instanceof Error
+                  ? err.message
+                  : "Não foi possível criar o centro de custo.",
+              )
+            }
+          />
         </div>
       ) : null}
 

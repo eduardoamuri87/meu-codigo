@@ -1,10 +1,9 @@
-import { withTtlCache } from "./memory-cache";
+import { withCheckpointCache } from "./memory-cache";
 import type { StripeBookItem, StripeDetailItem } from "./types";
 
 const STRIPE_BASE = "https://api.stripe.com";
 const BANK_DELAY_DAYS = 2;
 const DEFAULT_FEE_RATE = 0.045;
-const ONE_HOUR = 60 * 60 * 1000;
 
 const BR_HOLIDAYS = new Set<string>([
   // 2026
@@ -352,18 +351,17 @@ function computeStripeMonth(
   };
 }
 
-const cachedActiveSubs = withTtlCache(
+const cachedActiveSubs = withCheckpointCache(
   "stripe-active-subs-v2",
-  ONE_HOUR,
   fetchActiveSubscriptions,
 );
 
-const cachedProductMap = withTtlCache("stripe-products-v3", ONE_HOUR, async () => {
+const cachedProductMap = withCheckpointCache("stripe-products-v3", async () => {
   const subs = await cachedActiveSubs();
   return fetchProductNames(subs);
 });
 
-const cachedFeeRate = withTtlCache("stripe-fee-rate", ONE_HOUR, async () => {
+const cachedFeeRate = withCheckpointCache("stripe-fee-rate", async () => {
   const txs = await fetchRecentBalanceTransactions(60);
   return computeEffectiveFeeRate(txs);
 });
@@ -624,28 +622,40 @@ function computeStripeBooksMonth(
   };
 }
 
-const cachedChargeBalanceTransactions = withTtlCache(
+const cachedChargeBalanceTransactions = withCheckpointCache(
   "stripe-charge-btxs-by-created-v1",
-  ONE_HOUR,
   fetchChargeBalanceTransactionsByCreatedWindow,
 );
 
-const cachedBookCheckoutSessions = withTtlCache(
+const cachedBookCheckoutSessions = withCheckpointCache(
   "stripe-book-sessions-v1",
-  ONE_HOUR,
   fetchBookCheckoutSessions,
 );
 
-const cachedBookPaymentLinks = withTtlCache(
+const cachedBookPaymentLinks = withCheckpointCache(
   "stripe-book-payment-links-v1",
-  ONE_HOUR,
   fetchBookPaymentLinks,
 );
+
+function emptyStripeBooksMonth(): StripeBooksMonthTotals {
+  return {
+    recebido: { total: 0, items: [] },
+    aReceber: { total: 0, items: [] },
+  };
+}
+
+function emptyStripeMonth(): StripeMonthTotals {
+  return {
+    recebido: { total: 0, items: [] },
+    aReceber: { total: 0, items: [] },
+  };
+}
 
 export async function getStripeBooksMonthTotals(
   year: number,
   month: number,
 ): Promise<StripeBooksMonthTotals> {
+  if (!process.env.STRIPE_API_TOKEN) return emptyStripeBooksMonth();
   try {
     const [txs, bookPIs, bookLinks] = await Promise.all([
       cachedChargeBalanceTransactions(year, month),
@@ -656,11 +666,7 @@ export async function getStripeBooksMonthTotals(
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("[stripe-books] falhou:", msg);
-    return {
-      recebido: { total: 0, items: [] },
-      aReceber: { total: 0, items: [] },
-      error: msg,
-    };
+    return { ...emptyStripeBooksMonth(), error: msg };
   }
 }
 
@@ -668,6 +674,7 @@ export async function getStripeMonthTotals(
   year: number,
   month: number,
 ): Promise<StripeMonthTotals> {
+  if (!process.env.STRIPE_API_TOKEN) return emptyStripeMonth();
   try {
     const [subs, productMap, feeRate] = await Promise.all([
       cachedActiveSubs(),
@@ -678,10 +685,6 @@ export async function getStripeMonthTotals(
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("[stripe] falhou:", msg);
-    return {
-      recebido: { total: 0, items: [] },
-      aReceber: { total: 0, items: [] },
-      error: msg,
-    };
+    return { ...emptyStripeMonth(), error: msg };
   }
 }

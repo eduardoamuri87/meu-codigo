@@ -1,7 +1,12 @@
 import { Wallet } from "lucide-react";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/auth/session";
 import { LoginForm } from "./login-form";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const session = await getSession();
+  if (session) redirect("/");
+
   return (
     <main className="min-h-dvh grid place-items-center p-4 relative overflow-hidden">
       <div className="absolute inset-0 -z-10 pointer-events-none">

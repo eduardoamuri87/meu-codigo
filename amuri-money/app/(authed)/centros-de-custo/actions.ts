@@ -29,6 +29,23 @@ export async function createCostCenter(formData: FormData): Promise<ActionResult
   return { ok: true };
 }
 
+export async function createCostCenterInline(
+  name: string,
+): Promise<{ id: string; name: string }> {
+  await requireUser();
+  const trimmed = name.trim();
+  if (!trimmed) throw new Error("Nome obrigatório.");
+
+  const id = crypto.randomUUID();
+  await db.insert(costCenters).values({
+    id,
+    name: trimmed,
+    createdAt: Date.now(),
+  });
+  invalidateCostCenters();
+  return { id, name: trimmed };
+}
+
 export async function updateCostCenter(formData: FormData): Promise<ActionResult> {
   await requireUser();
   const id = String(formData.get("id") ?? "");

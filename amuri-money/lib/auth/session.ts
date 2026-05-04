@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { sessions, users, type User } from "@/lib/db/schema";
@@ -60,6 +61,6 @@ export async function invalidateSession(sessionId: string) {
 
 export async function requireUser(): Promise<User> {
   const session = await getSession();
-  if (!session) throw new Error("Não autenticado");
+  if (!session) redirect("/login");
   return session.user;
 }

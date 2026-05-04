@@ -4,15 +4,9 @@ import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { ArrowDown, ArrowUp, ArrowUpDown, Link2Off, MoreVertical, Pencil, Repeat, Trash2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -51,6 +45,7 @@ import {
   type RecurrentEditScope,
 } from "./transacoes/actions";
 import { createCategoryInline } from "./categorias/actions";
+import { createCostCenterInline } from "./centros-de-custo/actions";
 import { VirtualRowDetailsDialog } from "./virtual-row-details-dialog";
 
 export type Row = {
@@ -72,7 +67,13 @@ export type Row = {
   virtualDetail?: VirtualRowDetail;
 };
 
-type SortKey = "date" | "description" | "categoryName" | "amount" | "paid";
+type SortKey =
+  | "date"
+  | "description"
+  | "categoryName"
+  | "costCenterName"
+  | "amount"
+  | "paid";
 type SortDir = "asc" | "desc";
 type EditingCell = { rowId: string; field: EditableField } | null;
 
@@ -87,6 +88,11 @@ function compareRows(a: Row, b: Row, key: SortKey): number {
     case "categoryName":
       return (a.categoryName ?? "").localeCompare(
         b.categoryName ?? "",
+        "pt-BR",
+      );
+    case "costCenterName":
+      return (a.costCenterName ?? "").localeCompare(
+        b.costCenterName ?? "",
         "pt-BR",
       );
     case "amount":
@@ -112,7 +118,7 @@ export function TransactionsList({
   const [editing, setEditing] = useState<EditingCell>(null);
   const [scopePrompt, setScopePrompt] = useState<{
     row: Row;
-    field: "description" | "amount" | "categoryId";
+    field: "description" | "amount" | "categoryId" | "costCenterId";
     rawValue: string;
   } | null>(null);
   const [detailRow, setDetailRow] = useState<Row | null>(null);
@@ -242,7 +248,10 @@ export function TransactionsList({
   function commitField(row: Row, field: EditableField, rawValue: string) {
     if (
       row.recurrenceId &&
-      (field === "description" || field === "amount" || field === "categoryId")
+      (field === "description" ||
+        field === "amount" ||
+        field === "categoryId" ||
+        field === "costCenterId")
     ) {
       setScopePrompt({ row, field, rawValue });
       return;
@@ -274,8 +283,13 @@ export function TransactionsList({
             const n = parseDecimalBR(prompt.rawValue);
             if (n === null) throw new Error("Valor inválido.");
             patch.amount = n;
-          } else {
+          } else if (prompt.field === "categoryId") {
             patch.categoryId =
+              !prompt.rawValue || prompt.rawValue === NO_CATEGORY
+                ? null
+                : prompt.rawValue;
+          } else {
+            patch.costCenterId =
               !prompt.rawValue || prompt.rawValue === NO_CATEGORY
                 ? null
                 : prompt.rawValue;
@@ -328,6 +342,13 @@ export function TransactionsList({
               <SortableHead
                 label="Categoria"
                 sortKey="categoryName"
+                activeKey={sortKey}
+                activeDir={sortDir}
+                onToggle={toggleSort}
+              />
+              <SortableHead
+                label="Centro de custo"
+                sortKey="costCenterName"
                 activeKey={sortKey}
                 activeDir={sortDir}
                 onToggle={toggleSort}
@@ -420,14 +441,6 @@ export function TransactionsList({
                           : `${row.parcelNumber}/∞`}
                       </span>
                     ) : null}
-                    {row.costCenterName ? (
-                      <span
-                        className="text-xs rounded border px-1.5 py-0.5 bg-muted text-muted-foreground"
-                        title="Centro de custo"
-                      >
-                        {row.costCenterName}
-                      </span>
-                    ) : null}
                     {row.virtual ? (
                       <span className="text-xs rounded border px-1.5 py-0.5 bg-muted text-muted-foreground">
                         auto
@@ -453,6 +466,26 @@ export function TransactionsList({
                       }
                     >
                       {row.categoryName ?? "—"}
+                    </CellButton>
+                  )}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {row.virtual || row.type === "receita" ? (
+                    "—"
+                  ) : isEditing(row, "costCenterId") ? (
+                    <InlineCostCenterSelect
+                      costCenters={costCenters}
+                      pending={pending}
+                      onCommit={(v) => commitField(row, "costCenterId", v)}
+                      onCancel={() => setEditing(null)}
+                    />
+                  ) : (
+                    <CellButton
+                      onClick={() =>
+                        setEditing({ rowId: row.id, field: "costCenterId" })
+                      }
+                    >
+                      {row.costCenterName ?? "—"}
                     </CellButton>
                   )}
                 </TableCell>
@@ -922,6 +955,8 @@ function EditRecurrentForm({
     initialCostCenterId ?? NO_CATEGORY,
   );
   const [dayOfMonth, setDayOfMonth] = useState(String(initialDayOfMonth));
+  const [extraCategories, setExtraCategories] = useState<Category[]>([]);
+  const [extraCostCenters, setExtraCostCenters] = useState<CostCenter[]>([]);
 
   function submit(scope: RecurrentEditScope) {
     const patch: RecurrentEditPatch = {};
@@ -954,7 +989,15 @@ function EditRecurrentForm({
     onConfirm(scope, patch);
   }
 
-  const categoryOptions = categories.filter((c) => c.type === row.type);
+  const mergedCategories = [
+    ...categories,
+    ...extraCategories.filter((c) => !categories.some((x) => x.id === c.id)),
+  ];
+  const mergedCostCenters = [
+    ...costCenters,
+    ...extraCostCenters.filter((c) => !costCenters.some((x) => x.id === c.id)),
+  ];
+  const categoryOptions = mergedCategories.filter((c) => c.type === row.type);
 
   return (
     <div className="flex flex-col gap-4">
@@ -998,58 +1041,67 @@ function EditRecurrentForm({
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="edit-categoryId">Categoria</Label>
-              <Select
-                value={categoryId}
-                onValueChange={(v) => setCategoryId(v ?? NO_CATEGORY)}
-                items={[
-                  { value: NO_CATEGORY, label: "Sem categoria" },
-                  ...categoryOptions.map((c) => ({
-                    value: c.id,
-                    label: c.name,
-                  })),
-                ]}
-              >
-                <SelectTrigger id="edit-categoryId" className="w-full">
-                  <SelectValue placeholder="Sem categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={NO_CATEGORY}>Sem categoria</SelectItem>
-                  {categoryOptions.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                id="edit-categoryId"
+                value={categoryId === NO_CATEGORY ? null : categoryId}
+                onChange={(v) => setCategoryId(v ?? NO_CATEGORY)}
+                options={categoryOptions}
+                noneLabel="Sem categoria"
+                placeholder="Sem categoria"
+                disabled={pending}
+                onCreate={async (name) => {
+                  const created = await createCategoryInline(name, row.type);
+                  setExtraCategories((prev) => [
+                    ...prev,
+                    {
+                      id: created.id,
+                      name: created.name,
+                      type: created.type,
+                      createdAt: Date.now(),
+                    },
+                  ]);
+                  return { id: created.id, name: created.name };
+                }}
+                onCreateError={(err) =>
+                  toast.error(
+                    err instanceof Error
+                      ? err.message
+                      : "Não foi possível criar a categoria.",
+                  )
+                }
+              />
             </div>
             {isDespesa ? (
               <div className="flex flex-col gap-2">
                 <Label htmlFor="edit-costCenterId">Centro de custo</Label>
-                <Select
-                  value={costCenterId}
-                  onValueChange={(v) => setCostCenterId(v ?? NO_CATEGORY)}
-                  items={[
-                    { value: NO_CATEGORY, label: "Sem centro de custo" },
-                    ...costCenters.map((c) => ({
-                      value: c.id,
-                      label: c.name,
-                    })),
-                  ]}
-                >
-                  <SelectTrigger id="edit-costCenterId" className="w-full">
-                    <SelectValue placeholder="Sem centro de custo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={NO_CATEGORY}>
-                      Sem centro de custo
-                    </SelectItem>
-                    {costCenters.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  id="edit-costCenterId"
+                  value={costCenterId === NO_CATEGORY ? null : costCenterId}
+                  onChange={(v) => setCostCenterId(v ?? NO_CATEGORY)}
+                  options={mergedCostCenters}
+                  noneLabel="Sem centro de custo"
+                  placeholder="Sem centro de custo"
+                  disabled={pending}
+                  onCreate={async (name) => {
+                    const created = await createCostCenterInline(name);
+                    setExtraCostCenters((prev) => [
+                      ...prev,
+                      {
+                        id: created.id,
+                        name: created.name,
+                        createdAt: Date.now(),
+                      },
+                    ]);
+                    return created;
+                  }}
+                  onCreateError={(err) =>
+                    toast.error(
+                      err instanceof Error
+                        ? err.message
+                        : "Não foi possível criar o centro de custo.",
+                    )
+                  }
+                />
               </div>
             ) : null}
             <div className="flex flex-col gap-2 pt-2">
@@ -1272,6 +1324,120 @@ function InlineCategorySelect({
             const label =
               opt.kind === "none"
                 ? "Sem categoria"
+                : opt.kind === "existing"
+                  ? opt.label
+                  : `Criar "${opt.name}"`;
+            return (
+              <button
+                key={opt.kind === "existing" ? opt.id : opt.kind + i}
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => pick(opt)}
+                className={`w-full text-left px-2.5 py-1.5 text-sm ${
+                  isActive ? "bg-accent text-accent-foreground" : ""
+                } ${opt.kind === "create" ? "text-muted-foreground italic" : ""}`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function InlineCostCenterSelect({
+  costCenters,
+  pending,
+  onCommit,
+  onCancel,
+}: {
+  costCenters: CostCenter[];
+  pending: boolean;
+  onCommit: (v: string) => void;
+  onCancel: () => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [busy, setBusy] = useState(false);
+
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? costCenters.filter((c) => c.name.toLowerCase().includes(q))
+    : costCenters;
+  const exactMatch = costCenters.some(
+    (c) => c.name.trim().toLowerCase() === q,
+  );
+
+  const options: ComboOption[] = [];
+  if (!q) options.push({ kind: "none" });
+  for (const c of filtered) options.push({ kind: "existing", id: c.id, label: c.name });
+  if (q && !exactMatch)
+    options.push({ kind: "create", name: query.trim() });
+
+  const safeIdx = Math.min(activeIdx, Math.max(options.length - 1, 0));
+
+  async function pick(opt: ComboOption) {
+    if (opt.kind === "none") {
+      onCommit(NO_CATEGORY);
+    } else if (opt.kind === "existing") {
+      onCommit(opt.id);
+    } else {
+      setBusy(true);
+      try {
+        const created = await createCostCenterInline(opt.name);
+        onCommit(created.id);
+      } catch (err) {
+        toast.error(
+          err instanceof Error
+            ? err.message
+            : "Não foi possível criar o centro de custo.",
+        );
+        setBusy(false);
+      }
+    }
+  }
+
+  return (
+    <div className="relative">
+      <Input
+        type="text"
+        autoFocus
+        value={query}
+        disabled={pending || busy}
+        placeholder="Buscar ou criar..."
+        onChange={(e) => {
+          setQuery(e.currentTarget.value);
+          setActiveIdx(0);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            setActiveIdx((i) => Math.min(i + 1, options.length - 1));
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            setActiveIdx((i) => Math.max(i - 1, 0));
+          } else if (e.key === "Enter") {
+            e.preventDefault();
+            const opt = options[safeIdx];
+            if (opt) pick(opt);
+          } else if (e.key === "Escape") {
+            e.preventDefault();
+            onCancel();
+          }
+        }}
+        onBlur={() => {
+          if (!busy) onCancel();
+        }}
+      />
+      {options.length > 0 ? (
+        <div className="absolute top-full left-0 z-20 mt-1 flex w-56 max-h-60 flex-col overflow-y-auto rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10">
+          {options.map((opt, i) => {
+            const isActive = i === safeIdx;
+            const label =
+              opt.kind === "none"
+                ? "Sem centro de custo"
                 : opt.kind === "existing"
                   ? opt.label
                   : `Criar "${opt.name}"`;

@@ -269,7 +269,12 @@ export async function convertToRecurrent(
   invalidateTransactions();
 }
 
-export type EditableField = "date" | "description" | "categoryId" | "amount";
+export type EditableField =
+  | "date"
+  | "description"
+  | "categoryId"
+  | "costCenterId"
+  | "amount";
 
 export async function updateTransactionField(
   id: string,
@@ -283,6 +288,7 @@ export async function updateTransactionField(
     date: string;
     description: string;
     categoryId: string | null;
+    costCenterId: string | null;
     amount: number;
   }> = {};
 
@@ -306,6 +312,11 @@ export async function updateTransactionField(
     }
     case "categoryId": {
       updates.categoryId =
+        !rawValue || rawValue === "__none__" ? null : rawValue;
+      break;
+    }
+    case "costCenterId": {
+      updates.costCenterId =
         !rawValue || rawValue === "__none__" ? null : rawValue;
       break;
     }
