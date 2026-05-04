@@ -175,9 +175,16 @@ export default async function HomePage({
   const today = currentYearMonth();
   const viewIsFuture =
     year > today.year || (year === today.year && month > today.month);
-  const carryMonths = viewIsFuture
-    ? monthsBetween(today.year, today.month, year, month)
-    : [];
+  // Saldo zero em 1º de abril/2026; tudo posterior acumula o delta de cada
+  // mês para que saldoInicial(M+1) = saldoFinalProjetado(M) e o "saldo atual"
+  // do mês corrente seja saldoInicial + (recebido − pago) realizado.
+  const SALDO_GENESIS = { year: 2026, month: 4 };
+  const carryMonths = monthsBetween(
+    SALDO_GENESIS.year,
+    SALDO_GENESIS.month,
+    year,
+    month,
+  );
 
   const [totalsRow, dbRows, cats, ccs, iugu, stripe, books, carryDeltas] =
     await Promise.all([
@@ -211,9 +218,9 @@ export default async function HomePage({
     books.aReceber.total;
   const pago = totalsRow?.pago ?? 0;
   const aPagar = totalsRow?.aPagar ?? 0;
-  const saldoRealizado = recebido - pago;
+  const saldoAtual = saldoInicial + recebido - pago;
   const saldoProjetado = saldoInicial + recebido + aReceber - pago - aPagar;
-  const saldoPrincipal = viewIsFuture ? saldoInicial : saldoRealizado;
+  const saldoPrincipal = viewIsFuture ? saldoInicial : saldoAtual;
 
   const baseParams = new URLSearchParams();
   if (tipo !== "todos") baseParams.set("tipo", tipo);
