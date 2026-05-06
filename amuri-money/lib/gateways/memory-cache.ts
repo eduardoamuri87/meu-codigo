@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -13,23 +13,53 @@ if (!existsSync(CACHE_DIR)) {
   } catch {}
 }
 
-const store: Map<string, Entry<unknown>> = (() => {
-  if (!existsSync(CACHE_FILE)) return new Map();
+const store: Map<string, Entry<unknown>> = new Map();
+// mtime do arquivo na última vez que sincronizamos store ↔ disco.
+// Usado para detectar quando outro processo apagou (clearGatewayCache) ou
+// regravou o cache, mantendo réplicas consistentes em deploys multi-worker.
+let lastSeenMtimeMs = 0;
+
+function fileMtimeMs(): number {
+  try {
+    return statSync(CACHE_FILE).mtimeMs;
+  } catch {
+    return 0;
+  }
+}
+
+function syncFromDisk() {
+  const currentMtime = fileMtimeMs();
+  if (currentMtime === lastSeenMtimeMs) return;
+
+  store.clear();
+  lastSeenMtimeMs = currentMtime;
+  if (currentMtime === 0) return;
+
   try {
     const raw = readFileSync(CACHE_FILE, "utf8");
-    return new Map(JSON.parse(raw) as Array<[string, Entry<unknown>]>);
+    for (const [k, v] of JSON.parse(raw) as Array<[string, Entry<unknown>]>) {
+      store.set(k, v);
+    }
   } catch {
-    return new Map();
+    // leitura falhou — store fica vazio, próxima miss refetcha
   }
-})();
+}
+
+// Carrega o snapshot inicial do disco (se houver).
+syncFromDisk();
 
 function persist() {
   const data = JSON.stringify(Array.from(store.entries()));
-  writeFile(CACHE_FILE, data).catch(() => {});
+  writeFile(CACHE_FILE, data)
+    .then(() => {
+      lastSeenMtimeMs = fileMtimeMs();
+    })
+    .catch(() => {});
 }
 
 export async function clearGatewayCache() {
   store.clear();
+  lastSeenMtimeMs = 0;
   if (existsSync(CACHE_FILE)) {
     try {
       await unlink(CACHE_FILE);
@@ -87,6 +117,7 @@ export function withCheckpointCache<Args extends unknown[], T>(
     const key = prefix + ":" + JSON.stringify(args);
     const now = Date.now();
     const checkpoint = mostRecentCheckpointMs(now);
+    syncFromDisk();
     const hit = store.get(key) as Entry<T> | undefined;
     if (hit && hit.refreshedAt >= checkpoint) return hit.value;
     const value = await fn(...args);
