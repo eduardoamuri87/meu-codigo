@@ -792,6 +792,11 @@ export function TransactionsList({
               {deleting
                 ? `"${deleting.description}" de ${formatDateBR(deleting.date)}.`
                 : null}
+              {deleting?.isParent ? (
+                <span className="block mt-2 text-rose-700 font-medium">
+                  Isto também vai apagar todos os itens deste agrupador.
+                </span>
+              ) : null}
             </DialogDescription>
           </DialogHeader>
           {deleting?.recurrenceId ? (

@@ -376,10 +376,7 @@ export async function deleteTransaction(
     }
   }
 
-  await db
-    .update(transactions)
-    .set({ parentId: null, updatedAt: Date.now() })
-    .where(eq(transactions.parentId, id));
+  await db.delete(transactions).where(eq(transactions.parentId, id));
   await db.delete(transactions).where(eq(transactions.id, id));
   invalidateTransactions();
 }
