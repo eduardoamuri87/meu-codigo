@@ -3,6 +3,7 @@ import { Wallet } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { logoutAction } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
+import { BottomNav } from "./bottom-nav";
 import { SuperRefreshButton } from "./super-refresh-button";
 
 export default async function AuthedLayout({
@@ -21,14 +22,14 @@ export default async function AuthedLayout({
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur">
-        <div className="mx-auto max-w-5xl px-6 py-4 flex items-center gap-5">
+        <div className="mx-auto max-w-5xl px-6 py-4 flex items-center gap-3 sm:gap-5">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <span className="grid place-items-center size-8 rounded-lg bg-primary text-primary-foreground shadow-sm">
               <Wallet className="h-4 w-4" />
             </span>
             <span>Amuri Money</span>
           </Link>
-          <nav className="flex items-center gap-1 text-sm ml-2">
+          <nav className="hidden sm:flex items-center gap-1 text-sm ml-2">
             <Link
               href="/"
               className="px-3 py-1.5 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition"
@@ -64,9 +65,10 @@ export default async function AuthedLayout({
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-5xl w-full px-6 py-10 md:py-12 flex-1">
+      <main className="mx-auto max-w-5xl w-full px-6 py-10 md:py-12 flex-1 pb-24 sm:pb-12">
         {children}
       </main>
+      <BottomNav />
     </>
   );
 }

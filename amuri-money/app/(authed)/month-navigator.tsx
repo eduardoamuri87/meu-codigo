@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { addMonths, formatMonthLabel, formatMonthParam } from "@/lib/format";
+import { addMonths, formatMonthParam } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
+import { MonthPicker } from "./month-picker";
 
 export function MonthNavigator({
   year,
@@ -21,8 +22,6 @@ export function MonthNavigator({
     return `/?${params.toString()}`;
   }
 
-  const label = formatMonthLabel(year, month);
-
   return (
     <div className="flex items-center gap-2">
       <Link
@@ -32,9 +31,11 @@ export function MonthNavigator({
       >
         <ChevronLeft className="h-4 w-4" />
       </Link>
-      <div className="min-w-40 text-center font-medium capitalize">
-        {label}
-      </div>
+      <MonthPicker
+        year={year}
+        month={month}
+        baseParams={baseParams.toString()}
+      />
       <Link
         href={hrefFor(next.year, next.month)}
         className={buttonVariants({ variant: "ghost", size: "icon" })}

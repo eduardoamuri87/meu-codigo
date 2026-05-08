@@ -31,7 +31,7 @@ export function SuperRefreshButton() {
         }
       >
         <RotateCw className={isPending ? "animate-spin" : undefined} />
-        Atualizar tudo
+        <span className="hidden sm:inline">Atualizar tudo</span>
       </Button>
       {isPending ? (
         <div
