@@ -2,9 +2,14 @@
 
 import crypto from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { and, eq, gt, gte, ne } from "drizzle-orm";
+import { and, asc, eq, gt, gte, ne } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { recurrences, transactions } from "@/lib/db/schema";
+import {
+  categories as categoriesTable,
+  costCenters as costCentersTable,
+  recurrences,
+  transactions,
+} from "@/lib/db/schema";
 import { requireUser } from "@/lib/auth/session";
 import { parseDecimalBR } from "@/lib/format";
 import { CACHE_TAGS } from "@/lib/queries/page-data";
@@ -371,7 +376,407 @@ export async function deleteTransaction(
     }
   }
 
+  await db
+    .update(transactions)
+    .set({ parentId: null, updatedAt: Date.now() })
+    .where(eq(transactions.parentId, id));
   await db.delete(transactions).where(eq(transactions.id, id));
+  invalidateTransactions();
+}
+
+export async function makeParent(id: string): Promise<void> {
+  await requireUser();
+  if (!id) throw new Error("ID inválido.");
+
+  const [tx] = await db
+    .select()
+    .from(transactions)
+    .where(eq(transactions.id, id))
+    .limit(1);
+  if (!tx) throw new Error("Transação não encontrada.");
+  if (tx.recurrenceId)
+    throw new Error("Transação em recorrência não pode virar agrupador.");
+  if (tx.parentId)
+    throw new Error("Esta transação já é filha de outro agrupador.");
+  if (tx.isParent) return;
+
+  await db
+    .update(transactions)
+    .set({
+      isParent: true,
+      categoryId: null,
+      costCenterId: null,
+      updatedAt: Date.now(),
+    })
+    .where(eq(transactions.id, id));
+  invalidateTransactions();
+}
+
+export type UnmakeParentScope = "detach" | "delete";
+
+export async function unmakeParent(
+  id: string,
+  scope: UnmakeParentScope = "detach",
+): Promise<void> {
+  await requireUser();
+  if (!id) throw new Error("ID inválido.");
+
+  const [tx] = await db
+    .select()
+    .from(transactions)
+    .where(eq(transactions.id, id))
+    .limit(1);
+  if (!tx) throw new Error("Transação não encontrada.");
+  if (!tx.isParent) throw new Error("Não é um agrupador.");
+
+  if (scope === "delete") {
+    await db.delete(transactions).where(eq(transactions.parentId, id));
+  } else {
+    await db
+      .update(transactions)
+      .set({ parentId: null, updatedAt: Date.now() })
+      .where(eq(transactions.parentId, id));
+  }
+
+  await db
+    .update(transactions)
+    .set({ isParent: false, updatedAt: Date.now() })
+    .where(eq(transactions.id, id));
+  invalidateTransactions();
+}
+
+export async function addChild(
+  parentId: string,
+  formData: FormData,
+): Promise<FormState> {
+  const user = await requireUser();
+  if (!parentId) return { error: "Pai inválido." };
+
+  const [parent] = await db
+    .select()
+    .from(transactions)
+    .where(eq(transactions.id, parentId))
+    .limit(1);
+  if (!parent) return { error: "Pai não encontrado." };
+  if (!parent.isParent) return { error: "Transação não é um agrupador." };
+
+  const description = String(formData.get("description") ?? "").trim();
+  if (!description) return { error: "Descrição obrigatória." };
+
+  const amount = parseAmount(String(formData.get("amount") ?? ""));
+  if (amount === null) return { error: "Valor inválido." };
+
+  const categoryRaw = formData.get("categoryId");
+  const categoryStr = categoryRaw ? String(categoryRaw) : "";
+  const categoryId =
+    categoryStr && categoryStr !== "__none__" ? categoryStr : null;
+  const costCenterRaw = formData.get("costCenterId");
+  const costCenterStr = costCenterRaw ? String(costCenterRaw) : "";
+  const costCenterId =
+    parent.type === "despesa" && costCenterStr && costCenterStr !== "__none__"
+      ? costCenterStr
+      : null;
+
+  const dateStr = String(formData.get("date") ?? "").trim();
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(dateStr) ? dateStr : parent.date;
+
+  const now = Date.now();
+  await db.insert(transactions).values({
+    id: crypto.randomUUID(),
+    date,
+    description,
+    amount,
+    categoryId,
+    costCenterId,
+    type: parent.type,
+    paid: parent.paid,
+    parentId,
+    createdBy: user.id,
+    createdAt: now,
+    updatedAt: now,
+  });
+  invalidateTransactions();
+  return { ok: true };
+}
+
+export type ImportChildrenResult = {
+  created: number;
+  skipped: number;
+  unmatchedCategories: number;
+  unmatchedCostCenters: number;
+};
+
+function normalizeName(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function parseDate(s: string, fallback: string): string {
+  const t = s.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(t)) return t;
+  const br = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  if (br) {
+    const d = br[1].padStart(2, "0");
+    const m = br[2].padStart(2, "0");
+    let y = br[3];
+    if (y.length === 2) y = `20${y}`;
+    return `${y}-${m}-${d}`;
+  }
+  return fallback;
+}
+
+function parseAmountFlexible(s: string): number | null {
+  const cleaned = s.trim().replace(/[R$\s]/g, "");
+  if (!cleaned) return null;
+  let normalized: string;
+  if (cleaned.includes(",") && cleaned.includes(".")) {
+    normalized = cleaned.replace(/\./g, "").replace(",", ".");
+  } else if (cleaned.includes(",")) {
+    normalized = cleaned.replace(",", ".");
+  } else {
+    normalized = cleaned;
+  }
+  const n = Number.parseFloat(normalized);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+function splitDelim(line: string, delim: string): string[] {
+  if (delim === "\t") return line.split("\t").map((s) => s.trim());
+  const result: string[] = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (ch === delim && !inQuotes) {
+      result.push(current);
+      current = "";
+    } else {
+      current += ch;
+    }
+  }
+  result.push(current);
+  return result.map((s) => s.trim());
+}
+
+function detectDelimiter(line: string): "\t" | ";" | "," | null {
+  if (line.includes("\t")) return "\t";
+  const semi = (line.match(/;/g) || []).length;
+  const comma = (line.match(/,/g) || []).length;
+  if (semi === 0 && comma === 0) return null;
+  return semi > comma ? ";" : ",";
+}
+
+function parseImportLines(raw: string): string[][] {
+  const stripped = raw
+    .replace(/^```(?:csv|tsv|text|markdown|md)?\s*/gim, "")
+    .replace(/```\s*$/gm, "")
+    .trim();
+  const lines = stripped
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .filter((l) => !/^\|?\s*[-:|\s]+\|?\s*$/.test(l));
+
+  return lines
+    .map((line) => {
+      if (line.startsWith("|") || line.endsWith("|")) {
+        return line
+          .replace(/^\|/, "")
+          .replace(/\|$/, "")
+          .split("|")
+          .map((s) => s.trim());
+      }
+      const delim = detectDelimiter(line);
+      if (delim === null) return null;
+      return splitDelim(line, delim);
+    })
+    .filter((cols): cols is string[] => cols !== null && cols.length >= 3);
+}
+
+type ColumnMap = {
+  date: number | null;
+  description: number | null;
+  amount: number | null;
+  category: number | null;
+  costCenter: number | null;
+};
+
+function detectColumns(headerCols: string[]): ColumnMap | null {
+  const map: ColumnMap = {
+    date: null,
+    description: null,
+    amount: null,
+    category: null,
+    costCenter: null,
+  };
+  for (let i = 0; i < headerCols.length; i++) {
+    const norm = normalizeName(headerCols[i]);
+    if (map.date === null && /\b(data|date|dia)\b/.test(norm)) map.date = i;
+    else if (map.description === null && /desc/.test(norm))
+      map.description = i;
+    else if (
+      map.amount === null &&
+      /\b(valor|amount|preco|montante|total)\b/.test(norm)
+    )
+      map.amount = i;
+    else if (map.category === null && /categor/.test(norm))
+      map.category = i;
+    else if (
+      map.costCenter === null &&
+      /(centro|cost.?cent|^cc$|c\.c\.)/.test(norm)
+    )
+      map.costCenter = i;
+  }
+  if (map.description === null || map.amount === null) return null;
+  return map;
+}
+
+export async function importChildrenFromText(
+  parentId: string,
+  text: string,
+): Promise<ImportChildrenResult> {
+  const user = await requireUser();
+  if (!parentId) throw new Error("Pai inválido.");
+  const trimmed = text.trim();
+  if (!trimmed) throw new Error("Texto vazio.");
+  if (trimmed.length > 200_000)
+    throw new Error("Texto muito longo (máx. 200.000 caracteres).");
+
+  const [parent] = await db
+    .select()
+    .from(transactions)
+    .where(eq(transactions.id, parentId))
+    .limit(1);
+  if (!parent) throw new Error("Agrupador não encontrado.");
+  if (!parent.isParent)
+    throw new Error("Esta transação não é um agrupador.");
+
+  const [cats, ccs] = await Promise.all([
+    db
+      .select({
+        id: categoriesTable.id,
+        name: categoriesTable.name,
+        type: categoriesTable.type,
+      })
+      .from(categoriesTable)
+      .orderBy(asc(categoriesTable.name)),
+    db
+      .select({ id: costCentersTable.id, name: costCentersTable.name })
+      .from(costCentersTable)
+      .orderBy(asc(costCentersTable.name)),
+  ]);
+
+  const catByName = new Map(
+    cats
+      .filter((c) => c.type === parent.type)
+      .map((c) => [normalizeName(c.name), c.id]),
+  );
+  const ccByName = new Map(ccs.map((c) => [normalizeName(c.name), c.id]));
+
+  let rows = parseImportLines(trimmed);
+  let columnMap: ColumnMap = {
+    date: 0,
+    description: 1,
+    amount: 2,
+    category: 3,
+    costCenter: 4,
+  };
+  if (rows.length > 0) {
+    const detected = detectColumns(rows[0]);
+    if (detected) {
+      columnMap = detected;
+      rows = rows.slice(1);
+    }
+  }
+  if (rows.length === 0) {
+    return {
+      created: 0,
+      skipped: 0,
+      unmatchedCategories: 0,
+      unmatchedCostCenters: 0,
+    };
+  }
+
+  const now = Date.now();
+  let skipped = 0;
+  let unmatchedCategories = 0;
+  let unmatchedCostCenters = 0;
+
+  const inserts = rows
+    .map((cols) => {
+      const get = (idx: number | null) =>
+        idx !== null ? (cols[idx] ?? "") : "";
+      const dateRaw = get(columnMap.date);
+      const description = get(columnMap.description).trim().slice(0, 200);
+      const amountRaw = get(columnMap.amount);
+      const catRaw = get(columnMap.category).trim();
+      const ccRaw = get(columnMap.costCenter).trim();
+
+      const amount = parseAmountFlexible(amountRaw);
+      if (!description || amount === null) {
+        skipped += 1;
+        return null;
+      }
+
+      let categoryId: string | null = null;
+      if (catRaw) {
+        const matched = catByName.get(normalizeName(catRaw));
+        if (matched) categoryId = matched;
+        else unmatchedCategories += 1;
+      }
+      let costCenterId: string | null = null;
+      if (parent.type === "despesa" && ccRaw) {
+        const matched = ccByName.get(normalizeName(ccRaw));
+        if (matched) costCenterId = matched;
+        else unmatchedCostCenters += 1;
+      }
+
+      return {
+        id: crypto.randomUUID(),
+        date: parseDate(dateRaw, parent.date),
+        description,
+        amount,
+        categoryId,
+        costCenterId,
+        type: parent.type,
+        paid: parent.paid,
+        parentId,
+        createdBy: user.id,
+        createdAt: now,
+        updatedAt: now,
+      };
+    })
+    .filter((r): r is NonNullable<typeof r> => r !== null);
+
+  if (inserts.length > 0) {
+    await db.insert(transactions).values(inserts);
+  }
+  invalidateTransactions();
+  return {
+    created: inserts.length,
+    skipped,
+    unmatchedCategories,
+    unmatchedCostCenters,
+  };
+}
+
+export async function detachFromParent(id: string): Promise<void> {
+  await requireUser();
+  if (!id) throw new Error("ID inválido.");
+  await db
+    .update(transactions)
+    .set({ parentId: null, updatedAt: Date.now() })
+    .where(eq(transactions.id, id));
   invalidateTransactions();
 }
 

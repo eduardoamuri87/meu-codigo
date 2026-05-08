@@ -2,7 +2,22 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { ArrowDown, ArrowUp, ArrowUpDown, Link2Off, MoreVertical, Pencil, Repeat, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  ChevronDown,
+  ChevronRight,
+  Layers,
+  Link2Off,
+  MoreVertical,
+  Pencil,
+  Plus,
+  Repeat,
+  ClipboardPaste,
+  Trash2,
+  Unlink,
+} from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
@@ -34,15 +49,21 @@ import { formatCurrency, formatDateBR, parseDecimalBR } from "@/lib/format";
 import type { Category, CostCenter } from "@/lib/db/schema";
 import type { VirtualRowDetail } from "@/lib/gateways/types";
 import {
+  addChild,
   convertToRecurrent,
   deleteTransaction,
+  detachFromParent,
+  importChildrenFromText,
+  makeParent,
   toggleTransactionPaid,
   unlinkRecurrence,
+  unmakeParent,
   updateRecurrentTransaction,
   updateTransactionField,
   type EditableField,
   type RecurrentEditPatch,
   type RecurrentEditScope,
+  type UnmakeParentScope,
 } from "./transacoes/actions";
 import { createCategoryInline } from "./categorias/actions";
 import { createCostCenterInline } from "./centros-de-custo/actions";
@@ -63,6 +84,9 @@ export type Row = {
   parcelNumber: number | null;
   totalParcels: number | null;
   dayOfMonth: number | null;
+  parentId: string | null;
+  isParent: boolean;
+  childSum: number;
   virtual?: boolean;
   virtualDetail?: VirtualRowDetail;
 };
@@ -115,6 +139,10 @@ export function TransactionsList({
   const [converting, setConverting] = useState<Row | null>(null);
   const [editingRecurrent, setEditingRecurrent] = useState<Row | null>(null);
   const [unlinking, setUnlinking] = useState<Row | null>(null);
+  const [unmaking, setUnmaking] = useState<Row | null>(null);
+  const [importingTo, setImportingTo] = useState<Row | null>(null);
+  const [addingChildTo, setAddingChildTo] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const [editing, setEditing] = useState<EditingCell>(null);
   const [scopePrompt, setScopePrompt] = useState<{
     row: Row;
@@ -126,15 +154,49 @@ export function TransactionsList({
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [pending, startTransition] = useTransition();
 
-  const sortedRows = useMemo(() => {
+  type RenderItem =
+    | { kind: "row"; row: Row; depth: 0 | 1 }
+    | { kind: "add-child"; parentId: string; type: "receita" | "despesa"; date: string };
+
+  const renderItems: RenderItem[] = useMemo(() => {
     const virtual = rows.filter((r) => r.virtual);
     const normal = rows.filter((r) => !r.virtual);
-    normal.sort((a, b) => {
+    const ids = new Set(normal.map((r) => r.id));
+    const childrenByParent = new Map<string, Row[]>();
+    for (const r of normal) {
+      if (r.parentId && ids.has(r.parentId)) {
+        const arr = childrenByParent.get(r.parentId) ?? [];
+        arr.push(r);
+        childrenByParent.set(r.parentId, arr);
+      }
+    }
+    for (const arr of childrenByParent.values()) {
+      arr.sort((a, b) => a.date.localeCompare(b.date));
+    }
+    const topLevels = normal.filter(
+      (r) => !r.parentId || !ids.has(r.parentId),
+    );
+    topLevels.sort((a, b) => {
       const d = compareRows(a, b, sortKey);
       return sortDir === "asc" ? d : -d;
     });
-    return [...virtual, ...normal];
-  }, [rows, sortKey, sortDir]);
+    const items: RenderItem[] = [];
+    for (const r of virtual) items.push({ kind: "row", row: r, depth: 0 });
+    for (const r of topLevels) {
+      items.push({ kind: "row", row: r, depth: 0 });
+      if (r.isParent && expanded.has(r.id)) {
+        const children = childrenByParent.get(r.id) ?? [];
+        for (const c of children) items.push({ kind: "row", row: c, depth: 1 });
+        items.push({
+          kind: "add-child",
+          parentId: r.id,
+          type: r.type,
+          date: r.date,
+        });
+      }
+    }
+    return items;
+  }, [rows, sortKey, sortDir, expanded]);
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
@@ -318,6 +380,60 @@ export function TransactionsList({
     return editing?.rowId === row.id && editing.field === field;
   }
 
+  function toggleExpanded(id: string) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function handleMakeParent(row: Row) {
+    startTransition(async () => {
+      try {
+        await makeParent(row.id);
+        setExpanded((prev) => new Set(prev).add(row.id));
+        toast.success("Transação virou agrupador.");
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "Não foi possível.",
+        );
+      }
+    });
+  }
+
+  function handleUnmakeParent(row: Row, scope: UnmakeParentScope) {
+    startTransition(async () => {
+      try {
+        await unmakeParent(row.id, scope);
+        toast.success(
+          scope === "delete"
+            ? "Agrupador e itens excluídos."
+            : "Agrupador desfeito; itens viraram avulsos.",
+        );
+        setUnmaking(null);
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "Não foi possível.",
+        );
+      }
+    });
+  }
+
+  function handleDetachFromParent(row: Row) {
+    startTransition(async () => {
+      try {
+        await detachFromParent(row.id);
+        toast.success("Item desvinculado do agrupador.");
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "Não foi possível.",
+        );
+      }
+    });
+  }
+
   return (
     <>
       <div className="card-soft overflow-x-auto [&_th]:h-12 [&_th]:px-5 [&_td]:py-4 [&_td]:px-5">
@@ -375,206 +491,287 @@ export function TransactionsList({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedRows.map((row) => (
-              <TableRow
-                key={row.id}
-                className={
-                  row.virtual
-                    ? "bg-yellow-50/80 hover:bg-yellow-100/80 cursor-pointer"
-                    : ""
-                }
-                onClick={
-                  row.virtual ? () => setDetailRow(row) : undefined
-                }
-              >
-                <TableCell className="tabular-nums">
-                  {row.virtual ? (
-                    "—"
-                  ) : isEditing(row, "date") ? (
-                    <InlineInput
-                      type="date"
-                      initial={row.date}
-                      pending={pending}
-                      onCommit={(v) => commitField(row, "date", v)}
-                      onCancel={() => setEditing(null)}
-                    />
-                  ) : (
-                    <CellButton
-                      onClick={() => setEditing({ rowId: row.id, field: "date" })}
-                    >
-                      {formatDateBR(row.date)}
-                    </CellButton>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
+            {renderItems.map((item) => {
+              if (item.kind === "add-child") {
+                return (
+                  <AddChildRow
+                    key={`add:${item.parentId}`}
+                    parentId={item.parentId}
+                    parentType={item.type}
+                    parentDate={item.date}
+                    categories={categories}
+                    costCenters={costCenters}
+                    isOpen={addingChildTo === item.parentId}
+                    onOpen={() => setAddingChildTo(item.parentId)}
+                    onClose={() => setAddingChildTo(null)}
+                  />
+                );
+              }
+              const row = item.row;
+              const isParentRow = !row.virtual && row.isParent;
+              const isChildRow = item.depth === 1;
+              const displayAmount = isParentRow ? row.childSum : row.amount;
+              const rowClassName = row.virtual
+                ? "bg-yellow-50/80 hover:bg-yellow-100/80 cursor-pointer"
+                : isParentRow
+                  ? "bg-rose-100/70 hover:bg-rose-200/70"
+                  : isChildRow
+                    ? "bg-muted/20"
+                    : "";
+              return (
+                <TableRow
+                  key={row.id}
+                  className={rowClassName}
+                  onClick={
+                    row.virtual ? () => setDetailRow(row) : undefined
+                  }
+                >
+                  <TableCell className="tabular-nums">
                     {row.virtual ? (
-                      <span>{row.description}</span>
-                    ) : isEditing(row, "description") ? (
+                      "—"
+                    ) : isEditing(row, "date") ? (
                       <InlineInput
-                        type="text"
-                        initial={row.description}
+                        type="date"
+                        initial={row.date}
                         pending={pending}
-                        onCommit={(v) => commitField(row, "description", v)}
+                        onCommit={(v) => commitField(row, "date", v)}
+                        onCancel={() => setEditing(null)}
+                      />
+                    ) : (
+                      <CellButton
+                        onClick={() => setEditing({ rowId: row.id, field: "date" })}
+                      >
+                        {formatDateBR(row.date)}
+                      </CellButton>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div
+                      className={`flex items-center gap-2 ${isChildRow ? "pl-6" : ""}`}
+                    >
+                      {isParentRow ? (
+                        <button
+                          type="button"
+                          onClick={() => toggleExpanded(row.id)}
+                          aria-label={
+                            expanded.has(row.id) ? "Colapsar" : "Expandir"
+                          }
+                          className="size-5 grid place-items-center rounded hover:bg-muted shrink-0 cursor-pointer"
+                        >
+                          {expanded.has(row.id) ? (
+                            <ChevronDown className="h-4 w-4" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4" />
+                          )}
+                        </button>
+                      ) : null}
+                      {row.virtual ? (
+                        <span>{row.description}</span>
+                      ) : isEditing(row, "description") ? (
+                        <InlineInput
+                          type="text"
+                          initial={row.description}
+                          pending={pending}
+                          onCommit={(v) => commitField(row, "description", v)}
+                          onCancel={() => setEditing(null)}
+                        />
+                      ) : (
+                        <CellButton
+                          onClick={() =>
+                            setEditing({ rowId: row.id, field: "description" })
+                          }
+                        >
+                          {row.description}
+                        </CellButton>
+                      )}
+                      {row.recurrenceId && row.parcelNumber ? (
+                        <span
+                          className="text-xs rounded border px-1.5 py-0.5 bg-muted text-muted-foreground tabular-nums"
+                          title={
+                            row.totalParcels
+                              ? `Parcela ${row.parcelNumber} de ${row.totalParcels}`
+                              : `Parcela ${row.parcelNumber} — recorrência sem fim`
+                          }
+                        >
+                          {row.totalParcels
+                            ? `${row.parcelNumber}/${row.totalParcels}`
+                            : `${row.parcelNumber}/∞`}
+                        </span>
+                      ) : null}
+                      {row.virtual ? (
+                        <span className="text-xs rounded border px-1.5 py-0.5 bg-muted text-muted-foreground">
+                          auto
+                        </span>
+                      ) : null}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {row.virtual ? (
+                      (row.categoryName ?? "—")
+                    ) : isParentRow ? (
+                      <span className="text-muted-foreground/60">—</span>
+                    ) : isEditing(row, "categoryId") ? (
+                      <InlineCategorySelect
+                        rowType={row.type}
+                        categories={categories.filter((c) => c.type === row.type)}
+                        pending={pending}
+                        onCommit={(v) => commitField(row, "categoryId", v)}
                         onCancel={() => setEditing(null)}
                       />
                     ) : (
                       <CellButton
                         onClick={() =>
-                          setEditing({ rowId: row.id, field: "description" })
+                          setEditing({ rowId: row.id, field: "categoryId" })
                         }
                       >
-                        {row.description}
+                        {row.categoryName ?? "—"}
                       </CellButton>
                     )}
-                    {row.recurrenceId && row.parcelNumber ? (
-                      <span
-                        className="text-xs rounded border px-1.5 py-0.5 bg-muted text-muted-foreground tabular-nums"
-                        title={
-                          row.totalParcels
-                            ? `Parcela ${row.parcelNumber} de ${row.totalParcels}`
-                            : `Parcela ${row.parcelNumber} — recorrência sem fim`
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {row.virtual || row.type === "receita" ? (
+                      "—"
+                    ) : isParentRow ? (
+                      <span className="text-muted-foreground/60">—</span>
+                    ) : isEditing(row, "costCenterId") ? (
+                      <InlineCostCenterSelect
+                        costCenters={costCenters}
+                        pending={pending}
+                        onCommit={(v) => commitField(row, "costCenterId", v)}
+                        onCancel={() => setEditing(null)}
+                      />
+                    ) : (
+                      <CellButton
+                        onClick={() =>
+                          setEditing({ rowId: row.id, field: "costCenterId" })
                         }
                       >
-                        {row.totalParcels
-                          ? `${row.parcelNumber}/${row.totalParcels}`
-                          : `${row.parcelNumber}/∞`}
+                        {row.costCenterName ?? "—"}
+                      </CellButton>
+                    )}
+                  </TableCell>
+                  <TableCell
+                    className={`text-right tabular-nums ${
+                      row.type === "receita"
+                        ? "text-emerald-600"
+                        : "text-rose-600"
+                    } ${isParentRow ? "font-semibold" : ""}`}
+                  >
+                    {isParentRow ? (
+                      <span>
+                        {row.type === "receita" ? "+" : "−"}
+                        {formatCurrency(displayAmount)}
                       </span>
-                    ) : null}
-                    {row.virtual ? (
-                      <span className="text-xs rounded border px-1.5 py-0.5 bg-muted text-muted-foreground">
-                        auto
-                      </span>
-                    ) : null}
-                  </div>
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {row.virtual ? (
-                    (row.categoryName ?? "—")
-                  ) : isEditing(row, "categoryId") ? (
-                    <InlineCategorySelect
-                      rowType={row.type}
-                      categories={categories.filter((c) => c.type === row.type)}
-                      pending={pending}
-                      onCommit={(v) => commitField(row, "categoryId", v)}
-                      onCancel={() => setEditing(null)}
-                    />
-                  ) : (
-                    <CellButton
-                      onClick={() =>
-                        setEditing({ rowId: row.id, field: "categoryId" })
-                      }
-                    >
-                      {row.categoryName ?? "—"}
-                    </CellButton>
-                  )}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {row.virtual || row.type === "receita" ? (
-                    "—"
-                  ) : isEditing(row, "costCenterId") ? (
-                    <InlineCostCenterSelect
-                      costCenters={costCenters}
-                      pending={pending}
-                      onCommit={(v) => commitField(row, "costCenterId", v)}
-                      onCancel={() => setEditing(null)}
-                    />
-                  ) : (
-                    <CellButton
-                      onClick={() =>
-                        setEditing({ rowId: row.id, field: "costCenterId" })
-                      }
-                    >
-                      {row.costCenterName ?? "—"}
-                    </CellButton>
-                  )}
-                </TableCell>
-                <TableCell
-                  className={`text-right tabular-nums ${
-                    row.type === "receita"
-                      ? "text-emerald-600"
-                      : "text-rose-600"
-                  }`}
-                >
-                  {isEditing(row, "amount") ? (
-                    <InlineInput
-                      type="decimal"
-                      initial={row.amount.toFixed(2).replace(".", ",")}
-                      pending={pending}
-                      className="text-right"
-                      onCommit={(v) => commitField(row, "amount", v)}
-                      onCancel={() => setEditing(null)}
-                    />
-                  ) : (
-                    <CellButton
-                      onClick={() =>
-                        setEditing({ rowId: row.id, field: "amount" })
-                      }
-                      className="w-full text-right"
-                    >
-                      {row.type === "receita" ? "+" : "−"}
-                      {formatCurrency(row.amount)}
-                    </CellButton>
-                  )}
-                </TableCell>
-                <TableCell className="text-center">
-                  {row.virtual ? (
-                    <Switch checked={row.paid} disabled />
-                  ) : (
-                    <Switch
-                      checked={row.paid}
-                      onCheckedChange={(v) => togglePaid(row, v)}
-                      disabled={pending}
-                    />
-                  )}
-                </TableCell>
-                <TableCell>
-                  {row.virtual ? null : (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        className={buttonVariants({
-                          variant: "ghost",
-                          size: "icon",
-                        })}
-                        aria-label="Ações"
+                    ) : isEditing(row, "amount") ? (
+                      <InlineInput
+                        type="decimal"
+                        initial={row.amount.toFixed(2).replace(".", ",")}
+                        pending={pending}
+                        className="text-right"
+                        onCommit={(v) => commitField(row, "amount", v)}
+                        onCancel={() => setEditing(null)}
+                      />
+                    ) : (
+                      <CellButton
+                        onClick={() =>
+                          setEditing({ rowId: row.id, field: "amount" })
+                        }
+                        className="w-full text-right"
                       >
-                        <MoreVertical className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        {row.recurrenceId ? (
-                          <>
-                            <DropdownMenuItem
-                              onClick={() => setEditingRecurrent(row)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                              Editar recorrência
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => setUnlinking(row)}
-                            >
-                              <Link2Off className="h-4 w-4" />
-                              Desvincular recorrência
-                            </DropdownMenuItem>
-                          </>
-                        ) : (
-                          <DropdownMenuItem onClick={() => setConverting(row)}>
-                            <Repeat className="h-4 w-4" />
-                            Tornar recorrente
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem
-                          variant="destructive"
-                          onClick={() => setDeleting(row)}
+                        {row.type === "receita" ? "+" : "−"}
+                        {formatCurrency(row.amount)}
+                      </CellButton>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {row.virtual ? (
+                      <Switch checked={row.paid} disabled />
+                    ) : (
+                      <Switch
+                        checked={row.paid}
+                        onCheckedChange={(v) => togglePaid(row, v)}
+                        disabled={pending}
+                      />
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {row.virtual ? null : (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          className={buttonVariants({
+                            variant: "ghost",
+                            size: "icon",
+                          })}
+                          aria-label="Ações"
                         >
-                          <Trash2 className="h-4 w-4" />
-                          Excluir
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
+                          <MoreVertical className="h-4 w-4" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {row.recurrenceId ? (
+                            <>
+                              <DropdownMenuItem
+                                onClick={() => setEditingRecurrent(row)}
+                              >
+                                <Pencil className="h-4 w-4" />
+                                Editar recorrência
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => setUnlinking(row)}
+                              >
+                                <Link2Off className="h-4 w-4" />
+                                Desvincular recorrência
+                              </DropdownMenuItem>
+                            </>
+                          ) : isParentRow ? (
+                            <>
+                              <DropdownMenuItem
+                                onClick={() => setImportingTo(row)}
+                              >
+                                <ClipboardPaste className="h-4 w-4" />
+                                Importar itens (CSV)
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => setUnmaking(row)}
+                              >
+                                <Layers className="h-4 w-4" />
+                                Desfazer agrupador
+                              </DropdownMenuItem>
+                            </>
+                          ) : row.parentId ? (
+                            <DropdownMenuItem
+                              onClick={() => handleDetachFromParent(row)}
+                            >
+                              <Unlink className="h-4 w-4" />
+                              Desvincular do pai
+                            </DropdownMenuItem>
+                          ) : (
+                            <>
+                              <DropdownMenuItem onClick={() => setConverting(row)}>
+                                <Repeat className="h-4 w-4" />
+                                Tornar recorrente
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleMakeParent(row)}
+                              >
+                                <Layers className="h-4 w-4" />
+                                Tornar agrupador
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onClick={() => setDeleting(row)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            Excluir
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
@@ -639,6 +836,52 @@ export function TransactionsList({
               </Button>
             </DialogFooter>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <ImportFaturaDialog
+        row={importingTo}
+        categories={categories}
+        costCenters={costCenters}
+        onClose={() => setImportingTo(null)}
+      />
+
+      <Dialog
+        open={unmaking !== null}
+        onOpenChange={(open) => !open && setUnmaking(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Desfazer agrupador?</DialogTitle>
+            <DialogDescription>
+              {unmaking
+                ? `"${unmaking.description}" deixará de ser agrupador. O que fazer com os itens?`
+                : null}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="default"
+              onClick={() => unmaking && handleUnmakeParent(unmaking, "detach")}
+              disabled={pending}
+            >
+              Desvincular itens (viram avulsos)
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => unmaking && handleUnmakeParent(unmaking, "delete")}
+              disabled={pending}
+            >
+              Excluir itens junto
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setUnmaking(null)}
+              disabled={pending}
+            >
+              Cancelar
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -1166,6 +1409,369 @@ function CellButton({
     >
       {children}
     </button>
+  );
+}
+
+function buildClaudePrompt(
+  parentType: "receita" | "despesa",
+  parentDate: string,
+  categories: Category[],
+  costCenters: CostCenter[],
+): string {
+  const cats = categories
+    .filter((c) => c.type === parentType)
+    .map((c) => `- ${c.name}`)
+    .join("\n");
+  const ccs = costCenters.map((c) => `- ${c.name}`).join("\n");
+  const ccBlock =
+    parentType === "despesa"
+      ? `
+
+Centros de custo válidos:
+${ccs || "(nenhum cadastrado)"}`
+      : "";
+
+  return `Vou colar uma fatura/extrato. Extraia cada transação e devolva em CSV (separado por vírgulas), nesta ordem de colunas:
+
+data,descrição,valor,categoria,centro_de_custo
+
+Regras:
+- Uma transação por linha. Sem cabeçalho.
+- data: YYYY-MM-DD. Se faltar o ano, use ${parentDate.slice(0, 4)}. Se não houver data, use ${parentDate}.
+- valor: positivo, formato brasileiro (ex: 1234,56). Sem R$.
+- descrição: limpa, sem códigos de autorização. Se houver vírgula na descrição, envolva em aspas duplas.
+- categoria: escolha exatamente UMA da lista abaixo (cole o nome igual). Se nada encaixar, deixe vazio. Nunca invente.${parentType === "despesa" ? "\n- centro_de_custo: idem, da lista abaixo. Vazio se incerto." : "\n- centro_de_custo: deixe vazio (esta é uma receita)."}
+- Ignore: cabeçalhos da fatura, totais, juros agregados, mensagens de marketing, datas de vencimento.
+- Devolva só o CSV cru, sem explicação, sem código-cerca.
+
+Categorias válidas (${parentType}):
+${cats || "(nenhuma cadastrada)"}${ccBlock}
+
+Fatura:
+[cole aqui]`;
+}
+
+function ImportFaturaDialog({
+  row,
+  categories,
+  costCenters,
+  onClose,
+}: {
+  row: Row | null;
+  categories: Category[];
+  costCenters: CostCenter[];
+  onClose: () => void;
+}) {
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const prompt = row
+    ? buildClaudePrompt(row.type, row.date, categories, costCenters)
+    : "";
+
+  async function copyPrompt() {
+    try {
+      await navigator.clipboard.writeText(prompt);
+      toast.success("Prompt copiado. Cole no Claude.ai junto com a fatura.");
+    } catch {
+      toast.error("Falha ao copiar.");
+    }
+  }
+
+  async function submit() {
+    if (!row) return;
+    if (!text.trim()) {
+      toast.error("Cole o CSV gerado pelo Claude.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const result = await importChildrenFromText(row.id, text);
+      if (result.created === 0) {
+        toast.warning("Nenhum item encontrado no texto.");
+      } else {
+        const parts = [`${result.created} itens criados`];
+        if (result.skipped > 0) parts.push(`${result.skipped} ignorados`);
+        if (result.unmatchedCategories > 0)
+          parts.push(`${result.unmatchedCategories} sem categoria`);
+        if (result.unmatchedCostCenters > 0)
+          parts.push(`${result.unmatchedCostCenters} sem CC`);
+        toast.success(parts.join(", ") + ".");
+      }
+      setText("");
+      onClose();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Falha ao importar.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Dialog
+      open={row !== null}
+      onOpenChange={(open) => !open && !busy && onClose()}
+    >
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Importar itens da fatura</DialogTitle>
+          <DialogDescription>
+            Cole o CSV com os itens. Os filhos serão criados em{" "}
+            <strong>{row?.description}</strong>. Categorias e centros de custo
+            são casados por nome (acentos e maiúsculas ignorados).
+          </DialogDescription>
+        </DialogHeader>
+        <details className="text-sm">
+          <summary className="cursor-pointer text-muted-foreground hover:text-foreground select-none">
+            Não tem CSV? Use o Claude.ai pra converter →
+          </summary>
+          <div className="mt-2 space-y-2">
+            <p className="text-xs text-muted-foreground">
+              Copie o prompt abaixo, cole no Claude.ai junto com a fatura,
+              copie o CSV de volta e cole aqui.
+            </p>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={copyPrompt}
+            >
+              Copiar prompt
+            </Button>
+            <pre className="text-xs bg-muted/40 rounded-md p-3 max-h-40 overflow-auto whitespace-pre-wrap">
+              {prompt}
+            </pre>
+          </div>
+        </details>
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.currentTarget.value)}
+          disabled={busy}
+          placeholder={`Exemplo:\n2026-05-10,Mercado XPTO,123,45,Alimentação,Casa\n2026-05-11,Uber,45,67,Transporte,Casa`}
+          rows={12}
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono resize-y outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+        />
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose} disabled={busy}>
+            Cancelar
+          </Button>
+          <Button onClick={submit} disabled={busy || !text.trim()}>
+            {busy ? "Importando..." : "Importar"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddChildRow({
+  parentId,
+  parentType,
+  parentDate,
+  categories,
+  costCenters,
+  isOpen,
+  onOpen,
+  onClose,
+}: {
+  parentId: string;
+  parentType: "receita" | "despesa";
+  parentDate: string;
+  categories: Category[];
+  costCenters: CostCenter[];
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+}) {
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [costCenterId, setCostCenterId] = useState<string | null>(null);
+  const [extraCategories, setExtraCategories] = useState<Category[]>([]);
+  const [extraCostCenters, setExtraCostCenters] = useState<CostCenter[]>([]);
+  const [busy, setBusy] = useState(false);
+
+  function reset() {
+    setDescription("");
+    setAmount("");
+    setCategoryId(null);
+    setCostCenterId(null);
+  }
+
+  const allCats = useMemo(
+    () =>
+      [...categories, ...extraCategories]
+        .filter((c) => c.type === parentType)
+        .map((c) => ({ id: c.id, name: c.name })),
+    [categories, extraCategories, parentType],
+  );
+  const allCcs = useMemo(
+    () => [...costCenters, ...extraCostCenters].map((c) => ({ id: c.id, name: c.name })),
+    [costCenters, extraCostCenters],
+  );
+
+  async function submit() {
+    if (!description.trim() || !amount.trim()) {
+      toast.error("Descrição e valor obrigatórios.");
+      return;
+    }
+    setBusy(true);
+    const fd = new FormData();
+    fd.set("description", description.trim());
+    fd.set("amount", amount.trim());
+    fd.set("date", parentDate);
+    if (categoryId) fd.set("categoryId", categoryId);
+    if (costCenterId && parentType === "despesa")
+      fd.set("costCenterId", costCenterId);
+    try {
+      const res = await addChild(parentId, fd);
+      if (res?.error) {
+        toast.error(res.error);
+      } else {
+        toast.success("Item adicionado.");
+        reset();
+      }
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Não foi possível adicionar.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!isOpen) {
+    return (
+      <TableRow className="bg-rose-50/40 hover:bg-rose-50/60">
+        <TableCell colSpan={7} className="py-2">
+          <button
+            type="button"
+            onClick={onOpen}
+            className="flex items-center gap-2 text-sm text-rose-700 hover:text-rose-800 px-2 py-1 rounded hover:bg-rose-100/50 transition cursor-pointer pl-8"
+          >
+            <Plus className="h-4 w-4" />
+            Adicionar item
+          </button>
+        </TableCell>
+      </TableRow>
+    );
+  }
+
+  return (
+    <TableRow className="bg-rose-50/40">
+      <TableCell className="text-xs text-muted-foreground tabular-nums">
+        {formatDateBR(parentDate)}
+      </TableCell>
+      <TableCell>
+        <Input
+          autoFocus
+          value={description}
+          onChange={(e) => setDescription(e.currentTarget.value)}
+          placeholder="Descrição"
+          disabled={busy}
+        />
+      </TableCell>
+      <TableCell>
+        <Combobox
+          value={categoryId}
+          onChange={setCategoryId}
+          options={allCats}
+          placeholder="Categoria"
+          disabled={busy}
+          onCreate={async (name) => {
+            const created = await createCategoryInline(name, parentType);
+            const cat: Category = {
+              id: created.id,
+              name: created.name,
+              type: parentType,
+              createdAt: Date.now(),
+            };
+            setExtraCategories((prev) => [...prev, cat]);
+            return { id: created.id, name: created.name };
+          }}
+          onCreateError={(err) =>
+            toast.error(
+              err instanceof Error ? err.message : "Não foi possível criar.",
+            )
+          }
+        />
+      </TableCell>
+      <TableCell>
+        {parentType === "despesa" ? (
+          <Combobox
+            value={costCenterId}
+            onChange={setCostCenterId}
+            options={allCcs}
+            placeholder="Centro"
+            disabled={busy}
+            onCreate={async (name) => {
+              const created = await createCostCenterInline(name);
+              const cc: CostCenter = {
+                id: created.id,
+                name: created.name,
+                createdAt: Date.now(),
+              };
+              setExtraCostCenters((prev) => [...prev, cc]);
+              return { id: created.id, name: created.name };
+            }}
+            onCreateError={(err) =>
+              toast.error(
+                err instanceof Error ? err.message : "Não foi possível criar.",
+              )
+            }
+          />
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
+      </TableCell>
+      <TableCell>
+        <Input
+          type="text"
+          inputMode="decimal"
+          value={amount}
+          onChange={(e) => setAmount(e.currentTarget.value)}
+          placeholder="0,00"
+          className="text-right"
+          disabled={busy}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              submit();
+            } else if (e.key === "Escape") {
+              e.preventDefault();
+              onClose();
+            }
+          }}
+        />
+      </TableCell>
+      <TableCell />
+      <TableCell>
+        <div className="flex gap-1">
+          <Button
+            type="button"
+            size="sm"
+            onClick={submit}
+            disabled={busy}
+          >
+            Salvar
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              reset();
+              onClose();
+            }}
+            disabled={busy}
+          >
+            ✕
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
   );
 }
 

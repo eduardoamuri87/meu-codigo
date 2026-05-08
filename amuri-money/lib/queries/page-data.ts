@@ -33,6 +33,9 @@ export type DbRow = {
   parcelNumber: number | null;
   totalParcels: number | null;
   dayOfMonth: number | null;
+  parentId: string | null;
+  isParent: boolean;
+  childSum: number;
 };
 
 export const getCachedCategories = unstable_cache(
@@ -65,7 +68,13 @@ export const getCachedMonthTotals = unstable_cache(
         aPagar: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'despesa' AND ${transactions.paid} = 0 THEN ${transactions.amount} ELSE 0 END), 0)`,
       })
       .from(transactions)
-      .where(and(gte(transactions.date, start), lt(transactions.date, end)));
+      .where(
+        and(
+          gte(transactions.date, start),
+          lt(transactions.date, end),
+          eq(transactions.isParent, false),
+        ),
+      );
     return {
       recebido: row?.recebido ?? 0,
       aReceber: row?.aReceber ?? 0,
@@ -117,6 +126,9 @@ export const getCachedMonthRows = unstable_cache(
         parcelNumber: transactions.parcelNumber,
         totalParcels: recurrences.totalParcels,
         dayOfMonth: recurrences.dayOfMonth,
+        parentId: transactions.parentId,
+        isParent: transactions.isParent,
+        childSum: sql<number>`COALESCE((SELECT SUM(amount) FROM transactions c WHERE c.parent_id = ${transactions.id}), 0)`,
       })
       .from(transactions)
       .leftJoin(categories, eq(transactions.categoryId, categories.id))

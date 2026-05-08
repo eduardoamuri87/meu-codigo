@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  type AnySQLiteColumn,
   check,
   index,
   integer,
@@ -75,6 +76,13 @@ export const transactions = sqliteTable(
     paid: integer("paid", { mode: "boolean" }).notNull().default(false),
     recurrenceId: text("recurrence_id").references(() => recurrences.id),
     parcelNumber: integer("parcel_number"),
+    parentId: text("parent_id").references(
+      (): AnySQLiteColumn => transactions.id,
+      { onDelete: "set null" },
+    ),
+    isParent: integer("is_parent", { mode: "boolean" })
+      .notNull()
+      .default(false),
     createdBy: text("created_by").references(() => users.id),
     createdAt: integer("created_at").notNull(),
     updatedAt: integer("updated_at").notNull(),
@@ -86,6 +94,7 @@ export const transactions = sqliteTable(
       t.recurrenceId,
       t.parcelNumber,
     ),
+    index("idx_transactions_parent").on(t.parentId),
     check("transactions_type_check", sql`${t.type} IN ('receita', 'despesa')`),
   ],
 );
