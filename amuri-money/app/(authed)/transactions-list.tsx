@@ -436,7 +436,7 @@ export function TransactionsList({
 
   return (
     <>
-      <div className="card-soft overflow-x-auto [&_th]:h-12 [&_th]:px-5 [&_td]:py-4 [&_td]:px-5">
+      <div className="card-soft overflow-x-auto [&_th]:h-12 [&_th]:px-3 [&_td]:py-4 [&_td]:px-3">
         <Table>
           <TableHeader>
             <TableRow>
@@ -446,7 +446,7 @@ export function TransactionsList({
                 activeKey={sortKey}
                 activeDir={sortDir}
                 onToggle={toggleSort}
-                className="w-32"
+                className="w-24"
               />
               <SortableHead
                 label="Descrição"
@@ -475,7 +475,7 @@ export function TransactionsList({
                 activeKey={sortKey}
                 activeDir={sortDir}
                 onToggle={toggleSort}
-                className="w-40"
+                className="w-32"
                 align="end"
               />
               <SortableHead
@@ -484,7 +484,7 @@ export function TransactionsList({
                 activeKey={sortKey}
                 activeDir={sortDir}
                 onToggle={toggleSort}
-                className="w-20"
+                className="w-16"
                 align="center"
               />
               <TableHead className="w-10" />
@@ -545,7 +545,7 @@ export function TransactionsList({
                       </CellButton>
                     )}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="whitespace-normal break-words min-w-[12rem]">
                     <div
                       className={`flex items-center gap-2 ${isChildRow ? "pl-6" : ""}`}
                     >
