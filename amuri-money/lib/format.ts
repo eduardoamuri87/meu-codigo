@@ -61,7 +61,16 @@ export function formatMonthLabel(year: number, month: number): string {
 }
 
 export function parseDecimalBR(s: string): number | null {
-  const cleaned = s.trim().replace(/\./g, "").replace(",", ".");
-  const n = Number.parseFloat(cleaned);
+  const stripped = s.replace(/[R$\s ]/gi, "").trim();
+  if (!stripped) return null;
+  let normalized: string;
+  if (stripped.includes(",") && stripped.includes(".")) {
+    normalized = stripped.replace(/\./g, "").replace(",", ".");
+  } else if (stripped.includes(",")) {
+    normalized = stripped.replace(",", ".");
+  } else {
+    normalized = stripped;
+  }
+  const n = Number.parseFloat(normalized);
   return Number.isFinite(n) && n >= 0 ? n : null;
 }
