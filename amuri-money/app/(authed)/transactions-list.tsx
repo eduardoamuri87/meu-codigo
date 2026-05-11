@@ -6,8 +6,10 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  Check,
   ChevronDown,
   ChevronRight,
+  Circle,
   Layers,
   Link2Off,
   MoreVertical,
@@ -2177,7 +2179,17 @@ function MobileTransactionList({
                 ) : (
                   <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
                 )
-              ) : null}
+              ) : row.paid ? (
+                <Check
+                  className={`h-4 w-4 shrink-0 ${
+                    row.type === "receita"
+                      ? "text-emerald-600"
+                      : "text-muted-foreground"
+                  }`}
+                />
+              ) : (
+                <Circle className="h-4 w-4 shrink-0 text-muted-foreground/30" />
+              )}
               <span
                 className={`truncate text-sm ${isParentRow ? "font-medium" : ""}`}
               >
