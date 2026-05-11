@@ -101,6 +101,15 @@ type SortKey =
 type SortDir = "asc" | "desc";
 type EditingCell = { rowId: string; field: EditableField } | null;
 
+type RenderItem =
+  | { kind: "row"; row: Row; depth: 0 | 1 }
+  | {
+      kind: "add-child";
+      parentId: string;
+      type: "receita" | "despesa";
+      date: string;
+    };
+
 const NO_CATEGORY = "__none__";
 
 function compareRows(a: Row, b: Row, key: SortKey): number {
@@ -142,6 +151,7 @@ export function TransactionsList({
   const [unmaking, setUnmaking] = useState<Row | null>(null);
   const [importingTo, setImportingTo] = useState<Row | null>(null);
   const [addingChildTo, setAddingChildTo] = useState<string | null>(null);
+  const [mobileEditing, setMobileEditing] = useState<Row | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const [editing, setEditing] = useState<EditingCell>(null);
   const [scopePrompt, setScopePrompt] = useState<{
@@ -153,10 +163,6 @@ export function TransactionsList({
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [pending, startTransition] = useTransition();
-
-  type RenderItem =
-    | { kind: "row"; row: Row; depth: 0 | 1 }
-    | { kind: "add-child"; parentId: string; type: "receita" | "despesa"; date: string };
 
   const renderItems: RenderItem[] = useMemo(() => {
     const virtual = rows.filter((r) => r.virtual);
@@ -436,7 +442,14 @@ export function TransactionsList({
 
   return (
     <>
-      <div className="card-soft overflow-x-auto [&_th]:h-12 [&_th]:px-3 [&_td]:py-4 [&_td]:px-3">
+      <MobileTransactionList
+        renderItems={renderItems}
+        expanded={expanded}
+        toggleExpanded={toggleExpanded}
+        onTapRow={setMobileEditing}
+        onTapVirtual={setDetailRow}
+      />
+      <div className="hidden sm:block card-soft overflow-x-auto [&_th]:h-12 [&_th]:px-3 [&_td]:py-4 [&_td]:px-3">
         <Table>
           <TableHeader>
             <TableRow>
@@ -775,6 +788,45 @@ export function TransactionsList({
           </TableBody>
         </Table>
       </div>
+
+      <MobileEditDialog
+        row={mobileEditing}
+        categories={categories}
+        costCenters={costCenters}
+        onClose={() => setMobileEditing(null)}
+        onDelete={(row) => {
+          setMobileEditing(null);
+          setDeleting(row);
+        }}
+        onConvertRecurrent={(row) => {
+          setMobileEditing(null);
+          setConverting(row);
+        }}
+        onEditRecurrent={(row) => {
+          setMobileEditing(null);
+          setEditingRecurrent(row);
+        }}
+        onUnlinkRecurrence={(row) => {
+          setMobileEditing(null);
+          setUnlinking(row);
+        }}
+        onMakeParent={(row) => {
+          handleMakeParent(row);
+          setMobileEditing(null);
+        }}
+        onUnmakeParent={(row) => {
+          setMobileEditing(null);
+          setUnmaking(row);
+        }}
+        onImportItems={(row) => {
+          setMobileEditing(null);
+          setImportingTo(row);
+        }}
+        onDetachFromParent={(row) => {
+          handleDetachFromParent(row);
+          setMobileEditing(null);
+        }}
+      />
 
       <VirtualRowDetailsDialog
         row={detailRow}
@@ -2069,6 +2121,646 @@ function InlineCostCenterSelect({
         </div>
       ) : null}
     </div>
+  );
+}
+
+function MobileTransactionList({
+  renderItems,
+  expanded,
+  toggleExpanded,
+  onTapRow,
+  onTapVirtual,
+}: {
+  renderItems: RenderItem[];
+  expanded: Set<string>;
+  toggleExpanded: (id: string) => void;
+  onTapRow: (row: Row) => void;
+  onTapVirtual: (row: Row) => void;
+}) {
+  return (
+    <div className="sm:hidden card-soft divide-y divide-border/60 overflow-hidden">
+      {renderItems.map((item) => {
+        if (item.kind === "add-child") return null;
+        const row = item.row;
+        const isParentRow = !row.virtual && row.isParent;
+        const isChildRow = item.depth === 1;
+        const displayAmount = isParentRow ? row.childSum : row.amount;
+        const bg = row.virtual
+          ? "bg-yellow-50/80"
+          : isParentRow
+            ? "bg-rose-100/70"
+            : isChildRow
+              ? "bg-muted/20"
+              : "";
+
+        function handleTap() {
+          if (row.virtual) onTapVirtual(row);
+          else if (isParentRow) toggleExpanded(row.id);
+          else onTapRow(row);
+        }
+
+        return (
+          <button
+            key={row.id}
+            type="button"
+            onClick={handleTap}
+            className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors active:bg-muted/60 ${bg}`}
+          >
+            <div
+              className={`flex min-w-0 flex-1 items-center gap-2 ${
+                isChildRow ? "pl-4" : ""
+              }`}
+            >
+              {isParentRow ? (
+                expanded.has(row.id) ? (
+                  <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                )
+              ) : null}
+              <span
+                className={`truncate text-sm ${isParentRow ? "font-medium" : ""}`}
+              >
+                {row.description}
+              </span>
+              {row.recurrenceId && row.parcelNumber ? (
+                <span className="shrink-0 rounded border bg-muted px-1 py-0.5 text-[10px] tabular-nums text-muted-foreground">
+                  {row.totalParcels
+                    ? `${row.parcelNumber}/${row.totalParcels}`
+                    : `${row.parcelNumber}/∞`}
+                </span>
+              ) : null}
+              {row.virtual ? (
+                <span className="shrink-0 rounded border bg-muted px-1 py-0.5 text-[10px] text-muted-foreground">
+                  auto
+                </span>
+              ) : null}
+            </div>
+            <span
+              className={`shrink-0 text-right text-sm tabular-nums ${
+                row.type === "receita" ? "text-emerald-600" : "text-rose-600"
+              } ${isParentRow ? "font-semibold" : ""}`}
+            >
+              {row.type === "receita" ? "+" : "−"}
+              {formatCurrency(displayAmount)}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function MobileEditDialog({
+  row,
+  categories,
+  costCenters,
+  onClose,
+  onDelete,
+  onConvertRecurrent,
+  onEditRecurrent,
+  onUnlinkRecurrence,
+  onMakeParent,
+  onUnmakeParent,
+  onImportItems,
+  onDetachFromParent,
+}: {
+  row: Row | null;
+  categories: Category[];
+  costCenters: CostCenter[];
+  onClose: () => void;
+  onDelete: (row: Row) => void;
+  onConvertRecurrent: (row: Row) => void;
+  onEditRecurrent: (row: Row) => void;
+  onUnlinkRecurrence: (row: Row) => void;
+  onMakeParent: (row: Row) => void;
+  onUnmakeParent: (row: Row) => void;
+  onImportItems: (row: Row) => void;
+  onDetachFromParent: (row: Row) => void;
+}) {
+  return (
+    <Dialog open={row !== null} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-md">
+        {row ? (
+          <MobileEditForm
+            key={row.id}
+            row={row}
+            categories={categories}
+            costCenters={costCenters}
+            onClose={onClose}
+            onDelete={onDelete}
+            onConvertRecurrent={onConvertRecurrent}
+            onEditRecurrent={onEditRecurrent}
+            onUnlinkRecurrence={onUnlinkRecurrence}
+            onMakeParent={onMakeParent}
+            onUnmakeParent={onUnmakeParent}
+            onImportItems={onImportItems}
+            onDetachFromParent={onDetachFromParent}
+          />
+        ) : null}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function MobileEditForm({
+  row,
+  categories,
+  costCenters,
+  onClose,
+  onDelete,
+  onConvertRecurrent,
+  onEditRecurrent,
+  onUnlinkRecurrence,
+  onMakeParent,
+  onUnmakeParent,
+  onImportItems,
+  onDetachFromParent,
+}: {
+  row: Row;
+  categories: Category[];
+  costCenters: CostCenter[];
+  onClose: () => void;
+  onDelete: (row: Row) => void;
+  onConvertRecurrent: (row: Row) => void;
+  onEditRecurrent: (row: Row) => void;
+  onUnlinkRecurrence: (row: Row) => void;
+  onMakeParent: (row: Row) => void;
+  onUnmakeParent: (row: Row) => void;
+  onImportItems: (row: Row) => void;
+  onDetachFromParent: (row: Row) => void;
+}) {
+  const isParentRow = row.isParent;
+  const isDespesa = row.type === "despesa";
+  const isRecurrent = !!row.recurrenceId;
+
+  const [description, setDescription] = useState(row.description);
+  const [amount, setAmount] = useState(
+    row.amount.toFixed(2).replace(".", ","),
+  );
+  const [date, setDate] = useState(row.date);
+  const [categoryId, setCategoryId] = useState<string | null>(row.categoryId);
+  const [costCenterId, setCostCenterId] = useState<string | null>(
+    row.costCenterId,
+  );
+  const [paid, setPaid] = useState(row.paid);
+  const [extraCategories, setExtraCategories] = useState<Category[]>([]);
+  const [extraCostCenters, setExtraCostCenters] = useState<CostCenter[]>([]);
+  const [scopePrompt, setScopePrompt] = useState<{
+    field: "description" | "amount" | "categoryId" | "costCenterId";
+    rawValue: string;
+  } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const mergedCategories = useMemo(
+    () =>
+      [...categories, ...extraCategories]
+        .filter((c) => c.type === row.type)
+        .map((c) => ({ id: c.id, name: c.name })),
+    [categories, extraCategories, row.type],
+  );
+  const mergedCostCenters = useMemo(
+    () =>
+      [...costCenters, ...extraCostCenters].map((c) => ({
+        id: c.id,
+        name: c.name,
+      })),
+    [costCenters, extraCostCenters],
+  );
+
+  async function commitField(field: EditableField, rawValue: string) {
+    setBusy(true);
+    try {
+      await updateTransactionField(row.id, field, rawValue);
+    } catch (err) {
+      throw err instanceof Error ? err : new Error("Não foi possível atualizar.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function commitRecurrent(
+    scope: RecurrentEditScope,
+    field: "description" | "amount" | "categoryId" | "costCenterId",
+    rawValue: string,
+  ) {
+    if (scope === "single") {
+      await commitField(field, rawValue);
+      return;
+    }
+    const patch: RecurrentEditPatch = {};
+    if (field === "description") {
+      patch.description = rawValue.trim();
+    } else if (field === "amount") {
+      const n = parseDecimalBR(rawValue);
+      if (n === null) throw new Error("Valor inválido.");
+      patch.amount = n;
+    } else if (field === "categoryId") {
+      patch.categoryId =
+        !rawValue || rawValue === NO_CATEGORY ? null : rawValue;
+    } else {
+      patch.costCenterId =
+        !rawValue || rawValue === NO_CATEGORY ? null : rawValue;
+    }
+    setBusy(true);
+    try {
+      await updateRecurrentTransaction(row.id, scope, patch);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handlePaidToggle(next: boolean) {
+    setPaid(next);
+    setBusy(true);
+    try {
+      await toggleTransactionPaid(row.id, next);
+    } catch {
+      setPaid(!next);
+      toast.error("Não foi possível atualizar.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleSave() {
+    const trimmedDesc = description.trim();
+    const newAmountRaw = amount.trim();
+    const newCategoryRaw = categoryId ?? NO_CATEGORY;
+    const newCostCenterRaw = costCenterId ?? NO_CATEGORY;
+
+    const descChanged = trimmedDesc !== row.description;
+    const parsedAmount = parseDecimalBR(newAmountRaw);
+    const amountChanged =
+      parsedAmount !== null && parsedAmount !== row.amount;
+    const dateChanged = date !== row.date;
+    const categoryChanged = (categoryId ?? null) !== (row.categoryId ?? null);
+    const costCenterChanged =
+      isDespesa && (costCenterId ?? null) !== (row.costCenterId ?? null);
+
+    const anyChanged =
+      descChanged ||
+      amountChanged ||
+      dateChanged ||
+      categoryChanged ||
+      costCenterChanged;
+    if (!anyChanged) {
+      onClose();
+      return;
+    }
+
+    if (isRecurrent) {
+      const firstScopeField:
+        | "description"
+        | "amount"
+        | "categoryId"
+        | "costCenterId"
+        | null = descChanged
+        ? "description"
+        : amountChanged
+          ? "amount"
+          : categoryChanged
+            ? "categoryId"
+            : costCenterChanged
+              ? "costCenterId"
+              : null;
+      if (firstScopeField) {
+        const rawValue =
+          firstScopeField === "description"
+            ? trimmedDesc
+            : firstScopeField === "amount"
+              ? newAmountRaw
+              : firstScopeField === "categoryId"
+                ? newCategoryRaw
+                : newCostCenterRaw;
+        setScopePrompt({ field: firstScopeField, rawValue });
+        return;
+      }
+      if (dateChanged) {
+        try {
+          await commitField("date", date);
+          toast.success("Atualizado.");
+          onClose();
+        } catch (err) {
+          toast.error(
+            err instanceof Error ? err.message : "Não foi possível atualizar.",
+          );
+        }
+      }
+      return;
+    }
+
+    setBusy(true);
+    try {
+      if (descChanged) await updateTransactionField(row.id, "description", trimmedDesc);
+      if (amountChanged) await updateTransactionField(row.id, "amount", newAmountRaw);
+      if (dateChanged) await updateTransactionField(row.id, "date", date);
+      if (categoryChanged)
+        await updateTransactionField(row.id, "categoryId", newCategoryRaw);
+      if (costCenterChanged)
+        await updateTransactionField(row.id, "costCenterId", newCostCenterRaw);
+      toast.success("Atualizado.");
+      onClose();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Não foi possível atualizar.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function applyScope(scope: RecurrentEditScope) {
+    const prompt = scopePrompt;
+    if (!prompt) return;
+    try {
+      await commitRecurrent(scope, prompt.field, prompt.rawValue);
+      toast.success(
+        scope === "single"
+          ? "Atualizado."
+          : scope === "futures"
+            ? "Esta e as próximas não pagas atualizadas."
+            : "Todas as parcelas não pagas atualizadas.",
+      );
+      setScopePrompt(null);
+      onClose();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Não foi possível atualizar.",
+      );
+    }
+  }
+
+  if (scopePrompt) {
+    return (
+      <>
+        <DialogHeader>
+          <DialogTitle>Aplicar em quais parcelas?</DialogTitle>
+          <DialogDescription>
+            <strong>&ldquo;{row.description}&rdquo;</strong> faz parte de uma
+            recorrência. Onde aplicar a alteração?
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-2 pt-2">
+          <Button
+            variant="outline"
+            onClick={() => applyScope("single")}
+            disabled={busy}
+          >
+            Apenas esta
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => applyScope("futures")}
+            disabled={busy}
+          >
+            Esta e as próximas
+          </Button>
+          <Button onClick={() => applyScope("all")} disabled={busy}>
+            Todas
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => setScopePrompt(null)}
+            disabled={busy}
+          >
+            Cancelar
+          </Button>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle>
+          {isParentRow ? "Agrupador" : "Editar transação"}
+        </DialogTitle>
+      </DialogHeader>
+      <div className="flex flex-col gap-4">
+        {isParentRow ? (
+          <div className="rounded-md bg-muted/40 p-3 text-sm">
+            <div className="font-medium">{row.description}</div>
+            <div className="mt-1 tabular-nums text-muted-foreground">
+              Soma dos itens:{" "}
+              <span
+                className={
+                  row.type === "receita" ? "text-emerald-600" : "text-rose-600"
+                }
+              >
+                {row.type === "receita" ? "+" : "−"}
+                {formatCurrency(row.childSum)}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="m-edit-description">Descrição</Label>
+              <Input
+                id="m-edit-description"
+                value={description}
+                onChange={(e) => setDescription(e.currentTarget.value)}
+                disabled={busy}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="m-edit-amount">Valor</Label>
+                <Input
+                  id="m-edit-amount"
+                  type="text"
+                  inputMode="decimal"
+                  value={amount}
+                  onChange={(e) => setAmount(e.currentTarget.value)}
+                  className="text-right tabular-nums"
+                  disabled={busy}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="m-edit-date">Data</Label>
+                <Input
+                  id="m-edit-date"
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.currentTarget.value)}
+                  disabled={busy}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="m-edit-category">Categoria</Label>
+              <Combobox
+                id="m-edit-category"
+                value={categoryId}
+                onChange={setCategoryId}
+                options={mergedCategories}
+                noneLabel="Sem categoria"
+                placeholder="Sem categoria"
+                disabled={busy}
+                onCreate={async (name) => {
+                  const created = await createCategoryInline(name, row.type);
+                  setExtraCategories((prev) => [
+                    ...prev,
+                    {
+                      id: created.id,
+                      name: created.name,
+                      type: created.type,
+                      createdAt: Date.now(),
+                    },
+                  ]);
+                  return { id: created.id, name: created.name };
+                }}
+                onCreateError={(err) =>
+                  toast.error(
+                    err instanceof Error
+                      ? err.message
+                      : "Não foi possível criar a categoria.",
+                  )
+                }
+              />
+            </div>
+            {isDespesa ? (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="m-edit-cc">Centro de custo</Label>
+                <Combobox
+                  id="m-edit-cc"
+                  value={costCenterId}
+                  onChange={setCostCenterId}
+                  options={mergedCostCenters}
+                  noneLabel="Sem centro de custo"
+                  placeholder="Sem centro de custo"
+                  disabled={busy}
+                  onCreate={async (name) => {
+                    const created = await createCostCenterInline(name);
+                    setExtraCostCenters((prev) => [
+                      ...prev,
+                      {
+                        id: created.id,
+                        name: created.name,
+                        createdAt: Date.now(),
+                      },
+                    ]);
+                    return created;
+                  }}
+                  onCreateError={(err) =>
+                    toast.error(
+                      err instanceof Error
+                        ? err.message
+                        : "Não foi possível criar o centro de custo.",
+                    )
+                  }
+                />
+              </div>
+            ) : null}
+            <div className="flex items-center justify-between rounded-md border px-3 py-2">
+              <Label htmlFor="m-edit-paid" className="cursor-pointer">
+                {row.type === "receita" ? "Recebido?" : "Pago?"}
+              </Label>
+              <Switch
+                id="m-edit-paid"
+                checked={paid}
+                onCheckedChange={handlePaidToggle}
+                disabled={busy}
+              />
+            </div>
+          </>
+        )}
+
+        {!isParentRow ? (
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              className="flex-1"
+              onClick={onClose}
+              disabled={busy}
+            >
+              Cancelar
+            </Button>
+            <Button className="flex-1" onClick={handleSave} disabled={busy}>
+              Salvar
+            </Button>
+          </div>
+        ) : null}
+
+        <div className="-mx-4 -mb-4 flex flex-col gap-1 rounded-b-xl border-t bg-muted/30 p-2">
+          {isRecurrent ? (
+            <>
+              <ActionButton onClick={() => onEditRecurrent(row)} disabled={busy}>
+                <Pencil className="h-4 w-4" /> Editar recorrência
+              </ActionButton>
+              <ActionButton
+                onClick={() => onUnlinkRecurrence(row)}
+                disabled={busy}
+              >
+                <Link2Off className="h-4 w-4" /> Desvincular recorrência
+              </ActionButton>
+            </>
+          ) : isParentRow ? (
+            <>
+              <ActionButton onClick={() => onImportItems(row)} disabled={busy}>
+                <ClipboardPaste className="h-4 w-4" /> Importar itens (CSV)
+              </ActionButton>
+              <ActionButton onClick={() => onUnmakeParent(row)} disabled={busy}>
+                <Layers className="h-4 w-4" /> Desfazer agrupador
+              </ActionButton>
+            </>
+          ) : row.parentId ? (
+            <ActionButton
+              onClick={() => onDetachFromParent(row)}
+              disabled={busy}
+            >
+              <Unlink className="h-4 w-4" /> Desvincular do pai
+            </ActionButton>
+          ) : (
+            <>
+              <ActionButton
+                onClick={() => onConvertRecurrent(row)}
+                disabled={busy}
+              >
+                <Repeat className="h-4 w-4" /> Tornar recorrente
+              </ActionButton>
+              <ActionButton onClick={() => onMakeParent(row)} disabled={busy}>
+                <Layers className="h-4 w-4" /> Tornar agrupador
+              </ActionButton>
+            </>
+          )}
+          <ActionButton
+            onClick={() => onDelete(row)}
+            disabled={busy}
+            destructive
+          >
+            <Trash2 className="h-4 w-4" /> Excluir
+          </ActionButton>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function ActionButton({
+  onClick,
+  disabled,
+  destructive,
+  children,
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+  destructive?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-muted disabled:opacity-50 ${
+        destructive ? "text-destructive" : ""
+      }`}
+    >
+      {children}
+    </button>
   );
 }
 
