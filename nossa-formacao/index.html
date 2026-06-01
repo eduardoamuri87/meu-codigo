@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>nossa formação — uma escola para planejadores financeiros</title>
+<meta name="description" content="Um percurso completo, prático e pé no chão para construir sua carreira como planejador financeiro. Aulas ao vivo, supervisão em grupo e consultoria individual." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --green:#225546;
+    --green-deep:#163a2e;
+    --green-soft:#bbcbb0;
+    --plum:#32292f;
+    --ink:#2b2329;
+    --blush:#feeeee;
+    --blush-2:#f3dbda;
+    --rose:#e6bdc0;
+    --rose-deep:#ce9d9f;
+    --peri:#5762d5;
+    --peri-soft:#d2dbf1;
+    --peri-ink:#6e7dab;
+    --cream:#fdf7f4;
+    --paper:#fafafa;
+    --white:#ffffff;
+    --radius:22px;
+    --radius-sm:14px;
+    --maxw:1180px;
+    --shadow:0 24px 60px -28px rgba(50,41,47,.35);
+    --shadow-sm:0 10px 30px -18px rgba(50,41,47,.4);
+    --serif:'Noto Serif', Georgia, serif;
+    --sans:'Overpass', system-ui, sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:var(--cream);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  section{position:relative}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+  /* ---------- typography ---------- */
+  h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.08;letter-spacing:-.01em}
+  .eyebrow{
+    font-family:var(--sans);
+    font-weight:700;
+    font-size:.78rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--green);
+    display:inline-flex;
+    align-items:center;
+    gap:.6em;
+  }
+  .eyebrow::before{
+    content:"";width:26px;height:2px;background:var(--rose-deep);border-radius:2px;
+  }
+  .italic{font-style:italic}
+
+  /* ---------- buttons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;gap:.55em;
+    font-family:var(--sans);font-weight:700;font-size:.98rem;
+    padding:.85em 1.5em;border-radius:100px;cursor:pointer;border:0;
+    transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+    white-space:nowrap;
+  }
+  .btn .arr{transition:transform .25s ease}
+  .btn:hover .arr{transform:translateX(4px)}
+  .btn-primary{background:var(--green);color:#fff;box-shadow:0 14px 30px -12px rgba(34,85,70,.6)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 20px 40px -12px rgba(34,85,70,.7)}
+  .btn-ghost{background:transparent;color:var(--green);border:1.5px solid rgba(34,85,70,.25)}
+  .btn-ghost:hover{background:rgba(34,85,70,.06);transform:translateY(-2px)}
+  .btn-peri{background:var(--peri);color:#fff;box-shadow:0 14px 30px -12px rgba(87,98,213,.55)}
+  .btn-peri:hover{transform:translateY(-2px)}
+
+  /* ---------- navbar ---------- */
+  header.nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    transition:background .3s ease, box-shadow .3s ease, padding .3s ease;
+    padding:18px 0;
+  }
+  header.nav.scrolled{
+    background:rgba(253,247,244,.82);
+    backdrop-filter:saturate(160%) blur(14px);
+    -webkit-backdrop-filter:saturate(160%) blur(14px);
+    box-shadow:0 1px 0 rgba(50,41,47,.07);
+    padding:12px 0;
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .brand{display:flex;align-items:center;gap:.5em}
+  .brand .logo{
+    display:block;width:92px;height:38px;background-color:var(--green);
+    -webkit-mask:url("https://cdn.prod.website-files.com/618be446beae2645ce792cba/6242fe8c97f0837b4206bc2e_nossa-branco.png") left center/contain no-repeat;
+    mask:url("https://cdn.prod.website-files.com/618be446beae2645ce792cba/6242fe8c97f0837b4206bc2e_nossa-branco.png") left center/contain no-repeat;
+  }
+  .nav-links{display:flex;gap:30px;align-items:center}
+  .nav-links a{font-size:.95rem;font-weight:600;color:var(--ink);opacity:.75;transition:opacity .2s, color .2s;position:relative}
+  .nav-links a:hover{opacity:1;color:var(--green)}
+  .nav-cta{display:flex;align-items:center;gap:14px}
+  .menu-btn{display:none;background:none;border:0;cursor:pointer;flex-direction:column;gap:5px;padding:8px}
+  .menu-btn span{width:24px;height:2px;background:var(--ink);border-radius:2px;transition:.3s}
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:160px 0 90px;
+    background:
+      radial-gradient(120% 90% at 100% 0%, var(--blush) 0%, transparent 55%),
+      radial-gradient(90% 80% at 0% 10%, #eef3ec 0%, transparent 50%),
+      var(--cream);
+    overflow:hidden;
+  }
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+  .hero h1{font-size:clamp(2.6rem,5.6vw,4.6rem);color:var(--green-deep)}
+  .hero h1 .hl{color:var(--green);position:relative;white-space:nowrap}
+  .hero h1 .hl::after{
+    content:"";position:absolute;left:-2px;right:-2px;bottom:.08em;height:.32em;
+    background:var(--rose);z-index:-1;border-radius:4px;transform:rotate(-.6deg);
+  }
+  .hero p.lead{font-size:1.18rem;color:var(--ink);opacity:.85;margin:26px 0 8px;max-width:48ch}
+  .hero .actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}
+  .hero-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:34px}
+  .tag{
+    font-size:.82rem;font-weight:600;padding:.5em 1em;border-radius:100px;
+    background:rgba(255,255,255,.7);border:1px solid rgba(50,41,47,.08);color:var(--ink);
+    display:inline-flex;align-items:center;gap:.5em;
+  }
+  .tag b{color:var(--green)}
+
+  /* hero visual */
+  .hero-art{position:relative}
+  .hero-card{
+    background:var(--white);border-radius:24px;padding:15px;box-shadow:var(--shadow);
+    position:relative;z-index:2;
+  }
+  .hero-card .photo{
+    border-radius:18px;overflow:hidden;background:var(--green-soft);
+  }
+  .hero-card .photo img{width:100%;height:auto;display:block}
+  .hero-card .meta{display:flex;align-items:center;gap:14px;margin-top:20px}
+  .hero-card .meta .av{display:flex}
+  .hero-card .meta .av span{
+    width:38px;height:38px;border-radius:50%;border:2.5px solid #fff;margin-left:-12px;
+    background:linear-gradient(135deg,var(--peri),var(--green));
+    display:grid;place-items:center;color:#fff;font-weight:700;font-size:.8rem;
+  }
+  .hero-card .meta .av span:first-child{margin-left:0}
+  .hero-card .meta small{font-size:.85rem;opacity:.7;line-height:1.3}
+  .hero-card .meta small b{color:var(--green);display:block;font-size:.95rem;opacity:1}
+  .float-badge{
+    position:absolute;background:#fff;border-radius:16px;padding:14px 18px;box-shadow:var(--shadow-sm);
+    z-index:3;display:flex;flex-direction:column;gap:2px;
+  }
+  .float-badge .n{font-family:var(--serif);font-weight:700;font-size:1.5rem;color:var(--green);line-height:1}
+  .float-badge .l{font-size:.72rem;font-weight:600;letter-spacing:.04em;opacity:.65;text-transform:uppercase}
+  .float-badge.one{top:-22px;left:-26px;animation:floaty 6s ease-in-out infinite}
+  .float-badge.two{bottom:30px;right:-30px;background:var(--green);animation:floaty 7s ease-in-out infinite .5s}
+  .float-badge.two .n{color:#fff}
+  .float-badge.two .l{color:rgba(255,255,255,.8)}
+  .blob{position:absolute;border-radius:50%;filter:blur(8px);opacity:.5;z-index:1}
+  .blob.a{width:200px;height:200px;background:var(--peri-soft);top:-40px;right:-30px}
+  .blob.b{width:160px;height:160px;background:var(--blush-2);bottom:-30px;left:-40px}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+
+  /* ---------- logos strip ---------- */
+  .strip{padding:34px 0;border-top:1px solid rgba(50,41,47,.07);border-bottom:1px solid rgba(50,41,47,.07);background:rgba(255,255,255,.4)}
+  .strip-inner{display:flex;align-items:center;gap:30px;justify-content:center;flex-wrap:wrap;text-align:center}
+  .strip-inner span{font-size:.86rem;font-weight:600;opacity:.6;letter-spacing:.02em}
+  .strip-inner .cfp{font-family:var(--serif);font-weight:700;color:var(--green);font-size:1.1rem}
+
+  /* ---------- generic section heading ---------- */
+  .sec{padding:96px 0}
+  .sec-head{max-width:640px;margin-bottom:54px}
+  .sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .sec-head h2{font-size:clamp(2rem,4vw,3.1rem);color:var(--green-deep);margin-top:16px}
+  .sec-head p{font-size:1.1rem;opacity:.8;margin-top:16px}
+
+  /* ---------- pillars ---------- */
+  .pillars{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+  .pillar{
+    display:grid;grid-template-columns:auto 1fr;gap:0 24px;align-items:start;
+    background:var(--white);border-radius:var(--radius);padding:30px 32px;
+    border:1px solid rgba(50,41,47,.06);box-shadow:var(--shadow-sm);
+    transition:transform .3s ease, box-shadow .3s ease;position:relative;overflow:hidden;
+  }
+  .pillar:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+  .pillar .ic{
+    width:56px;height:56px;border-radius:16px;display:grid;place-items:center;margin-bottom:0;
+    color:#fff;grid-row:1 / 3;align-self:start;
+  }
+  .pillar .ic{background:var(--green)}
+  .pillar .ic{font-family:var(--serif);font-weight:700;font-size:2.04rem;line-height:1}
+  .pillar h3{font-size:1.62rem;color:var(--green-deep);margin:0;grid-column:2}
+  .pillar p{font-size:1.2rem;opacity:.8;grid-column:2;margin-top:12px}
+  .big-statement{
+    font-family:var(--serif);font-size:clamp(1.7rem,3.8vw,2.9rem);line-height:1.18;
+    color:var(--green-deep);text-align:center;max-width:none;margin:156px auto;
+  }
+  #programa{padding-bottom:0}
+  #quemsomos .sec-head{max-width:none}
+  #quemsomos .sec-head h2{font-size:clamp(1.9rem,3.6vw,2.7rem)}
+  .big-statement .hl{color:var(--green);position:relative;white-space:nowrap}
+  .big-statement .hl::after{
+    content:"";position:absolute;left:-2px;right:-2px;bottom:.06em;height:.3em;
+    background:var(--rose);z-index:-1;border-radius:4px;transform:rotate(-.6deg);
+  }
+
+  /* ---------- phases ---------- */
+  .phases{background:var(--plum);color:#fff;border-radius:40px;margin:0 auto;max-width:calc(var(--maxw) + 0px)}
+  .phases-sec{padding:0 0 96px}
+  .phases-inner{padding:64px 56px}
+  .phases .eyebrow{color:var(--rose)}
+  .phases .eyebrow::before{background:var(--rose)}
+  .phases h2{color:#fff;font-size:clamp(2rem,4vw,3rem)}
+  .phases .sub{opacity:.7;max-width:60ch;margin-top:14px;font-size:1.05rem}
+  .phase-tabs{display:flex;gap:10px;flex-wrap:wrap;margin:40px 0 36px}
+  .ptab{
+    cursor:pointer;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);
+    border-radius:14px;padding:14px 20px;display:flex;flex-direction:column;gap:2px;
+    transition:.25s;min-width:120px;flex:1 1 130px;
+  }
+  .ptab:hover{background:rgba(255,255,255,.09)}
+  .ptab .num{font-size:.7rem;font-weight:700;letter-spacing:.14em;opacity:.55;text-transform:uppercase}
+  .ptab .nm{font-family:var(--serif);font-style:italic;font-size:1.5rem}
+  .ptab.active{background:var(--rose);border-color:var(--rose)}
+  .ptab.active .num,.ptab.active .nm{color:var(--plum);opacity:1}
+  .phase-panel{display:none;animation:fade .4s ease}
+  .phase-panel.active{display:grid;grid-template-columns:.8fr 1.2fr;gap:40px;align-items:start}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .phase-panel .pp-left .theme{font-family:var(--serif);font-style:italic;font-size:2.4rem;color:var(--rose);line-height:1}
+  .phase-panel .pp-left .area{margin-top:14px;font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.6}
+  .phase-panel .pp-right ul{list-style:none;display:flex;flex-direction:column;gap:14px}
+  .phase-panel .pp-right li{display:flex;gap:14px;align-items:flex-start;font-size:1.05rem}
+  .phase-panel .pp-right li .chk{
+    flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:rgba(187,203,176,.22);
+    display:grid;place-items:center;color:var(--green-soft);margin-top:1px;
+  }
+  .phase-panel .pp-right .note{margin-top:22px;font-size:.9rem;font-style:italic;opacity:.55}
+
+  /* ---------- coverage grid ---------- */
+  .cover-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:38px}
+  .cover-item{
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:18px;
+    padding:26px 24px;transition:transform .25s ease, background .25s ease;
+  }
+  .cover-item:hover{background:rgba(255,255,255,.1);transform:translateY(-4px)}
+  .cover-item .ic{width:11px;height:11px;border-radius:50%;background:var(--rose);margin-bottom:18px}
+  .cover-item .ic svg{display:none}
+  .cover-item h3{font-size:1.42rem;color:#fff;font-family:var(--serif)}
+  .cover-item p{font-size:1.1rem;opacity:.68;margin-top:10.5px}
+  .cover-foot{
+    margin-top:30px;padding-top:26px;border-top:1px solid rgba(255,255,255,.12);
+    display:flex;align-items:center;gap:16px;
+  }
+  .cover-foot .badge{
+    flex:0 0 auto;width:54px;height:54px;border-radius:50%;background:var(--rose);color:var(--plum);
+    display:grid;place-items:center;font-family:var(--serif);font-weight:700;font-size:1.5rem;
+  }
+  .cover-foot p{font-size:1.02rem;opacity:.85;margin:0}
+  .cover-foot p b{color:var(--rose);font-weight:700}
+
+  /* ---------- testimonials ---------- */
+  .tcol-wrap{max-width:1475px}
+  .tcol{columns:3;column-gap:24px}
+  .tcard{
+    break-inside:avoid;margin-bottom:24px;background:var(--white);border-radius:var(--radius);
+    padding:28px 26px;border:1px solid rgba(50,41,47,.06);box-shadow:var(--shadow-sm);
+  }
+  .tcard .quote{font-size:1rem;line-height:1.55}
+  .tcard .quote p{margin:0}
+  .tcard .quote p + p{margin-top:1em}
+  .tcard .quote .em{background:linear-gradient(transparent 60%, var(--blush-2) 60%);font-weight:600;color:var(--green-deep)}
+  .tcard .who{display:flex;align-items:center;gap:12px;margin-top:20px;padding-top:18px;border-top:1px solid rgba(50,41,47,.08)}
+  .tcard .who .av{
+    width:48px;height:48px;border-radius:50%;flex:0 0 auto;overflow:hidden;
+    background:var(--green-soft);box-shadow:0 0 0 3px var(--blush);
+  }
+  .tcard .who .av img{width:100%;height:100%;object-fit:cover}
+  .tcard .who .nm{font-weight:700;font-size:.95rem;line-height:1.2}
+  .tcard .who .role{font-size:.8rem;opacity:.6}
+  .stars{color:var(--rose-deep);font-size:.85rem;letter-spacing:2px;margin-bottom:12px}
+
+  /* ---------- results band (full-bleed) ---------- */
+  .results-band{
+    background:linear-gradient(135deg,var(--green) 0%, var(--green-deep) 100%);color:#fff;
+    padding:84px 24px;text-align:center;position:relative;overflow:hidden;
+  }
+  .results-band::before{content:"";position:absolute;width:420px;height:420px;border-radius:50%;background:rgba(255,255,255,.05);right:-120px;top:-180px}
+  .results-band::after{content:"";position:absolute;width:340px;height:340px;border-radius:50%;background:rgba(255,255,255,.04);left:-120px;bottom:-160px}
+  .results-phrase{
+    font-family:var(--serif);font-size:clamp(1.6rem,3.2vw,2.6rem);line-height:1.3;
+    max-width:30ch;margin:0 auto;position:relative;z-index:2;
+  }
+  .results-phrase b{font-weight:700}
+  .results-phrase .rp-hl{color:var(--rose)}
+
+  /* ---------- founders ---------- */
+  .founders{display:grid;grid-template-columns:repeat(2,1fr);gap:30px}
+  .founder{
+    background:var(--white);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(50,41,47,.06);
+    box-shadow:var(--shadow-sm);transition:transform .3s;
+  }
+  .founder:hover{transform:translateY(-5px)}
+  .founder .ph{aspect-ratio:1/1;overflow:hidden;background:var(--blush)}
+  .founder .ph img{width:100%;height:100%;object-fit:cover;object-position:center 22%}
+  .founder .bd{padding:28px}
+  .founder .bd h3{font-size:1.5rem;color:var(--green-deep)}
+  .founder .bd .cfp{font-size:.8rem;font-weight:700;letter-spacing:.1em;color:var(--rose-deep);text-transform:uppercase;margin-top:4px}
+  .founder .bd p{font-size:.96rem;opacity:.82;margin-top:14px}
+  .founder .bd a{color:var(--green);font-weight:700;font-size:.92rem;display:inline-flex;gap:.4em;margin-top:14px}
+
+  /* ---------- faq ---------- */
+  .faq-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:48px;align-items:start}
+  /* ---------- pra quem é (faixa full-bleed) ---------- */
+  .who-band{
+    background:linear-gradient(135deg, var(--green) 0%, var(--green-deep) 100%);
+    padding:84px 24px;text-align:center;position:relative;overflow:hidden;
+  }
+  .who-inner{position:relative;z-index:2;max-width:760px;margin:0 auto}
+  .who-band h2{font-family:var(--serif);font-weight:700;font-size:clamp(2rem,4vw,2.9rem);color:#fff}
+  .who-band p{font-size:1.16rem;color:#fff;opacity:.82;margin:22px auto 0}
+  .who-band h2 + p{margin-top:44px}
+
+  .faq-list{display:flex;flex-direction:column;gap:72px;max-width:860px;margin:0 auto;text-align:center}
+  .faq-item{background:none;border:0;padding:0}
+  .faq-q{font-family:var(--serif);font-weight:700;font-size:clamp(1.5rem,3vw,2.1rem);color:var(--green-deep);margin-bottom:22px;line-height:1.25}
+  .faq-a p{opacity:.82;font-size:1.08rem;max-width:62ch;margin:0 auto}
+
+  /* ---------- cta ---------- */
+  .cta-card{
+    background:
+      radial-gradient(100% 120% at 0% 0%, rgba(87,98,213,.16), transparent 55%),
+      var(--plum);
+    color:#fff;border-radius:36px;padding:70px 56px;text-align:center;position:relative;overflow:hidden;
+  }
+  .cta-card h2{font-size:clamp(2rem,4.4vw,3.2rem);color:#fff;max-width:none;margin:18px auto 0}
+  .cta-card p{opacity:.78;max-width:52ch;margin:20px auto 32px;font-size:1.08rem}
+  .cta-card .eyebrow{color:var(--rose);justify-content:center}
+  .cta-card .eyebrow::before{background:var(--rose)}
+  .cta-note{
+    margin:104px auto 56px;font-family:var(--serif);font-weight:700;font-size:clamp(1.5rem,2.9vw,2.2rem);
+    line-height:1.32;text-align:center;color:var(--green-deep);max-width:52ch;
+  }
+  .cta-note .cta-hl{color:var(--green)}
+  .cta-card .ring{position:absolute;border:1px solid rgba(255,255,255,.08);border-radius:50%}
+  .cta-card .ring.r1{width:380px;height:380px;left:-120px;bottom:-160px}
+  .cta-card .ring.r2{width:520px;height:520px;right:-180px;top:-220px}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--green-deep);color:#fff;padding:66px 0 34px;margin-top:96px}
+  .foot-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:40px;align-items:start}
+  footer .brand .logo{background-color:#fff}
+  footer .ftag{opacity:.65;margin-top:14px;font-size:.96rem}
+  .foot-grid > div:last-child{text-align:right}
+  footer h4{font-family:var(--sans);font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;opacity:.55;margin-bottom:16px}
+  footer ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  footer ul a{opacity:.82;font-size:.96rem;transition:opacity .2s}
+  footer ul a:hover{opacity:1}
+  .foot-bot{margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:.85rem;opacity:.6}
+
+  /* ---------- reveal ---------- */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------- responsive ---------- */
+  @media(max-width:960px){
+    .hero-grid{grid-template-columns:1fr;gap:48px}
+    .hero-art{max-width:440px;margin:0 auto}
+    .pillars{grid-template-columns:1fr}
+    .founders{grid-template-columns:1fr}
+    .faq-list{grid-template-columns:1fr}
+    .phase-panel.active{grid-template-columns:1fr;gap:24px}
+    .cover-grid{grid-template-columns:repeat(2,1fr)}
+    .tcol{columns:2}
+    .phases-inner{padding:48px 28px}
+  }
+  @media(max-width:680px){
+    .nav-links{
+      position:fixed;inset:0 0 0 auto;width:78%;max-width:320px;background:var(--cream);
+      flex-direction:column;justify-content:center;gap:26px;padding:40px;
+      transform:translateX(100%);transition:transform .35s ease;box-shadow:var(--shadow);
+    }
+    .nav-links.open{transform:none}
+    .nav-links a{font-size:1.2rem;opacity:1}
+    .menu-btn{display:flex}
+    .nav-cta .btn{display:none}
+    .cover-grid{grid-template-columns:1fr}
+    .pillar{padding:22px 24px}
+    .tcol{columns:1}
+    .results-band{padding:56px 22px}
+    .cta-card{padding:48px 26px}
+    .who-band{padding:56px 22px}
+    .foot-grid{grid-template-columns:1fr;gap:32px}
+    .sec{padding:72px 0}
+    .phases-inner{padding:40px 22px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand" aria-label="nossa"><span class="logo"></span></a>
+    <nav class="nav-links" id="navlinks">
+      <a href="#programa">o programa</a>
+      <a href="#fases">o percurso</a>
+      <a href="#depoimentos">depoimentos</a>
+      <a href="#quemsomos">quem somos</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="https://nossa.cc/meavisa" class="btn btn-primary">aplicar <span class="arr">→</span></a>
+      <button class="menu-btn" id="menuBtn" aria-label="menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div class="hero-copy reveal">
+      <h1>a <span class="hl">nossa</span> é uma escola para planejadores financeiros independentes</h1>
+      <p class="lead">Oferecemos um percurso completo, prático e pé no chão, para além da euforia do mercado. Se você busca construir uma carreira sólida apoiando as pessoas ao seu redor, a nossa formação é para você.</p>
+      <div class="actions">
+        <a href="https://nossa.cc/meavisa" class="btn btn-primary">quero uma vaga <span class="arr">→</span></a>
+      </div>
+    </div>
+
+    <div class="hero-art reveal">
+      <span class="blob a"></span>
+      <span class="blob b"></span>
+      <div class="hero-card">
+        <div class="photo">
+          <img src="foto-turma-web.jpg" alt="Turma da nossa reunida" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROGRAMA / PILLARS ===== -->
+<section class="sec" id="programa">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">o programa</span>
+      <h2>estruturamos o percurso que adoraríamos ter encontrado quando iniciamos nossas carreiras</h2>
+      <p>A nossa formação se apoia em quatro pilares — e em cada um deles seguiremos juntos e próximos, com o perdão do pleonasmo.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar reveal">
+        <div class="ic">1</div>
+        <h3>aulas ao vivo</h3>
+        <p>Passaremos por absolutamente tudo o que você vai precisar para estruturar o seu negócio e oferecer um planejamento financeiro, do começo ao fim.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="ic">2</div>
+        <h3>supervisão em grupo</h3>
+        <p>Discutiremos cases e aprofundaremos o conteúdo das aulas. Além disso, claro, será um espaço para compartilharmos experiências, angústias e conquistas.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="ic">3</div>
+        <h3>plataforma</h3>
+        <p>Todas as aulas ficam gravadas e disponíveis, junto com as dúvidas de todos os alunos — respondidas e comentadas. É de uma riqueza sem tamanho.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="ic">4</div>
+        <h3>oito sessões de acompanhamento</h3>
+        <p>Uma por mês — três individuais e cinco no seu quarteto — oferecidas por nós e por planejadores muitíssimo experientes.</p>
+      </div>
+    </div>
+
+    <p class="big-statement reveal">Não importa onde você está hoje:<br><span class="hl">nós te pegaremos pela mão.</span></p>
+  </div>
+</section>
+
+<!-- ===== PHASES ===== -->
+<section class="phases-sec" id="fases">
+  <div class="wrap">
+    <div class="phases reveal">
+      <div class="phases-inner">
+        <span class="eyebrow">juntos, do começo ao fim</span>
+        <h2>o percurso</h2>
+        <p class="sub">Desenvolveremos o seu modelo de negócio, marketing, vendas, processos internos, dinâmica de atuação e, claro, todo o repertório técnico e comportamental.</p>
+
+        <div class="cover-grid">
+          <div class="cover-item">
+            <div class="ic"></div>
+            <h3>modelagem de negócios</h3>
+            <p>Estruturaremos um modelo de negócio sustentável para você e viável seu cliente, incluindo os detalhes de precificação, gestão do tempo, processos e backoffice.</p>
+          </div>
+          <div class="cover-item">
+            <div class="ic"></div>
+            <h3>comunicação e prospecção</h3>
+            <p>Costuma ser um grande dilema na jornada do planejador financeiro. Encontraremos sua voz, de maneira prática e efetiva. Desenharemos um plano de comunicação que funciona.</p>
+          </div>
+          <div class="cover-item">
+            <div class="ic"></div>
+            <h3>condução – a atuação, na prática</h3>
+            <p>Tudo muda quando nos sentamos de frente com o cliente. Apoiados nas ciências comportamentais, traremos a teoria para a prática.</p>
+          </div>
+          <div class="cover-item">
+            <div class="ic"></div>
+            <h3>repertório técnico e comportamental</h3>
+            <p>Partiremos do zero e cobriremos a gestão financeira, os investimentos, seguros, o endividamento, as questões imobiliárias, as finanças para casais, a aposentadoria e os aspectos fiscais e sucessórios, fortemente amparados nas ciências comportamentais.</p>
+          </div>
+        </div>
+
+        <div class="cover-foot">
+          <span class="badge">✓</span>
+          <p>Contaremos com <b>professores convidados</b>, especialistas em suas áreas – acadêmicos, advogados, contadores e psicólogos, além de planejadores muitíssimo experientes que dividem a jornada conosco.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RESULTS BAND ===== -->
+<section class="results-band reveal">
+  <p class="results-phrase">são <b>493 planejadores financeiros independentes</b> formados até aqui — <span class="rp-hl">a gente morre de orgulho.</span></p>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section class="sec" id="depoimentos" style="background:linear-gradient(180deg, transparent, var(--blush) 40%, transparent)">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow" style="justify-content:center">histórias reais</span>
+      <h2>depoimentos dos<br>nossos alunos</h2>
+    </div>
+  </div>
+  <div class="wrap tcol-wrap">
+    <div class="tcol" id="testimonials"></div>
+  </div>
+</section>
+
+<!-- ===== FOUNDERS ===== -->
+<section class="sec" id="quemsomos">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">quem somos</span>
+      <h2>vivi e amuri,<br>planejadores financeiros independentes</h2>
+    </div>
+    <div class="founders">
+      <div class="founder reveal">
+        <div class="ph"><img src="foto-vivi-web.jpg" alt="Vívian Rodrigues" loading="lazy" /></div>
+        <div class="bd">
+          <h3>Vívian Rodrigues Magalhães</h3>
+          <div class="cfp">CFP®</div>
+          <p>Vívian Rodrigues Magalhães é planejadora financeira independente. Durante os últimos 10 anos, se dedicou a projetos relacionados ao tema sempre buscando uma abordagem simples e estratégica, embasada nas ciências comportamentais.</p>
+          <p>Para além das mais de duas mil famílias diretamente apoiadas enquanto esteve à frente da Papo de Valor liderando um time de planejadoras, trabalha em parceria com as principais instituições públicas e privadas do país, para facilitar com que as discussões cheguem onde precisam chegar.</p>
+        </div>
+      </div>
+      <div class="founder reveal">
+        <div class="ph"><img src="foto-amuri-web.jpg" alt="Eduardo Amuri" loading="lazy" /></div>
+        <div class="bd">
+          <h3>Eduardo Amuri</h3>
+          <div class="cfp">CFP®</div>
+          <p>Amuri é autor dos livros <i>Dinheiro Sem Medo</i> e <i>Finanças Para Autônomos</i>. Há 16 anos, apoia instituições públicas e privadas que buscam elaborar projetos sólidos, responsáveis por impactar positivamente a vida de milhões de pessoas – algumas instituições apoiadas nos últimos anos: o Banco Central do Brasil, a Anbima, a Febraban e o Sicredi.</p>
+          <p>Oferece o planejamento financeiro de forma acessível e prática através do seu programa de acompanhamento e do seu podcast, o <i>uma horinha sobre grana</i>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRA QUEM É (faixa) ===== -->
+<section class="who-band reveal">
+  <div class="who-inner">
+    <h2>pra quem é?</h2>
+    <p>A Nossa Formação foi carinhosamente estruturada para aqueles que sonham em construir uma carreira como planejador financeiro e se identificam com a maneira humana e pé no chão com que atuamos.</p>
+    <p>Serão muitíssimo bem-vindos os que estão dando os primeiros passos e os que já iniciaram a caminhada há algum tempo e estão em processo de consolidação.</p>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="sec" id="faq">
+  <div class="wrap">
+    <div class="faq-list reveal" id="faqlist"></div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="sec" style="padding-bottom:0">
+  <div class="wrap">
+    <div class="cta-card reveal">
+      <span class="ring r1"></span><span class="ring r2"></span>
+      <span class="eyebrow">como seguimos?</span>
+      <h2>A lista de espera<br>para 2027 está aberta</h2>
+      <p>Preencha o formulário com todo o carinho — a aplicação cuidadosa é importante para decidirmos, juntos, se a formação é o que você precisa neste momento.</p>
+      <a href="https://nossa.cc/meavisa" class="btn btn-peri">quero aplicar para uma vaga <span class="arr">→</span></a>
+    </div>
+    <p class="cta-note">Em outubro de 2027, ao final dos nossos nove meses juntos, esperamos que você tenha se posicionado no mercado, com <span class="cta-hl">um negócio estruturado, lucrativo e de faturamento crescente.</span></p>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a href="#top" class="brand" aria-label="nossa"><span class="logo"></span></a>
+        <p class="ftag">uma escola para planejadores financeiros independentes</p>
+      </div>
+      <div>
+        <h4>contato</h4>
+        <ul>
+          <li><a href="mailto:vivi-e-amuri@nossa.cc">vivi-e-amuri@nossa.cc</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <span>© <span id="yr"></span> nossa</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ---------- data: testimonials ---------- */
+  const CDN='https://cdn.prod.website-files.com/618be446beae2645ce792cba/';
+  const tdata=[
+    {nm:'Priscila Bastos',role:'psicóloga de formação',photo:'635ee31c8045a528a02afebc_Design%20sem%20nome-p-500.png',q:'Sou psicóloga de formação, comecei a trabalhar com finanças em 2017, quando comecei a acompanhar a Vivi e Amuri. Nessa época, eu oferecia apenas a gestão financeira da clínica e não me sentia confortável em oferecer o planejamento financeiro pessoal. Foi quando surgiu a Nossa Formação e resolvi me inscrever.||<em>A formação começou no dia 31 de maio de 2022. Dia 20 de junho, eu estava começando a atender minha primeira cliente paga e no final da última semana de setembro, eu já havia recuperado todo o investimento que eu havia feito.</em>'},
+    {nm:'Raphael Carneiro',role:'jornalista de formação · CFP®',photo:'64d1170b1be8a4f4da69359e_fotos%20alunos%20bolinha%20(7)-p-500.png',q:'A Nossa foi crucial para que eu fizesse minha transição de carreira, para que hoje eu pudesse atuar exclusivamente como planejador financeiro. Sou jornalista de formação e conduzia o planejamento no paralelo e foi através da Nossa que eu encontrei o caminho da atuação em tempo integral.||O <em>tratamento individualizado</em> foi fundamental. Cada aluno é enxergado dentro do seu contexto e isso fez toda a diferença.||<em>Hoje, quando me perguntam “qual sua profissão?”, eu respondo “sou planejador financeiro”</em>, com toda a segurança, e isso se mostrou possível por conta de todo o ambiente proporcionado pela escola.'},
+    {nm:'Julianne Simões',role:'CFP®',photo:'64d116ce84f8214b5e99de6a_fotos%20alunos%20bolinha%20(6)-p-500.png',q:'Eu procurei a escola porque queria viver de planejamento financeiro. Como a gente cria um modelo de negócio que seja sustentável para o planejador e viável para o cliente?||<em>Os resultados foram muito além do que eu imaginava. Descobri inúmeros pontos de melhoria em todos os aspectos da minha entrega.</em>||O que eu posso te dizer é que, se que você tem uma caminhada longa no mercado financeiro <em>(como eu, que tenho quase 18 anos de estrada)</em>, você deveria vir. E que se você está começando agora, você deveria vir também – para além da condução excelente do Amuri e da Vivi, você encontrará uma comunidade feliz por te receber.'},
+    {nm:'Vanessa Rodrigues',role:'planejadora',photo:'635ee4294cc38f4beaa6cb12_vanessa-p-500.png',q:'Antes do curso eu sentia muita falta de ferramentas, de repertório, de um plano de negócio, de alguém com quem eu pudesse tratar sobre um plano de comunicação, prospecção, precificação. Eu queria me abrir com alguém que entendesse minhas dores e eu não tinha com quem conversar.||A entrega está sendo muito melhor que as expectativas.||<em>Foi com a força da comunidade e o acompanhamento dos professores que, em 4 meses, recuperei o meu investimento no curso e venho mantendo uma recorrência de faturamento e entrada de clientes novos.</em> O apoio para a estruturação do meu plano de prospecção e melhorias no meu modelo foram cruciais.'},
+    {nm:'Jana Gomes',role:'planejadora',photo:'635ee5f747d161c2c1928549_jana-p-500.png',q:'Conhecer o Amuri e a Vivi na minha trajetória como planejadora foi essencial para acreditar que, sim, é possível com finanças de maneira responsável, sem promessas mirabolantes e com os pés no chão.||Na Nossa Formação, para além de todo o conhecimento (e oportunidade de tirar dúvidas que eu nem sabia que eu tinha!), me conectou a uma rede de profissionais incríveis.||<em>Foi um divisor de águas na minha atuação.</em>'},
+    {nm:'Felipe Ueda',role:'saiu “do zero”',photo:'635ee42a1407d8b875cc4279_felipe-e-p-500.png',q:'Achei a proposta muito especial: planejamento real para pessoas reais. Logo de cara eu percebi que estava no caminho certo. Tudo é sempre muito bem embasado, com exemplos práticos e explicações que se apoiam nas ciências comportamentais.||<em>Tudo isso foi muito importante para que eu, que sou uma pessoa que saí "do zero", conseguisse logo no meu primeiro mês fechar meu primeiro cliente.</em>'},
+    {nm:'Bruna Santos',role:'ex-instituição financeira',photo:'64d116db50f0eaddb7464fda_fotos%20alunos%20bolinha%20(5)%20(1)-p-500.png',q:'Compareci a uma roda de conversa oferecida pela Vivi e pelo Amuri e eu senti que tinha algo para mim ali. Maratonei o podcast e entrei na segunda turma.||<em>Pedir a demissão da instituição financeira em que eu trabalhava parecia algo inimaginável</em>, mas eu senti uma segurança tão grande, mas tão grande, eu conheci tantos outros planejadores, recebi tantas ferramentas, que o processo foi natural e fluido.||Se você gosta do assunto, se você gosta de ajudar as pessoas, essa formação é para você. Eu gostaria imensamente de ter recebido essa oportunidade anos atrás.'},
+    {nm:'Êmile Harff',role:'aluna da Nossa',photo:'635ee5e7f95dcc2c10358e0e_e%2Ci%2Cle-p-500.png',q:'Sou a Emily, aluna da Nossa, e resolvi fazer o curso quando eu percebi que eu estudava finanças pessoais todos os dias. <em>O curso transformou, de maneira muito clara e tranquila, meu amor por esse assunto em uma profissão.</em>||Gosto muito das trocas, não só com os professores, mas com toda a comunidade de alunos – isso fez com que eu me sentisse em casa, <em>é como se todos fizessem parte de uma grande família.</em>'},
+    {nm:'Eloá Maciel',role:'na área desde 2017',photo:'64d116326c7dbb522cc00e0f_fotos%20alunos%20bolinha%20(4)-p-500.png',q:'Pra mim, a experiência está sendo incrível. Eu já atuava na área desde 2017 e fiquei na dúvida se realmente a formação iria agregar. A formação me trouxe muita segurança. A validação do Amuri e da Vivi não tem preço. Você vai colher benefícios, não importa se está começando agora ou se tem bastante bagagem.||<em>Um dos maiores ganhos, sem dúvida, foi a comunidade que criamos juntos. Descobri que a jornada não precisa ser solitária. Se sentir parte de um grupo fez toda a diferença.</em>'}
+  ];
+  const tc=document.getElementById('testimonials');
+  tdata.forEach((t)=>{
+    const el=document.createElement('div');
+    el.className='tcard reveal';
+    const quote=t.q.split('||').map(p=>'<p>'+p.trim()+'</p>').join('').replace(/<em>/g,'<span class="em">').replace(/<\/em>/g,'</span>');
+    el.innerHTML='<div class="stars">★★★★★</div><div class="quote">'+quote+'</div>'+
+      '<div class="who"><span class="av"><img src="'+CDN+t.photo+'" alt="'+t.nm+'" loading="lazy"></span>'+
+      '<div><div class="nm">'+t.nm+'</div></div></div>';
+    tc.appendChild(el);
+  });
+
+  /* ---------- data: faq ---------- */
+  const faqs=[
+    {q:'“Mas gente, eu não faço a menor ideia de como funciona o mundo dos investimentos”',a:'Todo o conhecimento e ferramentas necessárias para que você alcance cada uma dessas conquistas será oferecido ao longo das aulas. Investimentos, gestão financeira, análise previdenciária, seguros... todas as áreas serão abordadas.'},
+    {q:'“Vívian, Amuri, eu já atuo há alguns anos, mas quero amadurecer meu negócio. É pra mim?”',a:'Sim. Você contará com a nossa comunidade e, mais do que isso, com o nosso apoio. Os encontros de supervisão serão especialmente úteis para você e as aulas darão conta de lapidar a sua entrega.'}
+  ];
+  const fl=document.getElementById('faqlist');
+  faqs.forEach(f=>{
+    const it=document.createElement('div');
+    it.className='faq-item';
+    it.innerHTML='<div class="faq-q">'+f.q+'</div><div class="faq-a"><p>'+f.a+'</p></div>';
+    fl.appendChild(it);
+  });
+
+  /* ---------- nav scroll ---------- */
+  const nav=document.getElementById('nav');
+  addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>20));
+  const mb=document.getElementById('menuBtn'), nl=document.getElementById('navlinks');
+  mb.onclick=()=>nl.classList.toggle('open');
+  nl.querySelectorAll('a').forEach(a=>a.onclick=()=>nl.classList.remove('open'));
+
+  /* ---------- reveal on scroll ---------- */
+  const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  document.getElementById('yr').textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
