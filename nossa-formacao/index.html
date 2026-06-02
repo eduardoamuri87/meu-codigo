@@ -393,8 +393,9 @@
     }
     .nav-links.open{transform:none}
     .nav-links a{font-size:1.2rem;opacity:1}
-    .menu-btn{display:flex}
-    .nav-cta .btn{display:none}
+    .menu-btn{display:none}
+    .nav-cta .btn{display:inline-flex}
+    #testimonials .tcard:nth-last-child(-n+2){display:none}
     .cover-grid{grid-template-columns:1fr}
     .pillar{padding:22px 24px}
     .tcol{columns:1}
@@ -404,6 +405,15 @@
     .foot-grid{grid-template-columns:1fr;gap:32px}
     .sec{padding:72px 0}
     .phases-inner{padding:40px 22px}
+    .big-statement{font-size:clamp(2.1rem,7vw,2.9rem);margin-left:12px;margin-right:12px}
+    .big-statement .bs-br{display:none}
+    .big-statement .hl{
+      white-space:normal;
+      -webkit-box-decoration-break:clone;box-decoration-break:clone;
+      background:linear-gradient(var(--rose),var(--rose)) no-repeat;
+      background-size:100% .26em;background-position:0 92%;
+    }
+    .big-statement .hl::after{display:none}
   }
 </style>
 </head>
@@ -480,7 +490,7 @@
       </div>
     </div>
 
-    <p class="big-statement reveal">Não importa onde você está hoje:<br><span class="hl">nós te pegaremos pela mão.</span></p>
+    <p class="big-statement reveal">Não importa onde você está hoje:<br class="bs-br"> <span class="hl">nós te pegaremos pela mão.</span></p>
   </div>
 </section>
 
