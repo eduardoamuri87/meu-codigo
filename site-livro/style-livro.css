@@ -197,6 +197,83 @@ body {
     color: #333;
 }
 
+/* Seção Fotos do Livro */
+.fotos-livro-section {
+    padding: 40px 0;
+}
+
+.fotos-livro-grid {
+    display: flex;
+    gap: 24px;
+    width: 52.5%;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.foto-livro-item {
+    flex: 1;
+}
+
+.foto-livro-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.foto-livro-item img:hover {
+    transform: scale(1.02);
+}
+
+/* Seção Sobre Mim */
+.secao-sobre-mim {
+    padding: 60px 0;
+    background-color: #EDF5F1;
+}
+
+.sobre-mim-container {
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    width: 52.5%;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.sobre-mim-texto {
+    flex: 1.6;
+}
+
+.sobre-mim-texto .frase-meio-impactante {
+    text-align: left;
+    margin-bottom: 0.6em;
+}
+
+.sobre-mim-texto p {
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 1.5em;
+    text-align: justify;
+    color: #333;
+}
+
+.sobre-mim-foto {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sobre-mim-foto img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+}
+
 .link-compra {
     color: #333;
     text-decoration: underline;
@@ -755,6 +832,33 @@ body {
     }
 
     .lado-a-lado-esquerda .frase-meio-impactante {
+        text-align: center;
+    }
+
+    .secao-sobre-mim {
+        padding-top: 29px;
+    }
+
+    .secao-lado-a-lado {
+        padding-bottom: 8px;
+    }
+
+    .fotos-livro-section {
+        padding-top: 5px;
+    }
+
+    .fotos-livro-grid {
+        width: 90%;
+        gap: 14px;
+    }
+
+    .sobre-mim-container {
+        flex-direction: column-reverse;
+        gap: 30px;
+        width: 90%;
+    }
+
+    .sobre-mim-texto .frase-meio-impactante {
         text-align: center;
     }
 

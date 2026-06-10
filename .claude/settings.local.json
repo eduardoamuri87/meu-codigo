@@ -46,7 +46,8 @@
       "Bash(curl -s -o /dev/null -w \"status=%{http_code}\\\\n\" http://localhost:3000/login)",
       "Bash(npm --version)",
       "Bash(npm install *)",
-      "Bash(openssl rand *)"
+      "Bash(openssl rand *)",
+      "Bash(awk -F: '$1 > 3845')"
     ]
   }
 }
