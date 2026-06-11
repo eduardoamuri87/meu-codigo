@@ -197,6 +197,12 @@ body {
     color: #333;
 }
 
+#btn-compra-secundario {
+    display: block;
+    width: fit-content;
+    margin: 55px auto;
+}
+
 /* Seção Fotos do Livro */
 .fotos-livro-section {
     padding: 40px 0;
@@ -386,6 +392,8 @@ body {
 
 .popup-compra-content .btn-compra {
     margin-top: 10px;
+    padding: 18px 40px;
+    font-size: 1.125em;
 }
 
 .popup-compra-alternativa {
@@ -515,7 +523,7 @@ body {
 
 /* Botão de Compra */
 .compra-section {
-    padding: 25px 0;
+    padding: 30px 0 75px 0;
     text-align: center;
 }
 
@@ -523,8 +531,8 @@ body {
     display: inline-block;
     background-color: #32373c;
     color: #fff;
-    padding: 18px 40px;
-    font-size: 1.125em;
+    padding: 21.6px 48px;
+    font-size: 1.35em;
     font-weight: 500;
     text-decoration: none;
     border-radius: 0;
@@ -557,7 +565,7 @@ body {
 }
 
 .depoimentos-container {
-    width: 80%;
+    width: 48%;
     margin: 0 auto;
     padding: 0;
 }
@@ -573,7 +581,7 @@ body {
 
 .depoimentos-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 75px;
     align-items: stretch;
 }
@@ -620,7 +628,7 @@ body {
 
 .depoimento-destaque {
     font-family: 'Roboto Condensed', sans-serif;
-    font-size: 26px;
+    font-size: 32.5px;
     font-weight: 700;
     line-height: 1.35;
     color: #000;
@@ -629,7 +637,7 @@ body {
 
 .depoimento-texto {
     flex: 1;
-    font-size: 16px;
+    font-size: 18.4px;
     line-height: 1.6;
     color: #444;
     margin-bottom: 15px;
@@ -764,7 +772,7 @@ body {
     }
 
     .depoimento-destaque {
-        font-size: 28px;
+        font-size: 35px;
     }
 
     .depoimento-foto {
@@ -777,7 +785,7 @@ body {
     }
 
     .depoimento-texto {
-        font-size: 17px;
+        font-size: 19.55px;
     }
 }
 
