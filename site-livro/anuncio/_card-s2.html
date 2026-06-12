@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8">
+<title>Dinheiro Sem Medo — Anúncios 4x5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@300;400;700&family=Oswald:wght@400;500;600;700&family=Roboto+Slab:wght@300;400;500;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --creme:#f7ebe3;
+    --creme-2:#efe0d6;
+    --escuro:#2d313f;
+    --salvia:#95b2a8;
+    --caramelo:#ddae85;
+    --ambar:#fbac47;
+    --vermelho:#b32d3a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#3a3a3a;font-family:'Roboto Slab',serif;color:var(--escuro);display:flex;flex-wrap:wrap;gap:48px;padding:48px;justify-content:center}
+
+  /* ===== base do card 4x5 (1080x1350) ===== */
+  .card{
+    width:1080px;height:1350px;position:relative;overflow:hidden;
+    background:var(--creme);flex:0 0 auto;
+  }
+  .card .legenda{position:absolute;top:14px;left:18px;z-index:99;font:600 18px Oswald,sans-serif;letter-spacing:2px;color:rgba(255,255,255,.0)}
+
+  .amuri{height:30px;opacity:.7;display:block}
+
+  /* título do livro recriado no estilo da capa */
+  .titulo{font-family:'Oswald',sans-serif;font-weight:700;text-transform:uppercase;line-height:.86;letter-spacing:.5px;color:var(--escuro);display:flex;flex-direction:column}
+  .titulo span{display:block}
+  .titulo .l2{color:var(--salvia)}
+
+  /* texturas de fundo orgânicas */
+  .blob{position:absolute;border-radius:50%;pointer-events:none}
+
+  /* ================= V2 — FOTO + PAINEL ================= */
+  .v2{background:var(--creme)}
+  .v2 .painel{position:absolute;top:0;left:0;width:100%;height:631px;background:var(--creme);padding:96px 100px 0;display:flex;flex-direction:column}
+  .v2 .selo{align-self:flex-start;font:600 20px Oswald,sans-serif;letter-spacing:5px;text-transform:uppercase;color:var(--salvia);border:2px solid var(--salvia);padding:8px 20px;border-radius:40px;margin-bottom:30px}
+  .v2 .titulo{font-size:166px;margin-bottom:0}
+  .v2 .head{font:300 41px/1.32 'Roboto Slab',serif;color:var(--escuro);max-width:880px;margin:auto 0}
+  .v2 .head b{font-weight:700;color:var(--salvia)}
+  .v2 .amuri{position:absolute;top:52px;right:58px;height:34px;opacity:.6;margin:0;z-index:3}
+  .v2 .foto{position:absolute;bottom:0;left:0;width:100%;height:790px;object-fit:contain;object-position:center bottom}
+
+  /* ================= V3 — FULL BLEED ================= */
+  .v3{background:#000}
+  .v3 .foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+  .v3 .veu{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(16,12,10,.93) 0%,rgba(16,12,10,.74) 42%,rgba(16,12,10,.66) 70%,rgba(16,12,10,.86) 100%)}
+  .v3 .inner{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-start;padding:150px 100px 0}
+  .v3 .amuri{position:absolute;top:52px;right:58px;height:28px;filter:brightness(0) invert(1);opacity:.62;margin:0}
+  .v3 .titulo{font-size:172px;color:#fdf6f0;margin-bottom:34px}
+  .v3 .titulo .l2{color:var(--salvia)}
+  .v3 .regua{width:110px;height:6px;background:var(--ambar);border-radius:4px;margin-bottom:34px}
+  .v3 .tagline{font:300 50px/1.32 'Roboto Slab',serif;color:#fdf6f0;max-width:880px;margin-bottom:30px}
+  .v3 .tagline b{font-weight:700;color:var(--ambar)}
+  .v3 .head{font:300 34px/1.4 'Roboto Slab',serif;color:#fdf6f0;opacity:.82;max-width:840px}
+
+  /* ===== base do card 9x16 (1080x1920) ===== */
+  .card916{
+    width:1080px;height:1920px;position:relative;overflow:hidden;
+    background:var(--creme);flex:0 0 auto;
+  }
+
+  /* ================= S2 — FOTO + PAINEL (9x16) ================= */
+  .s2{background:var(--creme)}
+  .s2 .painel{position:absolute;top:0;left:0;width:100%;height:880px;background:var(--creme);padding:150px 100px 0;display:flex;flex-direction:column}
+  .s2 .titulo{font-size:200px;margin-bottom:0}
+  .s2 .head{font:300 44px/1.36 'Roboto Slab',serif;color:var(--escuro);max-width:880px;margin:auto 0}
+  .s2 .head b{font-weight:700;color:var(--salvia)}
+  .s2 .amuri{position:absolute;top:70px;right:58px;height:38px;opacity:.6;margin:0;z-index:3}
+  .s2 .foto{position:absolute;bottom:0;left:0;width:100%;height:1040px;object-fit:cover;object-position:center top}
+
+  /* story do v3: subtítulo de baixo 15% maior (34px → 39px) */
+  .card916.v3 .head{font-size:39px}
+
+</style>
+</head><body style="margin:0;padding:0;background:#fff;display:block">
+<section class="card916 s2" id="s2">
+    <img class="foto" src="../img-livro/foto-4.jpg" alt="">
+    <img class="amuri" src="assets/amuri-logo.svg" alt="Amuri">
+    <div class="painel">
+      <div class="titulo"><span>Dinheiro</span><span class="l2">sem Medo</span></div>
+      <p class="head">Da organização financeira aos investimentos, com uma <b>linguagem humana e pé no chão.</b></p>
+    </div>
+  </section>
+</body></html>
