@@ -197,6 +197,89 @@ body {
     color: #333;
 }
 
+#btn-compra-secundario {
+    display: block;
+    width: fit-content;
+    margin: 55px auto;
+}
+
+/* Seção Fotos do Livro */
+.fotos-livro-section {
+    padding: 40px 0;
+}
+
+.fotos-livro-grid {
+    display: flex;
+    gap: 24px;
+    width: 52.5%;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.foto-livro-item {
+    flex: 1;
+}
+
+.foto-livro-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.foto-livro-item img:hover {
+    transform: scale(1.02);
+}
+
+/* Seção Sobre Mim */
+.secao-sobre-mim {
+    padding: 60px 0;
+    background-color: #EDF5F1;
+}
+
+.sobre-mim-container {
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    width: 52.5%;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.sobre-mim-texto {
+    flex: 1.6;
+}
+
+.sobre-mim-texto .frase-meio-impactante {
+    text-align: left;
+    margin-bottom: 0.6em;
+}
+
+.sobre-mim-texto p {
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 1.5em;
+    text-align: justify;
+    color: #333;
+}
+
+.sobre-mim-foto {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sobre-mim-foto img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+}
+
 .link-compra {
     color: #333;
     text-decoration: underline;
@@ -309,6 +392,8 @@ body {
 
 .popup-compra-content .btn-compra {
     margin-top: 10px;
+    padding: 18px 40px;
+    font-size: 1.125em;
 }
 
 .popup-compra-alternativa {
@@ -438,7 +523,7 @@ body {
 
 /* Botão de Compra */
 .compra-section {
-    padding: 25px 0;
+    padding: 30px 0 75px 0;
     text-align: center;
 }
 
@@ -446,8 +531,8 @@ body {
     display: inline-block;
     background-color: #32373c;
     color: #fff;
-    padding: 18px 40px;
-    font-size: 1.125em;
+    padding: 21.6px 48px;
+    font-size: 1.35em;
     font-weight: 500;
     text-decoration: none;
     border-radius: 0;
@@ -480,7 +565,7 @@ body {
 }
 
 .depoimentos-container {
-    width: 80%;
+    width: 48%;
     margin: 0 auto;
     padding: 0;
 }
@@ -496,7 +581,7 @@ body {
 
 .depoimentos-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 75px;
     align-items: stretch;
 }
@@ -543,7 +628,7 @@ body {
 
 .depoimento-destaque {
     font-family: 'Roboto Condensed', sans-serif;
-    font-size: 26px;
+    font-size: 32.5px;
     font-weight: 700;
     line-height: 1.35;
     color: #000;
@@ -552,7 +637,7 @@ body {
 
 .depoimento-texto {
     flex: 1;
-    font-size: 16px;
+    font-size: 18.4px;
     line-height: 1.6;
     color: #444;
     margin-bottom: 15px;
@@ -687,7 +772,7 @@ body {
     }
 
     .depoimento-destaque {
-        font-size: 28px;
+        font-size: 35px;
     }
 
     .depoimento-foto {
@@ -700,7 +785,7 @@ body {
     }
 
     .depoimento-texto {
-        font-size: 17px;
+        font-size: 19.55px;
     }
 }
 
@@ -755,6 +840,33 @@ body {
     }
 
     .lado-a-lado-esquerda .frase-meio-impactante {
+        text-align: center;
+    }
+
+    .secao-sobre-mim {
+        padding-top: 29px;
+    }
+
+    .secao-lado-a-lado {
+        padding-bottom: 8px;
+    }
+
+    .fotos-livro-section {
+        padding-top: 5px;
+    }
+
+    .fotos-livro-grid {
+        width: 90%;
+        gap: 14px;
+    }
+
+    .sobre-mim-container {
+        flex-direction: column-reverse;
+        gap: 30px;
+        width: 90%;
+    }
+
+    .sobre-mim-texto .frase-meio-impactante {
         text-align: center;
     }
 

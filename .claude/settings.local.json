@@ -46,7 +46,15 @@
       "Bash(curl -s -o /dev/null -w \"status=%{http_code}\\\\n\" http://localhost:3000/login)",
       "Bash(npm --version)",
       "Bash(npm install *)",
-      "Bash(openssl rand *)"
+      "Bash(openssl rand *)",
+      "Bash(awk -F: '$1 > 3845')",
+      "WebFetch(domain:observatoriocc.org)",
+      "Read(//private/tmp/**)",
+      "Bash(curl -sL -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 Chrome/120 Safari/537.36\" \"https://observatoriocc.org/pesquisa/01-from-order-to-chaos/\" -o page.html -w \"HTTP %{http_code} | final_url=%{url_effective} | redirects=%{num_redirects} | size=%{size_download}\\\\n\")",
+      "Bash(cp /Users/eduardoamuri/Desktop/codigo-v3/meu-codigo/site-livro/index-livro.html /Users/eduardoamuri/Desktop/codigo-v3/meu-codigo/site-livro/index-livro-backJun.html && echo \"Backup criado\")"
+    ],
+    "additionalDirectories": [
+      "/Users/eduardoamuri/Desktop/codigo-v3/meu-codigo/site-livro"
     ]
   }
 }

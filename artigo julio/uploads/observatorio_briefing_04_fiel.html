@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Observatório · Briefing 04 · Da ordem ao caos</title>
+<meta name="description" content="Tradução fiel do artigo de Leandro e Botelho (JCR, 2025) sobre a trajetória de consumidores superendividados — da ordem ao caos, com riscos que escalam.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+
+<style>
+/* === RESET === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* === DESIGN TOKENS === */
+:root {
+  --clay: #D96B3D;
+  --forest: #1A2419;
+  --bone: #EEE6D6;
+  --rust: #8A2F1D;
+  --moss: #4A5D3A;
+  --forest-90: rgba(26,36,25,0.9);
+  --forest-70: rgba(26,36,25,0.7);
+  --forest-55: rgba(26,36,25,0.55);
+  --forest-30: rgba(26,36,25,0.3);
+  --forest-15: rgba(26,36,25,0.15);
+  --forest-08: rgba(26,36,25,0.08);
+  --forest-04: rgba(26,36,25,0.04);
+  --bone-90: rgba(238,230,214,0.9);
+  --bone-70: rgba(238,230,214,0.7);
+  --bone-50: rgba(238,230,214,0.5);
+  --bone-15: rgba(238,230,214,0.15);
+  --moss-15: rgba(74,93,58,0.15);
+  --moss-08: rgba(74,93,58,0.08);
+
+  --font-mono: 'Space Mono', ui-monospace, 'Courier New', monospace;
+  --font-sans: 'Space Grotesk', system-ui, sans-serif;
+  --font-display: 'Playfair Display', 'Georgia', serif;
+
+  --max-w: 1200px;
+  --col-w: 680px;
+}
+
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: var(--forest);
+  background: var(--bone);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* === UTILS === */
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+.col {
+  max-width: var(--col-w);
+  margin: 0 auto;
+}
+
+/* === NAV === */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bone);
+  border-bottom: 0.5px solid var(--forest-15);
+  backdrop-filter: blur(8px);
+  background: rgba(238,230,214,0.92);
+}
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 1.1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: var(--forest);
+}
+.brand svg { width: 32px; height: 32px; flex-shrink: 0; }
+.brand-name {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+.brand-name .dot { color: var(--clay); }
+.nav-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+@media (max-width: 640px) {
+  .nav-meta { display: none; }
+}
+
+/* === HERO === */
+.hero {
+  background: var(--forest);
+  color: var(--bone);
+  padding: 5rem 0 6rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 4rem;
+}
+.hero-mark {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+.hero-mark svg { width: 130px; height: 104px; }
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-align: center;
+  max-width: 920px;
+  margin: 0 auto 1.5rem;
+}
+.hero-lede {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  line-height: 1.55;
+  text-align: center;
+  max-width: 660px;
+  margin: 0 auto;
+  opacity: 0.88;
+}
+.hero-byline {
+  margin-top: 3rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+/* === SECTION === */
+section {
+  padding: 6rem 0;
+  position: relative;
+}
+.section-bone { background: var(--bone); color: var(--forest); }
+.section-forest { background: var(--forest); color: var(--bone); }
+.section-rust { background: var(--rust); color: var(--bone); }
+.section-clay { background: var(--clay); color: var(--forest); }
+
+.section-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.section-rust .section-tag,
+.section-forest .section-tag { color: var(--clay); }
+
+.section-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  margin-bottom: 2rem;
+}
+.section-intro {
+  font-family: var(--font-sans);
+  font-size: 1.2rem;
+  line-height: 1.55;
+  font-weight: 300;
+  margin-bottom: 3rem;
+  max-width: 620px;
+  opacity: 0.88;
+}
+
+/* === BODY TEXT === */
+p.body {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+  max-width: var(--col-w);
+}
+.section-rust p.body, .section-forest p.body { opacity: 0.92; }
+
+em.it { font-style: italic; font-family: var(--font-display); }
+.b { font-weight: 500; }
+
+/* === STATS === */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem 3rem;
+  margin: 3rem 0;
+}
+.stat {
+  border-top: 1.5px solid currentColor;
+  padding-top: 1rem;
+}
+.stat-num {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 5vw, 3.4rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.6rem;
+}
+.stat-unit {
+  font-size: 0.55em;
+  opacity: 0.65;
+  margin-left: 0.1em;
+}
+.stat-label {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  opacity: 0.78;
+}
+
+/* === PULL QUOTE === */
+blockquote.pull {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.4rem, 2.6vw, 1.85rem);
+  line-height: 1.35;
+  margin: 3rem 0 2rem;
+  padding-left: 2rem;
+  border-left: 3px solid var(--moss);
+  max-width: 760px;
+}
+blockquote.pull cite {
+  display: block;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-top: 1.2rem;
+  color: var(--moss);
+}
+
+/* === TRAJECTORY DIAGRAM === */
+.traj-axis {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  margin: 2.5rem 0 1.5rem;
+  position: relative;
+}
+.traj-axis::before {
+  content: '';
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 50%;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.25;
+}
+.traj-dot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  z-index: 1;
+}
+.traj-dot-circle {
+  width: 14px; height: 14px;
+  background: var(--moss);
+  border-radius: 50%;
+}
+.traj-dot:nth-child(2) .traj-dot-circle {
+  width: 18px; height: 18px;
+  background: var(--clay);
+}
+.traj-dot:nth-child(3) .traj-dot-circle {
+  width: 22px; height: 22px;
+  background: var(--rust);
+}
+.traj-dot:first-child { align-items: flex-start; }
+.traj-dot:last-child { align-items: flex-end; }
+.traj-dot:first-child .traj-dot-circle { margin-left: 0; }
+.traj-dot:last-child .traj-dot-circle { margin-right: 0; }
+.traj-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.traj-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+@media (max-width: 760px) {
+  .traj-grid { grid-template-columns: 1fr; }
+  .traj-axis { display: none; }
+}
+.traj-stage {
+  background: var(--bone);
+  border-radius: 12px;
+  padding: 1.75rem 1.5rem;
+  position: relative;
+}
+.traj-stage.s1 { background: var(--moss-15); }
+.traj-stage.s2 { background: rgba(217,107,61,0.16); }
+.traj-stage.s3 { background: rgba(138,47,29,0.2); }
+.traj-stage-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 0.75rem;
+}
+.traj-stage h3 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.55rem;
+  line-height: 1.1;
+  margin-bottom: 1.25rem;
+}
+.traj-stage ul { list-style: none; }
+.traj-stage li {
+  padding: 0.6rem 0;
+  border-top: 0.5px solid var(--forest-15);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+.traj-stage li:first-child { border-top: none; }
+.traj-stage li strong {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 0.2rem;
+}
+
+.callout {
+  background: var(--forest);
+  color: var(--bone);
+  padding: 1.75rem 2rem;
+  border-radius: 10px;
+  margin-top: 2rem;
+}
+.callout.callout-moss {
+  background: var(--moss);
+  color: var(--bone);
+}
+.callout-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 0.75rem;
+}
+.callout.callout-moss .callout-label {
+  color: rgba(238,230,214,0.7);
+}
+.callout p {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+/* === SEVEN PROPERTIES === */
+.props {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+.prop {
+  background: var(--moss-08);
+  border-radius: 10px;
+  padding: 1.5rem 1.4rem;
+  border-left: 3px solid var(--moss);
+}
+.prop-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 0.5rem;
+}
+.prop h4 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 1.1rem;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+.prop p {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  opacity: 0.78;
+}
+
+/* === FOUR FORCES === */
+.forces { margin-top: 2.5rem; }
+.force {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 1.25rem;
+  padding: 1.75rem 0;
+  border-top: 0.5px solid var(--forest-15);
+  align-items: start;
+}
+.force:last-child { border-bottom: 0.5px solid var(--forest-15); }
+.force-num {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  opacity: 0.5;
+  padding-top: 0.25rem;
+}
+.force h3 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 1.4rem;
+  line-height: 1.2;
+  margin-bottom: 0.6rem;
+}
+.force p {
+  font-size: 1rem;
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+/* === FOUR DIMENSIONS === */
+.dims {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+}
+.dim {
+  background: var(--moss-08);
+  border-radius: 12px;
+  padding: 1.75rem 1.6rem;
+  border-left: 3px solid var(--moss);
+}
+.dim-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 0.6rem;
+}
+.dim h3 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.5rem;
+  line-height: 1.15;
+  margin-bottom: 0.85rem;
+}
+.dim > p {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  opacity: 0.85;
+  margin-bottom: 1rem;
+}
+.dim-voice {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.4;
+  padding-top: 1rem;
+  border-top: 0.5px solid var(--forest-15);
+}
+.dim-source {
+  display: block;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-top: 0.6rem;
+  color: var(--moss);
+}
+
+/* === RUST SECTION SYNTHESIS BOX === */
+.synthesis {
+  background: rgba(238,230,214,0.12);
+  border-left: 3px solid var(--clay);
+  border-radius: 0 10px 10px 0;
+  padding: 1.75rem 2rem;
+  margin: 2.5rem 0;
+}
+.synthesis-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 0.75rem;
+}
+.synthesis p {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.35rem;
+  line-height: 1.35;
+}
+
+/* === RECOMMENDATIONS TABLE === */
+.recs { margin-top: 2.5rem; }
+.rec {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 1.5rem 0;
+  border-top: 0.5px solid var(--forest-15);
+  align-items: start;
+}
+.rec:last-child { border-bottom: 0.5px solid var(--forest-15); }
+@media (max-width: 760px) {
+  .rec { grid-template-columns: 1fr; gap: 1rem; padding: 1.5rem 0; }
+}
+.rec-col-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.rec-problem {
+  font-size: 0.98rem;
+  line-height: 1.55;
+  opacity: 0.78;
+}
+.rec-response {
+  font-size: 0.98rem;
+  line-height: 1.55;
+  font-weight: 500;
+  color: var(--rust);
+}
+
+/* === SIGNALS === */
+.signals { margin-top: 2.5rem; }
+.signal {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-top: 0.5px solid var(--forest-15);
+  align-items: baseline;
+}
+.signal:last-child { border-bottom: 0.5px solid var(--forest-15); }
+.signal-num {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  opacity: 0.5;
+}
+.signal-text {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+.signal-text strong { font-weight: 500; }
+
+/* === CLOSING === */
+.closing {
+  text-align: left;
+}
+.closing-quote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.15;
+  margin-bottom: 2rem;
+  max-width: 880px;
+}
+.closing-source {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* === FOOTER === */
+.footer {
+  background: var(--forest);
+  color: var(--bone);
+  padding: 4rem 0 3rem;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 4rem;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .footer-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+}
+.footer-brand .brand-name { font-size: 1.1rem; }
+.footer-tagline {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  opacity: 0.75;
+  margin-top: 1.25rem;
+  max-width: 280px;
+}
+.footer-tagline .b { font-weight: 500; }
+.footer-ref-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 1rem;
+}
+.footer-ref {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  opacity: 0.82;
+}
+.footer-ref em { font-style: italic; }
+.footer-ref a {
+  color: var(--clay);
+  text-decoration: none;
+  border-bottom: 0.5px solid var(--clay);
+}
+.footer-ref a:hover { opacity: 0.8; }
+.footer-bottom {
+  margin-top: 3rem;
+  padding-top: 1.75rem;
+  border-top: 0.5px solid var(--bone-15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+@media (max-width: 540px) {
+  .footer-bottom { flex-direction: column; gap: 1rem; align-items: flex-start; }
+}
+
+/* === BACK-TO-TOP === */
+.totop {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--bone);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  z-index: 40;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+}
+.totop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.totop:hover { background: var(--clay); }
+
+/* === READING PROGRESS BAR === */
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: var(--clay);
+  z-index: 100;
+  transition: width 0.05s linear;
+}
+
+/* === RESPONSIVE TWEAKS === */
+@media (max-width: 640px) {
+  .wrap { padding: 0 1.25rem; }
+  section { padding: 4rem 0; }
+  .hero { padding: 3rem 0 4rem; }
+  .stats { gap: 1.5rem; }
+  blockquote.pull { padding-left: 1.25rem; margin: 2rem 0; }
+  .force { grid-template-columns: 1fr; gap: 0.5rem; padding: 1.25rem 0; }
+  .signal { grid-template-columns: 40px 1fr; padding: 1rem 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- === PROGRESS BAR === -->
+<div class="progress" id="progress"></div>
+
+<!-- === NAV === -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="brand">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="50" cy="50" r="28" fill="none" stroke="currentColor" stroke-width="3"/>
+        <circle cx="56" cy="42" r="6" fill="#D96B3D"/>
+        <path d="M 14 64 C 30 63, 50 65, 86 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-name">observatório<span class="dot">.</span></span>
+    </a>
+    <span class="nav-meta">Briefing 04 · Tradução fiel</span>
+  </div>
+</nav>
+
+<!-- === HERO === -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-meta">
+      <span>Briefing 04 · 2026</span>
+      <span>Tradução de pesquisa</span>
+    </div>
+
+    <div class="hero-mark">
+      <svg viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="250" cy="200" r="100" fill="none" stroke="#EEE6D6" stroke-width="4"/>
+        <circle cx="272" cy="168" r="20" fill="#D96B3D"/>
+        <path d="M 70 248 C 130 244, 190 253, 250 250 S 370 244, 430 250" fill="none" stroke="#EEE6D6" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <div class="hero-eyebrow">Superendividamento · Tradução de pesquisa</div>
+    <h1 class="hero-title">Da ordem ao caos:<br/>como consumidores<br/>perdem o controle.</h1>
+    <p class="hero-lede">
+      Tradução do estudo de Júlio Leandro e Delane Botelho sobre a
+      trajetória de 37 consumidores superendividados em São Paulo —
+      e o que ela ensina sobre os limites da educação financeira
+      individual.
+    </p>
+
+    <div class="hero-byline">
+      Leandro &amp; Botelho · Journal of Consumer Research · 2025
+    </div>
+  </div>
+</header>
+
+<!-- === SECTION 01 — ABERTURA === -->
+<section class="section-bone" id="abertura">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">01 · Abertura</span>
+      <h2 class="section-title">O que o estudo investiga.</h2>
+      <p class="section-intro">
+        Leandro e Botelho examinam como consumidores deixam de ter
+        controle sobre os riscos do crédito e migram para um estado de
+        endividamento crônico, no qual a capacidade de gerenciar a
+        própria situação financeira se desfaz.
+      </p>
+
+      <p class="body">
+        Os autores entrevistaram 37 brasileiros superendividados em
+        São Paulo ao longo de 2018 e 2019, recrutados em um órgão
+        público de defesa do consumidor que oferece programa de
+        renegociação de dívidas. Também observaram seis reuniões de
+        Devedores Anônimos, palestras, seminários e materiais
+        institucionais. O recorte do estudo é amplo: participantes de
+        diferentes classes sociais, idades, profissões e níveis de
+        escolaridade — inclusive consumidores com alta escolaridade e
+        educação financeira formal.
+      </p>
+
+      <p class="body">
+        O argumento central dos autores é que pesquisas anteriores sobre
+        risco em consumo costumam estudar pessoas que conseguem manejar
+        bem situações de risco — paraquedistas, praticantes de esportes
+        radicais, mulheres em comunidades de derby roller. Sobre
+        consumidores que <em class="it">perdem</em> controle dos
+        riscos, e sobre o que acontece com sua identidade quando isso
+        ocorre, sabia-se pouco. É essa lacuna que o estudo se propõe
+        a preencher.
+      </p>
+    </div>
+
+    <div class="col">
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-num">76,1<span class="stat-unit">%</span></div>
+          <div class="stat-label">das famílias brasileiras tinham alguma dívida em janeiro de 2025 (CNC).</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">73,5<span class="stat-unit"> mi</span></div>
+          <div class="stat-label">de brasileiros estavam inadimplentes em dezembro de 2024 (Serasa Experian).</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">27,9<span class="stat-unit">%</span></div>
+          <div class="stat-label">da renda das famílias era destinada a serviço da dívida em 2022 — em 2005, eram 18% (Banco Central).</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">59,5<span class="stat-unit">%</span></div>
+          <div class="stat-label">dos participantes do estudo perderam emprego, renda ou tiveram diminuição de renda como ponto de partida do problema.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION 02 — CONCEITO CENTRAL === -->
+<section class="section-bone" id="conceito" style="padding-top:2rem;">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">02 · Conceito central</span>
+      <h2 class="section-title">Espiral descendente<br/>com riscos que escalam.</h2>
+
+      <p class="body">
+        A literatura existente sobre risco em consumo, segundo os autores,
+        descreve sobretudo pessoas que <em class="it">buscam</em>
+        riscos deliberadamente e desenvolvem habilidades para
+        controlá-los. O conceito que sintetiza isso é
+        <em class="it">edgework</em> (Lyng, 1990): um tipo de tomada de
+        risco voluntária na qual o indivíduo negocia a fronteira entre
+        ordem e caos sem cair nele.
+      </p>
+
+      <p class="body">
+        O superendividamento, dizem Leandro e Botelho, é o oposto. Os
+        consumidores não buscam o risco: ele escala em torno deles, e
+        quando percebem já não conseguem mais negociar a borda. Os autores
+        propõem o conceito de <strong>spiraling down with escalating
+        risks</strong> — uma descida progressiva e desorientadora, marcada
+        por vulnerabilidade que se acumula em domínios emocionais,
+        simbólicos e materiais.
+      </p>
+
+      <blockquote class="pull">
+        "Imagine um tsunami: você está no meio dele, e tudo está indo
+        para todo lado. E você quer sair, então luta, tenta escapar de
+        um ponto, acaba em outro, tentando sair. Você reza pra acabar.
+        Vai acabar uma hora — e se você sair vivo, ótimo."
+        <cite>Luke · participante do estudo · superendividado</cite>
+      </blockquote>
+
+      <p class="body">
+        Esse contraste — edgework de um lado, spiraling down de outro —
+        é a contribuição teórica central do artigo. Onde a literatura
+        anterior mostrava o consumidor mostly in control, este estudo
+        mostra o que acontece quando o controle se perde.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION 03 — SETE PROPRIEDADES === -->
+<section class="section-bone" id="anatomia" style="padding-top:2rem;">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">03 · Anatomia do risco</span>
+      <h2 class="section-title">As sete propriedades dos riscos que escalam.</h2>
+      <p class="section-intro">
+        A partir dos dados, os autores caracterizam os riscos do
+        superendividamento com sete condições — uma proposta de conceito
+        que vai além da literatura existente sobre risco em consumo.
+      </p>
+    </div>
+
+    <div class="props">
+      <div class="prop">
+        <div class="prop-num">Propriedade 01</div>
+        <h4>Complexo</h4>
+        <p>Multicausal — ameaça produzir múltiplos efeitos adversos.</p>
+      </div>
+      <div class="prop">
+        <div class="prop-num">Propriedade 02</div>
+        <h4>Dinâmico</h4>
+        <p>Muda de natureza com o tempo: transforma-se de risco normalizado e socialmente aprovado em risco disfuncional e estigmatizado, revelando-se ao consumidor de forma gradual e contínua.</p>
+      </div>
+      <div class="prop">
+        <div class="prop-num">Propriedade 03</div>
+        <h4>Ambíguo</h4>
+        <p>Incerto, difícil de interpretar, subjetivamente percebido.</p>
+      </div>
+      <div class="prop">
+        <div class="prop-num">Propriedade 04</div>
+        <h4>Imprevisível</h4>
+        <p>Sua capacidade de aumentar e se transformar torna quase impossível avaliar com precisão tanto os desfechos adversos quanto suas probabilidades. Exige que o consumidor improvise com informação limitada e memória semi-confiável.</p>
+      </div>
+      <div class="prop">
+        <div class="prop-num">Propriedade 05</div>
+        <h4>Severo</h4>
+        <p>Tem potencial de causar dano ao bem-estar (Campbell et al., 2020).</p>
+      </div>
+      <div class="prop">
+        <div class="prop-num">Propriedade 06</div>
+        <h4>Metastático</h4>
+        <p>Capacidade de se espalhar para diferentes arenas de risco e domínios da vida.</p>
+      </div>
+      <div class="prop">
+        <div class="prop-num">Propriedade 07</div>
+        <h4>Psicologicamente próximo</h4>
+        <p>Pela proximidade com quem experimenta seus efeitos e pelo envolvimento sentido (Campbell et al., 2020).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION 04 — TRAJETÓRIA === -->
+<section class="section-bone" id="trajetoria" style="padding-top:2rem;">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">04 · Trajetória de transição</span>
+      <h2 class="section-title">Três estágios:<br/>ordem, entremeio, caos.</h2>
+      <p class="section-intro">
+        Os autores caracterizam a trajetória dos consumidores em três
+        estágios contínuos e sobrepostos. A tabela abaixo replica a
+        síntese apresentada pelos autores (Tabela 3 do artigo).
+      </p>
+    </div>
+
+    <div class="traj-axis" aria-hidden="true">
+      <div class="traj-dot">
+        <div class="traj-dot-circle"></div>
+        <div class="traj-label">Risco baixo</div>
+      </div>
+      <div class="traj-dot">
+        <div class="traj-dot-circle"></div>
+        <div class="traj-label">Risco médio e crescente</div>
+      </div>
+      <div class="traj-dot">
+        <div class="traj-dot-circle"></div>
+        <div class="traj-label">Risco alto</div>
+      </div>
+    </div>
+
+    <div class="traj-grid">
+      <div class="traj-stage s1">
+        <div class="traj-stage-num">Order Stage</div>
+        <h3>Ordem.</h3>
+        <ul>
+          <li><strong>Sentido de controle</strong>Sensação de controle</li>
+          <li><strong>Emoções</strong>Estáveis e controladas</li>
+          <li><strong>Identidade</strong>Afirmativa e autônoma</li>
+          <li><strong>Esforço de mitigação</strong>Baixo — não há necessidade percebida</li>
+          <li><strong>Segurança ontológica</strong>Presente e estável</li>
+          <li><strong>Metáfora</strong>"Ordem"</li>
+        </ul>
+      </div>
+
+      <div class="traj-stage s2">
+        <div class="traj-stage-num">In-between Stage</div>
+        <h3>Entremeio.</h3>
+        <ul>
+          <li><strong>Sentido de controle</strong>Sensação de estar perdendo o controle</li>
+          <li><strong>Emoções</strong>Ansiedade emergente</li>
+          <li><strong>Identidade</strong>Enfraquecendo</li>
+          <li><strong>Esforço de mitigação</strong>Tentando gerenciar e mitigar (sem sucesso)</li>
+          <li><strong>Segurança ontológica</strong>Sentido de perda de segurança</li>
+          <li><strong>Metáfora</strong>"Snowballing" (bola de neve)</li>
+        </ul>
+      </div>
+
+      <div class="traj-stage s3">
+        <div class="traj-stage-num">Chaos Stage</div>
+        <h3>Caos.</h3>
+        <ul>
+          <li><strong>Sentido de controle</strong>Sentimentos crônicos de não controle</li>
+          <li><strong>Emoções</strong>Tempestade de emoções negativas</li>
+          <li><strong>Identidade</strong>Diminuída e depreciada</li>
+          <li><strong>Esforço de mitigação</strong>Baixo — passividade e desistência</li>
+          <li><strong>Segurança ontológica</strong>Majoritariamente perdida (ansiedade existencial)</li>
+          <li><strong>Metáfora</strong>"Rock bottom" (fundo do poço)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-moss">
+      <div class="callout-label">Conceito-chave</div>
+      <p>
+        "Segurança ontológica", termo usado por Giddens (1991) e
+        retomado pelos autores, refere-se ao estado mental estável que
+        decorre da percepção de continuidade dos eventos da vida.
+        Ela está presente na Ordem, se perde no Entremeio, e está
+        majoritariamente ausente no Caos.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION 05 — QUATRO FATORES AGRAVANTES === -->
+<section class="section-bone" id="forcas" style="padding-top:2rem;">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">05 · Fatores agravantes</span>
+      <h2 class="section-title">Quatro fatores que levam<br/>do médio ao alto risco.</h2>
+      <p class="section-intro">
+        Os autores identificam quatro fatores críticos que movem o
+        consumidor para níveis mais altos de risco. Eles agem combinados,
+        e o consumidor não necessariamente percebe sua ocorrência ou
+        impacto enquanto estão atuando.
+      </p>
+
+      <div class="forces">
+        <div class="force">
+          <div class="force-num">01</div>
+          <div>
+            <h3>Eventos múltiplos simultâneos.</h3>
+            <p>
+              A ocorrência simultânea de vários eventos precipitantes
+              agrava a situação de risco. Os autores citam exemplos do
+              estudo: John começa uma construção, faz um empréstimo, então
+              seu parceiro adoece e perde o emprego, e ele passa a pagar
+              sozinho dívidas calculadas para a renda dos dois;
+              paralelamente, o sogro também adoece, gerando despesas
+              médicas adicionais. O caráter multifacetado do
+              superendividamento, observam Leandro e Botelho, faz com
+              que nenhum conjunto único de fatores (econômico,
+              situacional ou psicológico) seja suficiente para explicá-lo.
+            </p>
+          </div>
+        </div>
+
+        <div class="force">
+          <div class="force-num">02</div>
+          <div>
+            <h3>Efeitos do estigma.</h3>
+            <p>
+              No Brasil, devedores cujos registros de insolvência são
+              reportados aos birôs de crédito nacionais são considerados
+              "maus pagadores" e referidos como consumidores com "nome
+              sujo" — termo que, segundo a literatura citada pelos
+              autores, marca uma posição estigmatizada de
+              semi-marginalidade. Marcados pela vergonha, os
+              participantes tentam esconder o problema de família,
+              amigos e profissionais especializados, e tentam resolver
+              sozinhos. Para evitar a inadimplência, frequentemente
+              contraem novas dívidas para pagar antigas, postergando e
+              ampliando o problema.
+            </p>
+          </div>
+        </div>
+
+        <div class="force">
+          <div class="force-num">03</div>
+          <div>
+            <h3>Ilusão de controle.</h3>
+            <p>
+              Com a ilusão de controle (Langer, 1975), os indivíduos
+              tendem a considerar que sua probabilidade de sucesso é
+              mais alta do que realmente é. Os participantes acreditam
+              que conseguirão resolver depois, e enquanto for possível
+              transferir um crédito para outro, permanecem com a
+              percepção de que ainda estão "deste lado da linha", como
+              descreve uma conselheira financeira citada no artigo.
+            </p>
+          </div>
+        </div>
+
+        <div class="force">
+          <div class="force-num">04</div>
+          <div>
+            <h3>Autoengano (self-denial).</h3>
+            <p>
+              Processo no qual o consumidor nega para si mesmo a
+              gravidade da situação. Os autores observam paralelo com
+              fenômenos descritos em outras áreas — como pacientes com
+              câncer de mama que negam a doença e resistem ao
+              tratamento (Phelan et al., 1992), ou pacientes com
+              transtornos alimentares que se recusam a se revelar em
+              contextos pessoais (Vandereycken e Van Humbeeck, 2008).
+              Quando o consumidor finalmente reconhece a situação, já
+              está bem além do ponto em que poderia recuperar o
+              controle.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION 06 — QUATRO DIMENSÕES === -->
+<section class="section-bone" id="dimensoes" style="padding-top:2rem;">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">06 · Experiência do caos</span>
+      <h2 class="section-title">Quatro dimensões<br/>da narrativa de caos.</h2>
+      <p class="section-intro">
+        Apoiados na conceitualização de "narrativas de caos" de Arthur
+        Frank (1998, 2013), os autores identificam quatro elementos-chave
+        da experiência vivida pelos participantes no estágio de Caos.
+      </p>
+    </div>
+
+    <div class="dims">
+      <div class="dim">
+        <div class="dim-num">Dimensão 01</div>
+        <h3>Espancamento emocional<br/><span style="opacity:0.55;font-size:0.8em;">(emotional battering)</span></h3>
+        <p>
+          Quando percebem que perderam o controle, os consumidores
+          relatam uma barragem de emoções negativas: arrependimento,
+          ressentimento, autocensura, opressão, medo, desespero e
+          pânico. Os autores citam evidências da literatura associando
+          endividamento a tentativas de suicídio (Richardson et al.,
+          2013; Turunen e Hiilamo, 2014), problemas com álcool, dependência
+          de drogas e transtornos neuróticos e psicóticos.
+        </p>
+        <div class="dim-voice">
+          "Eu já pensei até em me matar. Eu sentia desespero em minha
+          casa, quebrei muitas coisas de desespero."
+          <span class="dim-source">Angela · participante do estudo</span>
+        </div>
+      </div>
+
+      <div class="dim">
+        <div class="dim-num">Dimensão 02</div>
+        <h3>Desmoronar do mundo<br/><span style="opacity:0.55;font-size:0.8em;">(unmaking the world)</span></h3>
+        <p>
+          A vida dos superendividados começa a desmoronar. O problema
+          financeiro original se espalha para outros domínios da vida,
+          como metástase. Frank denomina isso de
+          <em class="it">unmaking of the person's world</em>: uma
+          sobredeterminação da situação em que o caos atinge profundidades
+          insondáveis, problemas se multiplicam e tudo parece dar errado.
+        </p>
+        <div class="dim-voice">
+          "Eu fui ficando pior, pior, pior, até o momento em que me
+          encontrei no fundo do poço."
+          <span class="dim-source">Louis · participante do estudo</span>
+        </div>
+      </div>
+
+      <div class="dim">
+        <div class="dim-num">Dimensão 03</div>
+        <h3>Vivendo no imediato<br/><span style="opacity:0.55;font-size:0.8em;">(living on immediacy)</span></h3>
+        <p>
+          O indivíduo imerso no caos é tomado pelo presente e pelo
+          imediato (Frank, 1998, 2013). Uma narrativa coerente exige
+          passado, presente e futuro, mas narrativas de caos — com seus
+          buracos, silêncios e interrupções — carecem de qualquer busca
+          por propósito ou senso de futuro.
+        </p>
+        <div class="dim-voice">
+          "Minha preocupação com a dívida consome 99% do meu tempo. De
+          manhã, à noite, nos sonhos. Não há outros pensamentos."
+          <span class="dim-source">Sandra · participante do estudo</span>
+        </div>
+      </div>
+
+      <div class="dim">
+        <div class="dim-num">Dimensão 04</div>
+        <h3>Perda de consumo e subsistência ameaçada<br/><span style="opacity:0.55;font-size:0.8em;">(loss of consumption and threatened subsistence)</span></h3>
+        <p>
+          Mesmo após cortes drásticos, o déficit persiste. Os
+          consumidores adaptam-se a um padrão de vida que exclui lazer,
+          consumo compensatório ou supérfluo. Devido à inadimplência,
+          frequentemente perdem acesso a produtos de crédito (cartões,
+          cheque especial), o que dificulta ainda mais a situação. O
+          resultado é uma vida que beira a subsistência.
+        </p>
+        <div class="dim-voice">
+          "Eu não tenho nem dinheiro para comprar um par de óculos
+          [ou] consertar meus dentes. Meu dente está quebrado. Não
+          tenho dinheiro; eu só pago contas. Eu vivo para pagar contas."
+          <span class="dim-source">Mary · participante do estudo</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION 07 — RUST · RESPONSABILIZAÇÃO === -->
+<section class="section-rust" id="responsabilizacao">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">07 · Crítica à responsabilização</span>
+      <h2 class="section-title" style="color:var(--bone);">Responsabilidade pessoal<br/>não pode ser exercida<br/>de dentro do caos.</h2>
+      <p class="section-intro">
+        Esta seção sintetiza o argumento crítico que Leandro e Botelho
+        constroem na discussão do artigo, sobre os limites do discurso
+        dominante de responsabilização do consumidor.
+      </p>
+
+      <p class="body">
+        A maioria dos participantes do estudo demonstrava senso de
+        responsabilidade pessoal — começaram como consumidores
+        autônomos que tomaram crédito no mercado e se sentiam
+        responsáveis por suas dívidas. As sociedades contemporâneas de
+        orientação ocidental, observam os autores, valorizam normas
+        culturais de responsabilidade pessoal, controle e
+        autogerenciamento, segundo as quais os indivíduos devem
+        assumir as rédeas da própria vida (Fischer, Otnes e Tuncay,
+        2007; Wong e King, 2008).
+      </p>
+
+      <p class="body">
+        Essas normas, segundo os autores, exerceram influência
+        ambivalente sobre os participantes: ao mesmo tempo em que
+        incentivaram a tomada de risco, dificultaram a resolução, já
+        que os consumidores tentaram resolver os problemas sozinhos.
+        Quando falharam em quitar as dívidas, sentiram-se responsáveis
+        e foram emocionalmente espancados por sentimentos de fracasso
+        pessoal.
+      </p>
+
+      <p class="body">
+        Pesquisas anteriores citadas pelos autores mostram que
+        obrigações e responsabilidades em torno da dívida do
+        consumidor têm sido deslocadas do Estado e das corporações
+        para os consumidores por discursos dominantes (Giesler e
+        Veresiu, 2014). Esses discursos exigem um consumidor
+        otimizado, racional e financeiramente educado, capaz de
+        gerenciar riscos efetivamente.
+      </p>
+
+      <div class="synthesis">
+        <div class="synthesis-label">Argumento dos autores</div>
+        <p>
+          "Ansiedade não é uma base sólida para ação racional (Beck,
+          1992). Como argumenta Frank (1998, 2013), indivíduos não
+          conseguem exercer responsabilidade pessoal de dentro do caos.
+          [...] As experiências [dos participantes] sublinham uma
+          falha societal crítica em reconhecer que a responsabilidade
+          pessoal não pode ser exercida dentro do caos."
+        </p>
+      </div>
+
+      <p class="body">
+        Os autores argumentam, então, que colocar todo o ônus de
+        evitar o superendividamento sobre o consumidor implica
+        expectativas irrealistas: altos níveis de literacia
+        financeira, monitoramento orçamentário constante, resiliência
+        psicológica diante do estigma, capacidade de antecipar perdas
+        de renda ou aumentos súbitos de despesas, e controle sobre as
+        incertezas da vida.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION 08 — TABELA 4 — INTERVENÇÕES === -->
+<section class="section-bone" id="recomendacoes">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">08 · Intervenções recomendadas</span>
+      <h2 class="section-title">Seis problemas observados,<br/>seis respostas propostas.</h2>
+      <p class="section-intro">
+        Os autores apresentam, na Tabela 4 do artigo, recomendações
+        baseadas em evidência para ajudar consumidores a reconhecer,
+        evitar e manejar riscos que escalam. A tabela abaixo é uma
+        tradução direta dessa Tabela 4.
+      </p>
+    </div>
+
+    <div class="recs">
+      <div class="rec">
+        <div>
+          <span class="rec-col-label">Problema observado</span>
+          <p class="rec-problem">Uso de crédito para suprir necessidades correntes ou complementar renda.</p>
+        </div>
+        <div>
+          <span class="rec-col-label">Resposta sugerida</span>
+          <p class="rec-response">Evitar depender de crédito para subsistência. Usar crédito apenas para fins financeiramente sustentáveis (ex.: investimentos com retorno positivo ou bens essenciais dentro de suas possibilidades).</p>
+        </div>
+      </div>
+
+      <div class="rec">
+        <div>
+          <span class="rec-col-label">Problema observado</span>
+          <p class="rec-problem">Tentativa de resolver problemas de dívida sozinho, por causa do estigma.</p>
+        </div>
+        <div>
+          <span class="rec-col-label">Resposta sugerida</span>
+          <p class="rec-response">Reconhecer o problema cedo. Buscar apoio de pessoas de confiança e instituições especializadas antes que o problema escale.</p>
+        </div>
+      </div>
+
+      <div class="rec">
+        <div>
+          <span class="rec-col-label">Problema observado</span>
+          <p class="rec-problem">Aceitação de riscos desconhecidos e não gerenciáveis por falta de literacia financeira e ilusão de controle.</p>
+        </div>
+        <div>
+          <span class="rec-col-label">Resposta sugerida</span>
+          <p class="rec-response">Tomar apenas riscos compreensíveis e gerenciáveis na eventualidade de surpresas negativas. Evitar risco sob condições de negação ou compreensão limitada.</p>
+        </div>
+      </div>
+
+      <div class="rec">
+        <div>
+          <span class="rec-col-label">Problema observado</span>
+          <p class="rec-problem">Exposição a perda imprevisível de renda e despesas súbitas sem rede de proteção.</p>
+        </div>
+        <div>
+          <span class="rec-col-label">Resposta sugerida</span>
+          <p class="rec-response">Construir reserva de emergência para absorver choques financeiros e reduzir dependência de crédito em momentos vulneráveis.</p>
+        </div>
+      </div>
+
+      <div class="rec">
+        <div>
+          <span class="rec-col-label">Problema observado</span>
+          <p class="rec-problem">Espancamento emocional e caos diminuindo a capacidade de resposta do consumidor.</p>
+        </div>
+        <div>
+          <span class="rec-col-label">Resposta sugerida</span>
+          <p class="rec-response">Buscar apoio psicológico para reconstruir resiliência emocional e recuperar a capacidade de lidar com a pressão financeira.</p>
+        </div>
+      </div>
+
+      <div class="rec">
+        <div>
+          <span class="rec-col-label">Problema observado</span>
+          <p class="rec-problem">Sentir-se sobrecarregado por riscos complexos e compostos.</p>
+        </div>
+        <div>
+          <span class="rec-col-label">Resposta sugerida</span>
+          <p class="rec-response">Engajar advogados e consultores financeiros para navegar processos institucionais e acessar soluções viáveis além do esforço individual.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:3rem;">
+      <div class="callout-label">Observação dos autores</div>
+      <p>
+        Leandro e Botelho argumentam que consumidores precisam de
+        pelo menos três fontes de apoio externo para superar o
+        problema: <strong>orientação financeira, apoio jurídico e apoio
+        psicológico</strong>. Enfrentar o desafio exige engajamento
+        institucional e responsabilidade compartilhada entre
+        formuladores de políticas, reguladores, credores e
+        consumidores.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION 09 — CONTRIBUIÇÕES TEÓRICAS === -->
+<section class="section-bone" id="contribuicoes" style="padding-top:2rem;">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">09 · Contribuições</span>
+      <h2 class="section-title">O que o estudo<br/>contribui para a literatura.</h2>
+      <p class="section-intro">
+        Na discussão, Leandro e Botelho enumeram as contribuições
+        teóricas do trabalho. Esta seção sintetiza as principais.
+      </p>
+
+      <div class="forces" style="margin-top:2.5rem;">
+        <div class="force">
+          <div class="force-num">01</div>
+          <div>
+            <h3>Mostrar o consumidor que perde controle.</h3>
+            <p>
+              Estende a literatura sociocultural sobre risco do
+              consumidor. Enquanto pesquisas anteriores mostram
+              consumidores sobretudo no controle ou negociando com
+              sucesso as fronteiras entre controle e caos, este estudo
+              revela como consumidores perdem o controle dos riscos em
+              uma trajetória descendente e migram da ordem ao caos.
+            </p>
+          </div>
+        </div>
+
+        <div class="force">
+          <div class="force-num">02</div>
+          <div>
+            <h3>Apresentar o conceito de "spiraling down with escalating risks".</h3>
+            <p>
+              Como metáfora descritiva e modelo processual e teórico,
+              que captura como riscos que escalam se acumulam, se
+              compõem e erodem progressivamente o senso de controle do
+              consumidor em domínios emocionais, simbólicos e materiais.
+            </p>
+          </div>
+        </div>
+
+        <div class="force">
+          <div class="force-num">03</div>
+          <div>
+            <h3>Mostrar que o risco pode danificar a identidade do consumidor.</h3>
+            <p>
+              Em relação negativa. Quando derrotados pelos riscos,
+              consumidores experienciam sentimentos de diminuição pessoal,
+              desvalorização e fracasso — em contraste com a literatura
+              anterior, que mostra o risco como recurso para construção
+              positiva de identidade.
+            </p>
+          </div>
+        </div>
+
+        <div class="force">
+          <div class="force-num">04</div>
+          <div>
+            <h3>Estender a literatura sobre crédito e dívida.</h3>
+            <p>
+              Mostrar que mesmo consumidores com alto capital cultural
+              não conseguem encontrar a "trajetória de liberdade" da
+              dívida descrita por Bernthal, Crockett e Rose (2005) e
+              Peñaloza e Barnhart (2011). Consumidores endividados
+              enfrentam estigma, experienciam disfuncionalidade ao não
+              conseguir gerenciar seus riscos com sucesso, e têm suas
+              identidades diminuídas.
+            </p>
+          </div>
+        </div>
+
+        <div class="force">
+          <div class="force-num">05</div>
+          <div>
+            <h3>Engajar criticamente com a literatura sobre responsabilidade pessoal.</h3>
+            <p>
+              Mostra que narrativas dominantes de autonomia e
+              autogerenciamento exercem influência ambivalente: ao
+              mesmo tempo em que encorajam os consumidores a tomar
+              riscos, restringem sua capacidade de gerenciar e se
+              recuperar de consequências adversas. No contexto de
+              riscos que escalam, essas narrativas tornam-se
+              progressivamente irrealistas.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === CLOSING SECTION === -->
+<section class="section-forest" id="fechamento">
+  <div class="wrap">
+    <div class="col closing">
+      <span class="section-tag">Para fechar</span>
+      <p class="closing-quote">
+        "O indivíduo imerso no caos é tomado pelo presente e pelo imediato.<br/>A história do caos não pode ser contada de dentro do caos, apenas retrospectivamente."
+      </p>
+      <div class="closing-source">
+        Arthur Frank (1998, 2013) · citado por Leandro &amp; Botelho
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === FOOTER === -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#top" class="brand" style="color:var(--bone);">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="50" cy="50" r="28" fill="none" stroke="currentColor" stroke-width="3"/>
+            <circle cx="56" cy="42" r="6" fill="#D96B3D"/>
+            <path d="M 14 64 C 30 63, 50 65, 86 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <span class="brand-name">observatório<span class="dot">.</span></span>
+        </a>
+        <div class="footer-tagline">
+          Tradução fiel de pesquisa acadêmica para
+          <span class="b">programas de inclusão, educação e
+          planejamento financeiro</span>.
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-ref-label">Referência completa</div>
+        <p class="footer-ref">
+          Leandro, J. C., &amp; Botelho, D. (2025).
+          <em>From Order to Chaos: How Consumers Lose Control of Risks
+          (and of Themselves).</em> Journal of Consumer Research,
+          52(6), 1149–1171.
+          <a href="https://doi.org/10.1093/jcr/ucaf026" target="_blank" rel="noopener">https://doi.org/10.1093/jcr/ucaf026</a>
+          <br/><br/>
+          O estudo foi realizado com 37 consumidores superendividados
+          em São Paulo, além de conselheiros do ProConsumer e
+          participantes de reuniões de Devedores Anônimos, durante
+          2018 e 2019. Este briefing é uma síntese: para citação
+          acadêmica, consultar o artigo original.
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© Observatório · 2026 · Briefing 04</span>
+      <span>Tradução fiel · Não substitui o original</span>
+    </div>
+  </div>
+</footer>
+
+<!-- === BACK TO TOP === -->
+<a href="#top" class="totop" id="totop" aria-label="Voltar ao topo">↑</a>
+
+<script>
+  // Reading progress bar
+  const progress = document.getElementById('progress');
+  const totop = document.getElementById('totop');
+
+  function onScroll() {
+    const h = document.documentElement;
+    const scrollTop = h.scrollTop || document.body.scrollTop;
+    const scrollHeight = h.scrollHeight - h.clientHeight;
+    const pct = (scrollTop / scrollHeight) * 100;
+    progress.style.width = pct + '%';
+
+    if (scrollTop > 600) {
+      totop.classList.add('visible');
+    } else {
+      totop.classList.remove('visible');
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+</body>
+</html>
