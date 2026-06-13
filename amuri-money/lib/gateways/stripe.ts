@@ -424,6 +424,8 @@ export async function listActiveStripeSubscriptions(): Promise<{
 const BOOK_PRODUCT_NAMES: Record<string, string> = {
   prod_TlI7gCEvvW3wV5: "Dinheiro sem medo — 1 livro",
   prod_TlI4kEHjGA0Sq5: "Dinheiro sem medo — 2 livros",
+  prod_UfVAb3Dqn670EQ: "Dinheiro sem medo — 1 livro",
+  prod_UfVC2HuMwLndEu: "Dinheiro sem medo — 2 livros",
 };
 
 type PaymentIntentExpanded = {
