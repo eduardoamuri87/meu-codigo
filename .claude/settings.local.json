@@ -51,7 +51,14 @@
       "WebFetch(domain:observatoriocc.org)",
       "Read(//private/tmp/**)",
       "Bash(curl -sL -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 Chrome/120 Safari/537.36\" \"https://observatoriocc.org/pesquisa/01-from-order-to-chaos/\" -o page.html -w \"HTTP %{http_code} | final_url=%{url_effective} | redirects=%{num_redirects} | size=%{size_download}\\\\n\")",
-      "Bash(cp /Users/eduardoamuri/Desktop/codigo-v3/meu-codigo/site-livro/index-livro.html /Users/eduardoamuri/Desktop/codigo-v3/meu-codigo/site-livro/index-livro-backJun.html && echo \"Backup criado\")"
+      "Bash(cp /Users/eduardoamuri/Desktop/codigo-v3/meu-codigo/site-livro/index-livro.html /Users/eduardoamuri/Desktop/codigo-v3/meu-codigo/site-livro/index-livro-backJun.html && echo \"Backup criado\")",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1080,1350 --default-background-color=00000000 --screenshot=anuncio-ig.png --virtual-time-budget=4000 file://__TRACKED_VAR__/anuncio-ig.html)",
+      "Bash(echo \"exit: $?\")",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1080,1350 --default-background-color=00000000 --screenshot=anuncio-ig-v2.png --virtual-time-budget=5000 file://__TRACKED_VAR__/anuncio-ig.html?v=2)",
+      "Bash(md5 -q anuncio-ig-v2.png)",
+      "Bash(rm -f anuncio-ig.png anuncio-ig-v2.png ../anuncio-ig-v2.png)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1080,1350 --default-background-color=00000000 --screenshot=\"/Users/eduardoamuri/Desktop/codigo-v3/meu-codigo/site-livro/anuncio-ig.png\" --virtual-time-budget=6000 \"file:///Users/eduardoamuri/Desktop/codigo-v3/meu-codigo/site-livro/anuncio-ig.html\")",
+      "Bash(rm -f anuncio-ig.png)"
     ],
     "additionalDirectories": [
       "/Users/eduardoamuri/Desktop/codigo-v3/meu-codigo/site-livro"

@@ -348,7 +348,22 @@ FIM DO TEXTO ORIGINAL -->
                 popupCompra.classList.remove('active');
             }
         });
-    </script>
+
+        // Repassa todos os parâmetros da URL para os botões de compra (Stripe)
+        (function() {
+            const params = window.location.search;
+            if (!params || params === '?') return;
+
+            const incoming = new URLSearchParams(params);
+            document.querySelectorAll('a[href*="buy.stripe.com"]').forEach(function(link) {
+                const url = new URL(link.href);
+                incoming.forEach(function(value, key) {
+                    url.searchParams.set(key, value);
+                });
+                link.href = url.toString();
+            });
+        })();
+</script>
 
 </body>
 </html>
