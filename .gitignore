@@ -2,3 +2,6 @@
 acessa-iugu/token.js
 acessa-iugu/token.txt
 acessa-iugu/token-stripe.txt
+site-livro/stripe/config.php
+site-livro/stripe/config-example.php
+site-livro/stripe/pedidos.log

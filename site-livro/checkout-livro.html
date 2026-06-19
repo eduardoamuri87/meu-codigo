@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar compra — Dinheiro Sem Medo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Condensed:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <!-- Meta Pixel -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1690349805231152');
+    fbq('track', 'PageView');
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #F7EBE3;
+            color: #333;
+            line-height: 1.6;
+            padding: 30px 20px;
+        }
+        .checkout-wrap {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px 28px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+        }
+        .checkout-titulo {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .checkout-sub { font-size: 15px; color: #777; margin-bottom: 24px; }
+
+        /* Texto de incentivo */
+        .upsell {
+            background: #FDF5F0;
+            border-radius: 10px;
+            padding: 18px 18px 6px;
+            margin-bottom: 18px;
+        }
+        .upsell p { font-size: 16.7px; margin-bottom: 12px; color: #444; }
+        .upsell b { color: #2D8E44; }
+
+        /* Seletor de exemplares */
+        .opcoes { display: flex; flex-direction: column; gap: 12px; margin-bottom: 26px; }
+        .opcao {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 2px solid #E6D9CE;
+            border-radius: 10px;
+            padding: 16px;
+            cursor: pointer;
+            transition: border-color .15s ease, background .15s ease;
+        }
+        .opcao:hover { border-color: #C9B5A6; }
+        .opcao.selecionada { border-color: #34A853; background: #F4FBF6; }
+        .opcao input { position: absolute; opacity: 0; pointer-events: none; }
+        .radio-visual {
+            flex: 0 0 auto;
+            width: 22px; height: 22px;
+            border: 2px solid #C9B5A6;
+            border-radius: 50%;
+            position: relative;
+            transition: border-color .15s ease;
+        }
+        .opcao.selecionada .radio-visual { border-color: #34A853; }
+        .opcao.selecionada .radio-visual::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 11px; height: 11px;
+            background: #34A853;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .opcao-info { flex: 1 1 auto; }
+        .opcao-titulo { font-weight: 700; font-size: 16px; }
+        .opcao-desc { font-size: 13px; color: #777; }
+        .opcao-preco { font-family: 'Roboto Condensed', sans-serif; font-weight: 700; font-size: 20px; white-space: nowrap; }
+        .badge {
+            position: absolute;
+            top: -10px; right: 14px;
+            background: #34A853;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .campo-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #555;
+            margin: 18px 0 8px;
+        }
+        .campo-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #E6E6E6;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            color: #30313d;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+        .campo-input:focus {
+            outline: none;
+            border-color: #34A853;
+            box-shadow: 0 0 0 3px rgba(52,168,83,.15);
+        }
+        .campo-input.invalido { border-color: #df1b41; }
+        .campo-erro { display: none; color: #df1b41; font-size: 13px; margin-top: 6px; }
+        #mensagem-erro {
+            display: none;
+            background: #FDECEA;
+            color: #B71C1C;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+        .total-linha {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+        }
+        .total-rotulo { font-size: 15px; font-weight: 500; }
+        .total-frete { display: block; font-size: 12px; color: #34A853; font-weight: 400; }
+        .total-valor { font-family: 'Roboto Condensed', sans-serif; font-size: 26px; font-weight: 800; }
+        #botao-pagar {
+            width: 100%;
+            margin-top: 18px;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            background: #34A853;
+            color: #fff;
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: .02em;
+            cursor: pointer;
+            transition: background .15s ease, opacity .15s ease;
+        }
+        #botao-pagar:hover { background: #2D8E44; }
+        #botao-pagar:disabled { opacity: .6; cursor: not-allowed; }
+        .spinner {
+            display: inline-block;
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,.5);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: girar .7s linear infinite;
+            vertical-align: middle;
+        }
+        @keyframes girar { to { transform: rotate(360deg); } }
+        .carregando-inicial { text-align: center; color: #999; padding: 40px 0; font-size: 15px; }
+        .seguro { text-align: center; font-size: 12px; color: #999; margin-top: 18px; }
+        .voltar { display: inline-block; margin-bottom: 18px; font-size: 14px; color: #777; text-decoration: none; }
+        .voltar:hover { text-decoration: underline; }
+    </style>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18247939771"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-18247939771');
+</script>
+
+</head>
+<body>
+    <div class="checkout-wrap">
+        <a href="index-livro.html" class="voltar">← voltar</a>
+        <h1 class="checkout-titulo">Logo mais o livro chega aí!</h1>
+        <p class="checkout-sub">Dinheiro Sem Medo · Eduardo Amuri</p>
+
+        <div class="upsell">
+            <p>Acredito, do fundo do coração, que <b>não há nada mais poderoso do que encontrar confidentes financeiros</b>.</p>
+            <p>Presentear alguém pode servir de gancho para que esse aspecto da relação floresça.</p>
+            <p>Se fizer sentido, compre um exemplar para você e outro para um grande amigo. Ele(a) ficará feliz! :)</p>
+        </div>
+
+        <form id="form-pagamento">
+            <div class="opcoes" id="opcoes">
+                <label class="opcao" data-produto="2">
+                    <span class="badge">desconto extra</span>
+                    <input type="radio" name="produto" value="2" checked>
+                    <span class="radio-visual"></span>
+                    <span class="opcao-info">
+                        <span class="opcao-titulo">2 exemplares</span>
+                        <span class="opcao-desc">um pra você, outro pra presentear · frete grátis</span>
+                    </span>
+                    <span class="opcao-preco">R$ 144</span>
+                </label>
+                <label class="opcao" data-produto="1">
+                    <input type="radio" name="produto" value="1">
+                    <span class="radio-visual"></span>
+                    <span class="opcao-info">
+                        <span class="opcao-titulo">1 exemplar</span>
+                        <span class="opcao-desc">só pra mim · frete grátis</span>
+                    </span>
+                    <span class="opcao-preco">R$ 89</span>
+                </label>
+            </div>
+
+            <div id="carregando-inicial" class="carregando-inicial">Preparando o pagamento…</div>
+
+            <div id="campos" style="display:none;">
+                <label class="campo-label">Seu e-mail</label>
+                <div id="link-authentication-element"></div>
+
+                <label class="campo-label">CPF</label>
+                <input type="text" id="cpf" class="campo-input" inputmode="numeric"
+                       placeholder="000.000.000-00" autocomplete="off" maxlength="14">
+                <div id="cpf-erro" class="campo-erro"></div>
+
+                <label class="campo-label">Endereço de entrega</label>
+                <div id="address-element"></div>
+
+                <label class="campo-label">Pagamento</label>
+                <div id="payment-element"></div>
+
+                <div class="total-linha">
+                    <span class="total-rotulo">
+                        Total
+                        <span class="total-frete">✓ frete grátis para todo o Brasil</span>
+                    </span>
+                    <span class="total-valor" id="total-valor">R$ 144</span>
+                </div>
+
+                <button id="botao-pagar" type="submit">
+                    <span id="botao-texto">Pagar agora</span>
+                </button>
+                <p class="seguro">🔒 Pagamento processado com segurança pela Stripe</p>
+            </div>
+
+            <div id="mensagem-erro"></div>
+        </form>
+    </div>
+
+    <script>
+    (function () {
+        // Preços (centavos) espelhados do backend. O backend é a fonte da verdade:
+        // ele revalida o produto e o valor ao criar o PaymentIntent.
+        const PRECOS = { '1': 8900, '2': 14400 };
+
+        // Produto inicial: respeita ?produto=1, senão começa em 2 exemplares.
+        const urlInicial = new URLSearchParams(window.location.search).get('produto');
+        let produto = urlInicial === '1' ? '1' : '2';
+
+        // Captura os parâmetros de rastreio (UTM etc.) que chegaram na URL, para
+        // repassar ao backend (metadata do pagamento) e à página de sucesso.
+        const tracking = {};
+        new URLSearchParams(window.location.search).forEach(function (value, key) {
+            if (key !== 'produto') tracking[key] = value;
+        });
+
+        const erroEl = document.getElementById('mensagem-erro');
+        function mostrarErro(msg) { erroEl.textContent = msg; erroEl.style.display = 'block'; }
+
+        // --- CPF: máscara + validação dos dígitos verificadores ---
+        const cpfInput = document.getElementById('cpf');
+        const cpfErro = document.getElementById('cpf-erro');
+
+        cpfInput.addEventListener('input', function () {
+            let v = cpfInput.value.replace(/\D/g, '').slice(0, 11);
+            v = v.replace(/(\d{3})(\d)/, '$1.$2')
+                 .replace(/(\d{3})(\d)/, '$1.$2')
+                 .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            cpfInput.value = v;
+            cpfInput.classList.remove('invalido');
+            cpfErro.style.display = 'none';
+        });
+
+        function cpfValido(cpf) {
+            cpf = cpf.replace(/\D/g, '');
+            if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+            for (let t = 9; t < 11; t++) {
+                let soma = 0;
+                for (let i = 0; i < t; i++) soma += parseInt(cpf[i], 10) * (t + 1 - i);
+                let digito = ((10 * soma) % 11) % 10;
+                if (digito !== parseInt(cpf[t], 10)) return false;
+            }
+            return true;
+        }
+        function formatarBRL(centavos) {
+            return (centavos / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+        function atualizarTotal() {
+            document.getElementById('total-valor').textContent = formatarBRL(PRECOS[produto]);
+        }
+
+        let stripe, elements;
+
+        // 1) Busca a chave publicável e monta os elementos em modo de criação adiada.
+        fetch('stripe/criar-pagamento.php')
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data.publishableKey) throw new Error('Configuração de pagamento indisponível.');
+
+                stripe = Stripe(data.publishableKey);
+                elements = stripe.elements({
+                    mode: 'payment',
+                    amount: PRECOS[produto],
+                    currency: 'brl',
+                    appearance: {
+                        theme: 'stripe',
+                        variables: {
+                            colorPrimary: '#34A853',
+                            fontFamily: 'Roboto, sans-serif',
+                            borderRadius: '8px'
+                        }
+                    }
+                });
+
+                elements.create('linkAuthentication').mount('#link-authentication-element');
+                elements.create('address', { mode: 'shipping', allowedCountries: ['BR'] })
+                        .mount('#address-element');
+                elements.create('payment').mount('#payment-element');
+
+                document.getElementById('carregando-inicial').style.display = 'none';
+                document.getElementById('campos').style.display = 'block';
+                atualizarTotal();
+
+                if (window.fbq) {
+                    fbq('track', 'InitiateCheckout', { value: PRECOS[produto] / 100, currency: 'BRL' });
+                }
+            })
+            .catch(function (err) {
+                document.getElementById('carregando-inicial').style.display = 'none';
+                mostrarErro(err.message || 'Erro ao iniciar o pagamento. Tente novamente.');
+            });
+
+        // 2) Troca de exemplares: atualiza destaque visual, total e o valor dos elementos.
+        const opcoes = document.querySelectorAll('.opcao');
+        function sincronizarSelecao() {
+            opcoes.forEach(function (op) {
+                const selecionada = op.dataset.produto === produto;
+                op.classList.toggle('selecionada', selecionada);
+                op.querySelector('input').checked = selecionada;
+            });
+        }
+        opcoes.forEach(function (op) {
+            op.addEventListener('click', function () {
+                produto = op.dataset.produto;
+                sincronizarSelecao();
+                atualizarTotal();
+                if (elements) elements.update({ amount: PRECOS[produto] });
+            });
+        });
+        sincronizarSelecao();
+
+        // 3) Pagamento: valida, cria o PaymentIntent no servidor e confirma.
+        const form = document.getElementById('form-pagamento');
+        const botao = document.getElementById('botao-pagar');
+        const botaoTexto = document.getElementById('botao-texto');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (!stripe || !elements) return;
+
+            // Valida o CPF antes de qualquer coisa.
+            const cpf = cpfInput.value.replace(/\D/g, '');
+            if (!cpfValido(cpf)) {
+                cpfInput.classList.add('invalido');
+                cpfErro.textContent = 'Informe um CPF válido.';
+                cpfErro.style.display = 'block';
+                cpfInput.focus();
+                return;
+            }
+
+            erroEl.style.display = 'none';
+            botao.disabled = true;
+            botaoTexto.innerHTML = '<span class="spinner"></span>';
+
+            function falhar(msg) {
+                mostrarErro(msg);
+                botao.disabled = false;
+                botaoTexto.textContent = 'Pagar agora';
+            }
+
+            // Valida os campos dos elementos antes de criar o PaymentIntent.
+            elements.submit().then(function (res) {
+                if (res.error) { falhar(res.error.message); return; }
+
+                // Cria o PaymentIntent no servidor (valor definido lá pelo produto).
+                return fetch('stripe/criar-pagamento.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ produto: produto, cpf: cpf, tracking: tracking })
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.error || !data.clientSecret) {
+                        throw new Error(data.error || 'Não foi possível iniciar o pagamento.');
+                    }
+
+                    const returnUrl = new URL('deu-certo.html', window.location.href);
+                    returnUrl.searchParams.set('valor', (PRECOS[produto] / 100).toFixed(2));
+                    // Repassa os UTMs adiante (o Stripe preserva os params da return_url).
+                    Object.keys(tracking).forEach(function (k) {
+                        returnUrl.searchParams.set(k, tracking[k]);
+                    });
+
+                    return stripe.confirmPayment({
+                        elements: elements,
+                        clientSecret: data.clientSecret,
+                        confirmParams: { return_url: returnUrl.toString() }
+                    });
+                })
+                .then(function (result) {
+                    // Só chega aqui em caso de erro imediato; no sucesso a Stripe redireciona.
+                    if (result && result.error) falhar(result.error.message);
+                });
+            }).catch(function (err) {
+                falhar(err.message || 'Erro ao processar o pagamento. Tente novamente.');
+            });
+        });
+    })();
+    </script>
+</body>
+</html>

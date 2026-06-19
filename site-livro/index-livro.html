@@ -33,6 +33,17 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=1690349805231152&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18247939771"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-18247939771');
+</script>
+
 </head>
 <body>
 
@@ -97,7 +108,7 @@ um livro para aqueles que desejam cultivar uma relação mais saudável com o di
                     <!-- Botão de Compra -->
                     <section class="compra-section">
                         <div class="container">
-                            <a href="#" class="btn-compra" id="btn-compra-principal">Quero comprar o livro →</a>
+                            <a href="checkout-livro.html" class="btn-compra" id="btn-compra-principal">Quero comprar o livro →</a>
                         </div>
                     </section>
 
@@ -221,7 +232,7 @@ FIM DO TEXTO ORIGINAL -->
                 <p>
                     Estou especialmente ansioso para escutar o opinião de vocês sobre o Vidas Possíveis, meu capítulo favorito – escrevi sobre a vida financeira de um grupo de pessoas em 2015-2016 e consegui entrevistá-las novamente agora, quase dez anos depois, para saber o que mudou.
                 </p>
-                <a href="#" class="btn-compra" id="btn-compra-secundario">Quero comprar o livro →</a>
+                <a href="checkout-livro.html" class="btn-compra" id="btn-compra-secundario">Quero comprar o livro →</a>
             </div>
         </div>
     </section>
@@ -316,22 +327,9 @@ FIM DO TEXTO ORIGINAL -->
             }
         });
 
-        // Popup de Compra
-        const btnCompraPrincipal = document.getElementById('btn-compra-principal');
+        // Popup de Compra (mantido no DOM, mas os botões agora vão direto ao checkout)
         const popupCompra = document.getElementById('popup-compra');
         const popupCompraClose = document.getElementById('popup-compra-close');
-
-        btnCompraPrincipal.addEventListener('click', function(e) {
-            e.preventDefault();
-            popupCompra.classList.add('active');
-        });
-
-        // Botão de compra secundário (seção lado a lado)
-        const btnCompraSecundario = document.getElementById('btn-compra-secundario');
-        btnCompraSecundario.addEventListener('click', function(e) {
-            e.preventDefault();
-            popupCompra.classList.add('active');
-        });
 
         popupCompraClose.addEventListener('click', function() {
             popupCompra.classList.remove('active');
@@ -349,13 +347,13 @@ FIM DO TEXTO ORIGINAL -->
             }
         });
 
-        // Repassa todos os parâmetros da URL para os botões de compra (Stripe)
+        // Repassa todos os parâmetros da URL (UTM etc.) para os botões de checkout
         (function() {
             const params = window.location.search;
             if (!params || params === '?') return;
 
             const incoming = new URLSearchParams(params);
-            document.querySelectorAll('a[href*="buy.stripe.com"]').forEach(function(link) {
+            document.querySelectorAll('a[href*="checkout-livro.html"]').forEach(function(link) {
                 const url = new URL(link.href);
                 incoming.forEach(function(value, key) {
                     url.searchParams.set(key, value);
