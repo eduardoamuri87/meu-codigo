@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Convite para a pré-venda da Nossa Formação 2027</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green: #225546;
+      --green-deep: #163a2e;
+      --green-soft: #bbcbb0;
+      --plum: #32292f;
+      --ink: #2b2329;
+      --blush: #feeeee;
+      --blush-2: #f3dbda;
+      --rose: #e6bdc0;
+      --peri: #5762d5;
+      --cream: #fdf7f4;
+      --white: #ffffff;
+      --serif: 'Noto Serif', Georgia, serif;
+      --sans: 'Overpass', system-ui, sans-serif;
+      --radius: 22px;
+      --radius-sm: 14px;
+      --maxw: 880px;
+      --shadow: 0 24px 60px -28px rgba(50,41,47,.35);
+      --shadow-sm: 0 10px 30px -18px rgba(50,41,47,.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { min-height: 100%; }
+    body {
+      font-family: var(--sans);
+      color: var(--ink);
+      background: var(--cream);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    main { flex: 1 0 auto; }
+
+    .wrap {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ---- Header ---- */
+    .nav {
+      padding: 64px 0 28px;
+      text-align: center;
+    }
+    .brand { display: inline-flex; align-items: center; gap: .5em; text-decoration: none; }
+    .brand-logo { display: block; height: 104px; width: auto; }
+    .brand .logo {
+      display: block;
+      width: 92px;
+      height: 38px;
+      background-color: var(--green);
+      -webkit-mask: url("https://cdn.prod.website-files.com/618be446beae2645ce792cba/6242fe8c97f0837b4206bc2e_nossa-branco.png") left center/contain no-repeat;
+      mask: url("https://cdn.prod.website-files.com/618be446beae2645ce792cba/6242fe8c97f0837b4206bc2e_nossa-branco.png") left center/contain no-repeat;
+    }
+
+    /* ---- Página ---- */
+    main { padding: 16px 0 24px; }
+
+    .page-head { margin-bottom: 28px; }
+    .page-head h1 {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: clamp(2.2rem, 6vw, 3.2rem);
+      color: var(--green);
+      line-height: 1.18;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 44px 48px;
+    }
+
+    .prose p {
+      font-size: 1.08rem;
+      color: var(--ink);
+      margin-bottom: 1.15em;
+    }
+    .prose p:last-child { margin-bottom: 0; }
+    .prose strong { font-weight: 700; color: var(--green); }
+    .prose em { font-style: italic; }
+
+    .lead {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 1.69rem !important;
+      color: var(--green) !important;
+      line-height: 1.4;
+    }
+
+    /* Datas em quadradinhos */
+    .dates {
+      list-style: none;
+      margin: 4px 0 1.4em;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .dates li {
+      background: var(--blush);
+      border-radius: var(--radius-sm);
+      padding: 20px 14px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .dates .day {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--green);
+      line-height: 1.2;
+    }
+    .dates .time { font-size: .88rem; opacity: .65; }
+
+    @media (max-width: 560px) {
+      .dates { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .highlight {
+      background: var(--blush);
+      border-radius: var(--radius-sm);
+      padding: 18px 22px;
+      margin-bottom: 1.15em;
+    }
+    .highlight p { margin-bottom: 0; font-family: var(--serif); font-size: 1.15rem; }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      align-items: center;
+      margin-bottom: 1.15em;
+    }
+    .split .highlight { margin-bottom: 0; height: 100%; display: flex; align-items: center; }
+    .split > p { margin-bottom: 0; }
+
+    /* ---- Botão ---- */
+    .cta { margin: 2.8em 0; text-align: center; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .55em;
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 1.33rem;
+      padding: .9em 1.8em;
+      border-radius: 100px;
+      cursor: pointer;
+      border: 0;
+      text-decoration: none;
+      transition: transform .25s ease, box-shadow .25s ease, background .2s ease;
+    }
+    .btn-primary {
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 14px 30px -12px rgba(34,85,70,.6);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px -12px rgba(34,85,70,.7);
+    }
+
+    .signoff {
+      margin-top: 1.6em;
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 1.15rem;
+      color: var(--green);
+    }
+
+    .note {
+      font-size: .98rem;
+      opacity: .75;
+      font-style: italic;
+    }
+
+    /* ---- Footer ---- */
+    footer {
+      background: var(--green-deep);
+      color: #fff;
+      padding: 56px 0 34px;
+      margin-top: 48px;
+    }
+    footer .brand .logo { background-color: #fff; }
+    footer .ftag {
+      margin-top: 14px;
+      font-size: .95rem;
+      opacity: .8;
+      max-width: 22em;
+    }
+    footer .contact { margin-top: 22px; }
+    footer .contact a { color: #fff; font-weight: 600; }
+
+    @media (max-width: 640px) {
+      .card { padding: 28px 24px; }
+      .prose p { font-size: 1.02rem; }
+      .lead { font-size: 1.53rem !important; }
+      .page-head h1 { text-align: center; }
+      .split { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body id="top">
+  <header class="nav">
+    <div class="wrap">
+      <a href="https://nossa.cc" class="brand">
+        <img class="brand-logo" src="https://cdn.prod.website-files.com/618be446beae2645ce792cba/63601972e4cee971fdd3d216_Grupo%202.png" alt="Nossa — escola para planejadores financeiros" />
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="page-head">
+        <h1>Convite para a pré-venda da Nossa Formação 2027</h1>
+      </div>
+
+      <section class="card prose">
+        <p class="lead">Turma, a Nossa Formação de 2027 começa agora.</p>
+
+        <p>Sabemos que os meses que antecedem o início das aulas costumam ser permeados por muita empolgação e ansiedade. Então, resolvemos &ldquo;começar&rdquo; a formação mais cedo.</p>
+
+        <p>Já coloque no seu calendário &ndash; sim, turma, vocês vão almoçar junto com a gente:</p>
+
+        <ul class="dates">
+          <li><span class="day">3 de agosto</span><span class="time">ao meio-dia</span></li>
+          <li><span class="day">31 de agosto</span><span class="time">ao meio-dia</span></li>
+          <li><span class="day">5 de outubro</span><span class="time">ao meio-dia</span></li>
+          <li><span class="day">2 de novembro</span><span class="time">ao meio-dia</span></li>
+        </ul>
+
+        <p>Nessas datas, teremos nossos encontros de <em>esquenta</em>. Esses encontros são exclusivos para aqueles que se matricularem na pré-venda.</p>
+
+        <div class="split">
+          <div class="highlight">
+            <p><strong>A turma da pré-venda (serão 30 pessoas) contará com uma sessão individual extra.</strong></p>
+          </div>
+          <p>A sessão acontecerá até setembro. Tudo foi pensado com todo o carinho, para garantir que você aproveite ao máximo nossa jornada.</p>
+        </div>
+
+        <p><strong>A sessão individual e os encontros de esquenta</strong> farão com que cheguemos, juntos, em janeiro/2027, quando iniciamos as aulas, com uma pequena base já construída. Vale para aqueles que já atendem, vale para aqueles que não começaram ainda.</p>
+
+        <div class="cta">
+          <a class="btn btn-primary" href="https://nossa.cc/matricula27">Quero fazer minha matrícula&nbsp;&rarr;</a>
+        </div>
+
+        <p class="signoff">Nos vemos na escola!<br />Vivi e Amuri</p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <a href="https://nossa.cc" class="brand"><span class="logo"></span></a>
+      <p class="ftag">uma escola para planejadores financeiros independentes</p>
+      <div class="contact">
+        <a href="mailto:vivi-e-amuri@nossa.cc">vivi-e-amuri@nossa.cc</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

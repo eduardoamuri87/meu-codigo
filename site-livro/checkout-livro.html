@@ -344,7 +344,11 @@
                 elements.create('linkAuthentication').mount('#link-authentication-element');
                 elements.create('address', { mode: 'shipping', allowedCountries: ['BR'] })
                         .mount('#address-element');
-                elements.create('payment').mount('#payment-element');
+                // Cartão como método principal (aberto por padrão); Pix logo abaixo,
+                // como opção secundária. Ambos vêm habilitados no Dashboard da Stripe.
+                elements.create('payment', {
+                    paymentMethodOrder: ['card', 'pix']
+                }).mount('#payment-element');
 
                 document.getElementById('carregando-inicial').style.display = 'none';
                 document.getElementById('campos').style.display = 'block';
