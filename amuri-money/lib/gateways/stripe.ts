@@ -428,6 +428,14 @@ const BOOK_PRODUCT_NAMES: Record<string, string> = {
   prod_UfVC2HuMwLndEu: "Dinheiro sem medo — 2 livros",
 };
 
+// Venda avulsa do Stripe = livro por padrão. A exceção são cursos/programas
+// (o "DSM"), que vêm por checkout session com estes produtos e NÃO são livro —
+// caíam indevidamente no total de livros (ex.: 5× R$4.200 em abril/2026).
+const NON_BOOK_PRODUCT_IDS = new Set<string>([
+  "prod_TuIfxLwdtISlIo", // DSM – 2026
+  "prod_THjtzisa9jxodS", // DSM
+]);
+
 type PaymentIntentExpanded = {
   id: string;
   payment_link?: string | null;
@@ -435,6 +443,10 @@ type PaymentIntentExpanded = {
 
 type ChargeExpanded = {
   id: string;
+  amount?: number;
+  description?: string | null;
+  invoice?: string | null;
+  metadata?: Record<string, string> | null;
   payment_intent?: string | PaymentIntentExpanded | null;
   billing_details?: { name?: string | null; email?: string | null } | null;
 };
@@ -518,10 +530,17 @@ async function fetchBookPaymentLinks(): Promise<Record<string, string>> {
   return result;
 }
 
+type BookSessionsResult = {
+  // PI -> info do livro (quando a session casa com um produto de livro)
+  books: Record<string, BookPaymentInfo>;
+  // PIs cujo produto é NÃO-livro (curso/DSM); devem ser excluídos do total
+  blocked: string[];
+};
+
 async function fetchBookCheckoutSessions(
   year: number,
   month: number,
-): Promise<Record<string, BookPaymentInfo>> {
+): Promise<BookSessionsResult> {
   const windowStart = monthStartUnix(year, month) - 7 * 86400;
   const windowEnd = monthEndUnix(year, month);
   const sessions = await listPaginated<CheckoutSession>(
@@ -533,37 +552,44 @@ async function fetchBookCheckoutSessions(
     },
   );
 
-  const byPI: Record<string, BookPaymentInfo> = {};
+  const books: Record<string, BookPaymentInfo> = {};
+  const blocked: string[] = [];
   for (const s of sessions) {
     if (s.mode !== "payment") continue;
     if (s.status !== "complete") continue;
     if (!s.payment_intent) continue;
-    const items = s.line_items?.data ?? [];
-    const matched = items
+    const productIds = (s.line_items?.data ?? [])
       .map((li) => li.price?.product)
-      .find((pid): pid is string =>
-        typeof pid === "string" && pid in BOOK_PRODUCT_NAMES,
-      );
+      .filter((pid): pid is string => typeof pid === "string");
+
+    if (productIds.some((pid) => NON_BOOK_PRODUCT_IDS.has(pid))) {
+      blocked.push(s.payment_intent);
+      continue;
+    }
+
+    const matched = productIds.find((pid) => pid in BOOK_PRODUCT_NAMES);
     if (!matched) continue;
     const cliente =
       s.customer_details?.name ||
       s.customer_details?.email ||
       "(sem nome)";
-    byPI[s.payment_intent] = {
+    books[s.payment_intent] = {
       cliente,
       produto: BOOK_PRODUCT_NAMES[matched],
     };
   }
-  return byPI;
+  return { books, blocked };
 }
 
 function computeStripeBooksMonth(
   txs: BalanceTransactionWithSource[],
   bookPIs: Record<string, BookPaymentInfo>,
+  blockedPIs: string[],
   bookLinks: Record<string, string>,
   year: number,
   month: number,
 ): StripeBooksMonthTotals {
+  const blocked = new Set(blockedPIs);
   const now = Math.floor(Date.now() / 1000);
   const monthPadded = String(month).padStart(2, "0");
   const monthKey = `${year}-${monthPadded}`;
@@ -575,22 +601,41 @@ function computeStripeBooksMonth(
   for (const tx of txs) {
     const source = tx.source;
     if (!source || typeof source !== "object") continue;
+
+    // Regra: livro = toda venda avulsa do Stripe. Cobranças de assinatura são
+    // geradas por uma invoice (têm `invoice` preenchido); vendas de livro não.
+    // Isso separa livro de assinatura sem depender de preço, product id ou
+    // metadata (que vem contaminada pelos ads). Funciona para os dois fluxos de
+    // venda do livro: checkout session (antigo) e checkout próprio do site (novo).
+    if (source.invoice) continue;
+
+    // Ignora cobranças de teste.
+    const desc = (source.description ?? "").trim();
+    const isTeste =
+      /teste/i.test(desc) ||
+      source.metadata?.produto === "teste" ||
+      (typeof source.amount === "number" && source.amount < 2000);
+    if (isTeste) continue;
+
+    // Nome do produto/cliente: usa a checkout session quando existir (fluxo
+    // antigo, cobrança sem descrição), senão a descrição da própria cobrança
+    // (checkout do site, ex: "Dinheiro Sem Medo — 1 exemplar"), senão genérico.
     const pi = source.payment_intent;
     const piId = typeof pi === "string" ? pi : pi?.id;
-    if (!piId) continue;
+    // Produto não-livro (curso/DSM) identificado pela checkout session: pula.
+    if (piId && blocked.has(piId)) continue;
+    const sessionInfo = piId ? bookPIs[piId] : undefined;
+    const linkProduto =
+      !sessionInfo && typeof pi === "object" && pi?.payment_link
+        ? bookLinks[pi.payment_link]
+        : undefined;
 
-    let info: BookPaymentInfo | undefined = bookPIs[piId];
-    if (!info && typeof pi === "object" && pi?.payment_link) {
-      const produto = bookLinks[pi.payment_link];
-      if (produto) {
-        const cliente =
-          source.billing_details?.name ||
-          source.billing_details?.email ||
-          "(sem nome)";
-        info = { cliente, produto };
-      }
-    }
-    if (!info) continue;
+    const cliente =
+      sessionInfo?.cliente ||
+      source.billing_details?.name ||
+      source.billing_details?.email ||
+      "(sem nome)";
+    const produto = sessionInfo?.produto || linkProduto || desc || "Livro";
 
     const disponivelUnix = addBusinessDaysBR(tx.created, BANK_DELAY_DAYS);
     const disponivelIso = unixToIso(disponivelUnix);
@@ -598,8 +643,8 @@ function computeStripeBooksMonth(
 
     const net = tx.net;
     const item: StripeBookItem = {
-      cliente: info.cliente,
-      produto: info.produto,
+      cliente,
+      produto,
       cobrancaEm: unixToIso(tx.created),
       disponivelEm: disponivelIso,
       valor: net / 100,
@@ -630,7 +675,7 @@ const cachedChargeBalanceTransactions = withCheckpointCache(
 );
 
 const cachedBookCheckoutSessions = withCheckpointCache(
-  "stripe-book-sessions-v1",
+  "stripe-book-sessions-v2",
   fetchBookCheckoutSessions,
 );
 
@@ -659,12 +704,19 @@ export async function getStripeBooksMonthTotals(
 ): Promise<StripeBooksMonthTotals> {
   if (!process.env.STRIPE_API_TOKEN) return emptyStripeBooksMonth();
   try {
-    const [txs, bookPIs, bookLinks] = await Promise.all([
+    const [txs, sessions, bookLinks] = await Promise.all([
       cachedChargeBalanceTransactions(year, month),
       cachedBookCheckoutSessions(year, month),
       cachedBookPaymentLinks(),
     ]);
-    return computeStripeBooksMonth(txs, bookPIs, bookLinks, year, month);
+    return computeStripeBooksMonth(
+      txs,
+      sessions.books,
+      sessions.blocked,
+      bookLinks,
+      year,
+      month,
+    );
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("[stripe-books] falhou:", msg);
