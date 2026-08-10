@@ -1,13 +1,17 @@
 <?php
 /**
- * Webhook da Stripe — confirmação oficial do pagamento.
+ * Webhook da Stripe — confirmação oficial do pagamento (Checkout Session).
  *
- * O Payment Element confirma o pagamento direto no navegador, mas o sinal
- * CONFIÁVEL de que a compra deu certo (e que deve disparar o pós-venda) vem
- * por aqui. Configure este endpoint no Dashboard:
- *   Desenvolvedores > Webhooks > Adicionar endpoint
- *   URL:  https://programas.amuri.com.br/stripe/webhook.php
- *   Evento: payment_intent.succeeded
+ * O Checkout embedded confirma o pagamento no navegador, mas o sinal CONFIÁVEL
+ * de que a compra deu certo (e que deve disparar o pós-venda) vem por aqui.
+ *
+ * Configure no Dashboard (Desenvolvedores > Webhooks > endpoint):
+ *   URL: https://programas.amuri.com.br/stripe/webhook.php
+ *   Eventos:
+ *     - checkout.session.completed            (cartão e PIX pago na hora)
+ *     - checkout.session.async_payment_succeeded  (PIX confirmado com atraso)
+ *     - checkout.session.async_payment_failed      (PIX expirou/falhou)
+ *   (pode remover o antigo payment_intent.succeeded — não é mais usado.)
  *
  * Copie o "Signing secret" (whsec_...) para config.php > webhook_secret.
  */
@@ -59,6 +63,65 @@ function stripeSignatureValida($payload, $sigHeader, $secret, $tolerancia = 300)
     return false;
 }
 
+/**
+ * Registra o pedido a partir de uma Checkout Session paga.
+ * Idempotente: ignora se a sessão já foi registrada (retentativas da Stripe,
+ * ou o evento completed + um async_succeeded para a mesma sessão).
+ */
+function registrarPedido($session) {
+    $logFile = __DIR__ . '/pedidos.log';
+    $sid = $session['id'] ?? '';
+
+    if ($sid && is_file($logFile)) {
+        $existente = @file_get_contents($logFile);
+        if ($existente !== false && strpos($existente, '"checkout_session":"' . $sid . '"') !== false) {
+            return; // já registrado
+        }
+    }
+
+    $cd = $session['customer_details'] ?? [];
+
+    // CPF/CNPJ coletado via tax_id_collection (customer_details.tax_ids[]).
+    $cpf = '';
+    foreach (($cd['tax_ids'] ?? []) as $t) {
+        if (!empty($t['value'])) { $cpf = $t['value']; break; }
+    }
+
+    // Endereço de entrega — o nome do campo varia por versão da API.
+    $entrega = $session['collected_information']['shipping_details']
+            ?? $session['shipping_details']
+            ?? $session['shipping']
+            ?? null;
+
+    // PaymentIntent pode vir como id (string) ou objeto expandido.
+    $pi = $session['payment_intent'] ?? '';
+    if (is_array($pi)) { $pi = $pi['id'] ?? ''; }
+
+    $meta = $session['metadata'] ?? [];
+
+    $registro = [
+        'data'             => date('c'),
+        'checkout_session' => $sid,
+        'payment_intent'   => $pi,
+        'valor'            => ($session['amount_total'] ?? 0) / 100,
+        'produto'          => $meta['produto'] ?? '',
+        'cpf'              => $cpf,
+        'email'            => $cd['email'] ?? '',
+        'nome'             => $cd['name'] ?? '',
+        'entrega'          => $entrega,
+        // UTMs e demais rastreios (metadata, menos os campos fixos).
+        'utm'              => array_diff_key($meta, array_flip(['produto', 'origem'])),
+    ];
+
+    // Registro simples em arquivo. Substitua/adicione aqui o seu pós-venda:
+    // enviar e-mail de confirmação, gravar o pedido, avisar a logística, etc.
+    file_put_contents(
+        $logFile,
+        json_encode($registro, JSON_UNESCAPED_UNICODE) . "\n",
+        FILE_APPEND | LOCK_EX
+    );
+}
+
 if (!stripeSignatureValida($payload, $sigHeader, $webhookSecret)) {
     http_response_code(400);
     echo 'Assinatura inválida';
@@ -66,28 +129,24 @@ if (!stripeSignatureValida($payload, $sigHeader, $webhookSecret)) {
 }
 
 $evento = json_decode($payload, true);
-$tipo = $evento['type'] ?? '';
+$tipo   = $evento['type'] ?? '';
+$obj    = $evento['data']['object'] ?? [];
 
-if ($tipo === 'payment_intent.succeeded') {
-    $pi = $evento['data']['object'] ?? [];
-
-    $registro = [
-        'data'         => date('c'),
-        'payment_intent' => $pi['id'] ?? '',
-        'valor'        => ($pi['amount'] ?? 0) / 100,
-        'produto'      => $pi['metadata']['produto'] ?? '',
-        'cpf'          => $pi['metadata']['cpf'] ?? '',
-        'email'        => $pi['receipt_email'] ?? ($pi['shipping']['name'] ?? ''),
-        'entrega'      => $pi['shipping'] ?? null,
-        // UTMs e demais rastreios (tudo da metadata, menos os campos fixos).
-        'utm'          => array_diff_key($pi['metadata'] ?? [], array_flip(['produto', 'cpf', 'origem'])),
-    ];
-
-    // Registro simples em arquivo. Substitua/adicione aqui o seu pós-venda:
-    // enviar e-mail de confirmação, gravar o pedido, avisar a logística, etc.
-    file_put_contents(
+if ($tipo === 'checkout.session.completed') {
+    // Síncrono (cartão; PIX pago na hora): payment_status = 'paid' → registra.
+    // Assíncrono pendente (PIX aguardando confirmação): 'unpaid' → NÃO registra
+    // ainda; o async_payment_succeeded chega depois.
+    if (($obj['payment_status'] ?? '') === 'paid') {
+        registrarPedido($obj);
+    }
+} elseif ($tipo === 'checkout.session.async_payment_succeeded') {
+    // PIX confirmado depois (rede de segurança).
+    registrarPedido($obj);
+} elseif ($tipo === 'checkout.session.async_payment_failed') {
+    // PIX expirou/falhou — registra um marcador para acompanhamento.
+    @file_put_contents(
         __DIR__ . '/pedidos.log',
-        json_encode($registro, JSON_UNESCAPED_UNICODE) . "\n",
+        json_encode(['data' => date('c'), 'falha_sessao' => $obj['id'] ?? ''], JSON_UNESCAPED_UNICODE) . "\n",
         FILE_APPEND | LOCK_EX
     );
 }

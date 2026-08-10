@@ -125,7 +125,9 @@ t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '1690349805231152');
-fbq('track', 'Purchase', {value: 0.00, currency: 'BRL'});
+fbq('track', 'PageView');
+// O Purchase (com o valor REAL) é disparado no fim do <body>, após confirmar
+// a sessão de pagamento no servidor.
 </script>
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=1690349805231152&ev=PageView&noscript=1"
@@ -151,5 +153,41 @@ src="https://www.facebook.com/tr?id=1690349805231152&ev=PageView&noscript=1"
         </div>
     </div>
 
+    <script>
+    (function () {
+        // Dispara o Purchase do pixel com o VALOR REAL, só após confirmar a
+        // sessão no servidor. (Antes disparava value 0.00 fixo.)
+        var params = new URLSearchParams(window.location.search);
+        var sessionId = params.get('session_id');
+
+        function dispararPurchase(valor) {
+            if (window.fbq && valor > 0) {
+                fbq('track', 'Purchase', { value: valor, currency: 'BRL' });
+            }
+            // Conversão do Google Ads: se você tiver um rótulo de conversão,
+            // descomente e troque SEU_ROTULO:
+            // if (window.gtag && valor > 0) {
+            //     gtag('event', 'conversion', { send_to: 'AW-18247939771/SEU_ROTULO', value: valor, currency: 'BRL' });
+            // }
+        }
+
+        if (sessionId) {
+            fetch('stripe/verificar-sessao.php?session_id=' + encodeURIComponent(sessionId))
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (d && d.payment_status === 'paid') {
+                        dispararPurchase((d.amount_total || 0) / 100);
+                    }
+                    // PIX ainda confirmando: não dispara Purchase aqui; o webhook
+                    // garante o pós-venda quando o pagamento confirmar.
+                })
+                .catch(function () { /* silencioso: a confirmação oficial é o webhook */ });
+        } else {
+            // Fallback para links antigos com ?valor=.
+            var valor = parseFloat(params.get('valor'));
+            if (!isNaN(valor)) dispararPurchase(valor);
+        }
+    })();
+    </script>
 </body>
 </html>
