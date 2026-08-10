@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nossa Formação 2027 — Pagamento</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green: #225546;
+      --green-deep: #163a2e;
+      --green-soft: #bbcbb0;
+      --plum: #32292f;
+      --ink: #2b2329;
+      --blush: #feeeee;
+      --blush-2: #f3dbda;
+      --rose: #e6bdc0;
+      --peri: #5762d5;
+      --cream: #fdf7f4;
+      --white: #ffffff;
+      --serif: 'Noto Serif', Georgia, serif;
+      --sans: 'Overpass', system-ui, sans-serif;
+      --radius: 22px;
+      --radius-sm: 14px;
+      --maxw: 880px;
+      --shadow: 0 24px 60px -28px rgba(50,41,47,.35);
+      --shadow-sm: 0 10px 30px -18px rgba(50,41,47,.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { min-height: 100%; }
+    body {
+      font-family: var(--sans);
+      color: var(--ink);
+      background: var(--cream);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    main { flex: 1 0 auto; }
+
+    .wrap {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ---- Header ---- */
+    .nav {
+      padding: 64px 0 28px;
+      text-align: center;
+    }
+    .brand { display: inline-flex; align-items: center; gap: .5em; text-decoration: none; }
+    .brand-logo { display: block; height: 104px; width: auto; }
+    .brand .logo {
+      display: block;
+      width: 92px;
+      height: 38px;
+      background-color: var(--green);
+      -webkit-mask: url("https://cdn.prod.website-files.com/618be446beae2645ce792cba/6242fe8c97f0837b4206bc2e_nossa-branco.png") left center/contain no-repeat;
+      mask: url("https://cdn.prod.website-files.com/618be446beae2645ce792cba/6242fe8c97f0837b4206bc2e_nossa-branco.png") left center/contain no-repeat;
+    }
+
+    /* ---- Página ---- */
+    main { padding: 16px 0 24px; }
+
+    .page-head { margin-bottom: 28px; }
+    .page-head h1 {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: clamp(3rem, 7.8vw, 4.05rem);
+      color: var(--green);
+      line-height: 1.15;
+      text-transform: lowercase;
+    }
+    .page-head p {
+      margin-top: 22px;
+      font-size: 1.05rem;
+      color: var(--ink);
+      opacity: .8;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+    }
+    /* empurra o botão para a base, alinhando os dois cards */
+    .card .btn { margin-top: auto; }
+
+    .eyebrow {
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: .92rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--green);
+      opacity: .75;
+      margin-bottom: 10px;
+    }
+
+    .card h2 {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 1.35rem;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .price {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: clamp(1.7rem, 5.5vw, 2.1rem);
+      color: var(--green);
+      line-height: 1.15;
+      margin: 6px 0;
+    }
+    .total {
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: .92rem;
+      color: var(--ink);
+      opacity: .6;
+      letter-spacing: .02em;
+      margin: 14px 0 8px;
+    }
+
+    .bank {
+      list-style: none;
+      margin: 14px 0 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 22px;
+      font-size: .92rem;
+    }
+    .bank li { display: flex; gap: 6px; }
+    .bank li .label { color: var(--ink); opacity: .55; }
+    .bank li .value { font-weight: 700; }
+
+    .hint {
+      font-size: .95rem;
+      color: var(--ink);
+      opacity: .8;
+      margin-top: 4px;
+    }
+    .hint a { color: var(--green); font-weight: 600; }
+
+    /* ---- Botões ---- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .55em;
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: .98rem;
+      padding: .85em 1.6em;
+      border-radius: 100px;
+      cursor: pointer;
+      border: 0;
+      text-decoration: none;
+      transition: transform .25s ease, box-shadow .25s ease, background .2s ease;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 14px 30px -12px rgba(34,85,70,.6);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px -12px rgba(34,85,70,.7);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--green);
+      border: 1.5px solid rgba(34,85,70,.25);
+    }
+    .btn-ghost:hover { background: rgba(34,85,70,.06); }
+    .btn-ghost.ok { color: var(--green); border-color: var(--green); }
+    .btn-block { display: flex; width: 100%; }
+    .btn-sm { padding: .6em 1.2em; font-size: .9rem; }
+
+    .copy-link {
+      display: inline-block;
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: .82rem;
+      color: var(--green);
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity .2s ease;
+    }
+    .copy-link:hover { opacity: .7; }
+    .copy-link.ok { opacity: .7; }
+
+    /* ---- Footer ---- */
+    footer {
+      background: var(--green-deep);
+      color: #fff;
+      padding: 56px 0 34px;
+      margin-top: 48px;
+    }
+    footer .brand .logo { background-color: #fff; }
+    footer .ftag {
+      margin-top: 14px;
+      font-size: .95rem;
+      opacity: .8;
+      max-width: 22em;
+    }
+    footer .contact { margin-top: 22px; }
+    footer .contact a { color: #fff; font-weight: 600; }
+
+    @media (max-width: 640px) {
+      .cards { grid-template-columns: 1fr; }
+      .card { padding: 24px; }
+      .card .btn { margin-top: 16px; }
+      .page-head h1 { font-size: 5.2vw; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body id="top">
+  <header class="nav">
+    <div class="wrap">
+      <a href="https://nossa.cc" class="brand">
+        <img class="brand-logo" src="https://cdn.prod.website-files.com/618be446beae2645ce792cba/63601972e4cee971fdd3d216_Grupo%202.png" alt="Nossa — escola para planejadores financeiros" />
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="page-head">
+        <h1>Nossa Formação 2027</h1>
+        <p>Será uma jornada maravilhosa, estamos animados por aqui! Abaixo, as informações de pagamento.</p>
+      </div>
+
+      <div class="cards">
+      <!-- À vista / PIX -->
+      <section class="card">
+        <div class="eyebrow">À vista · PIX ou transferência</div>
+        <div class="price">R$ 25.900,00</div>
+
+        <ul class="bank">
+          <li><span class="label">Banco</span><span class="value">Inter</span></li>
+          <li><span class="label">Ag.</span><span class="value">0001</span></li>
+          <li><span class="label">Conta</span><span class="value">16434247-8</span></li>
+          <li><span class="label">Chave PIX (CNPJ)</span><span class="value" id="pix-key">43.653.014/0001-17</span> <a href="#" role="button" class="copy-link" id="copy-pix">(copiar&nbsp;→)</a></li>
+        </ul>
+
+        <p class="hint" style="margin-top:14px">
+          Depois do pagamento, envie o comprovante para
+          <a href="mailto:vivi-e-amuri@nossa.cc">vivi-e-amuri@nossa.cc</a>.
+        </p>
+      </section>
+
+      <!-- Parcelado / Cartão -->
+      <section class="card">
+        <div class="eyebrow">Parcelado · Cartão de crédito</div>
+        <div class="price">12x R$ 2.480,00</div>
+        <p class="total">Total parcelado: R$ 29.760,00</p>
+
+        <a class="btn btn-ghost btn-block"
+           href="https://checkout.iugu.com/links/5E51F3C0198B4E7AB56C4EE7F66E6F96"
+           target="_blank" rel="noopener">
+          Quero parcelar em 12x no cartão
+        </a>
+      </section>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <a href="https://nossa.cc" class="brand"><span class="logo"></span></a>
+      <p class="ftag">uma escola para planejadores financeiros independentes</p>
+      <div class="contact">
+        <a href="mailto:vivi-e-amuri@nossa.cc">vivi-e-amuri@nossa.cc</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('copy-pix');
+      var key = document.getElementById('pix-key').textContent.trim();
+      var defaultLabel = btn.textContent;
+      btn.addEventListener('click', function (ev) {
+        ev.preventDefault();
+        function done() {
+          btn.textContent = '✓ chave copiada';
+          btn.classList.add('ok');
+          setTimeout(function () {
+            btn.textContent = defaultLabel;
+            btn.classList.remove('ok');
+          }, 2200);
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(key).then(done).catch(fallback);
+        } else {
+          fallback();
+        }
+        function fallback() {
+          var ta = document.createElement('textarea');
+          ta.value = key;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); done(); } catch (e) {}
+          document.body.removeChild(ta);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

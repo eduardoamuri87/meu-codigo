@@ -1,0 +1,3853 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Observatório · Briefing 04 · Quando o crédito vira espiral</title>
+<meta name="description" content="O que a pesquisa sobre consumidores que perderam o controle de suas dívidas nos ensina sobre como desenhar programas de inclusão, educação e planejamento financeiro que funcionam.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+<template id="__bundler_thumbnail" data-bg-color="#1A2419">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#1A2419"/>
+    <circle cx="600" cy="400" r="170" fill="none" stroke="#EEE6D6" stroke-width="6"/>
+    <circle cx="640" cy="345" r="34" fill="#D96B3D"/>
+    <path d="M 320 480 C 440 470, 560 490, 600 488 S 760 470, 880 482" fill="none" stroke="#EEE6D6" stroke-width="6" stroke-linecap="round"/>
+    <text x="600" y="640" text-anchor="middle" font-family="ui-monospace, monospace" font-size="38" fill="#EEE6D6" letter-spacing="6">OBSERVATÓRIO</text>
+    <text x="600" y="690" text-anchor="middle" font-family="ui-monospace, monospace" font-size="22" fill="#D96B3D" letter-spacing="5">BRIEFING 04</text>
+  </svg>
+</template>
+
+<style>
+/* === RESET === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* === DESIGN TOKENS === */
+:root {
+  --clay: #D96B3D;
+  --forest: #1A2419;
+  --bone: #EEE6D6;
+  --rust: #8A2F1D;
+  --moss: #4A5D3A;
+  --moss-15: rgba(74,93,58,0.15);
+  --moss-08: rgba(74,93,58,0.08);
+  --forest-90: rgba(26,36,25,0.9);
+  --forest-70: rgba(26,36,25,0.7);
+  --forest-55: rgba(26,36,25,0.55);
+  --forest-30: rgba(26,36,25,0.3);
+  --forest-15: rgba(26,36,25,0.15);
+  --forest-08: rgba(26,36,25,0.08);
+  --forest-04: rgba(26,36,25,0.04);
+  --bone-90: rgba(238,230,214,0.9);
+  --bone-70: rgba(238,230,214,0.7);
+  --bone-50: rgba(238,230,214,0.5);
+  --bone-15: rgba(238,230,214,0.15);
+
+  --font-mono: 'Space Mono', ui-monospace, 'Courier New', monospace;
+  --font-sans: 'Space Mono', ui-monospace, 'Courier New', monospace;
+  --font-display: 'Space Mono', ui-monospace, 'Courier New', monospace;
+
+  --max-w: 1200px;
+  --col-w: 850px;
+}
+
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: var(--forest);
+  background: var(--bone);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* === UTILS === */
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+.col {
+  max-width: var(--col-w);
+  margin: 0 auto;
+}
+
+/* === NAV === */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bone);
+  border-bottom: 0.5px solid var(--forest-15);
+  backdrop-filter: blur(8px);
+  background: rgba(238,230,214,0.92);
+}
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 1.1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: var(--forest);
+}
+.brand svg { width: 32px; height: 32px; flex-shrink: 0; }
+.brand-name {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+.brand-name .dot { color: var(--clay); }
+.nav-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+@media (max-width: 640px) {
+  .nav-meta { display: none; }
+}
+
+/* === HERO === */
+.hero {
+  background: var(--forest);
+  color: var(--bone);
+  padding: 5rem 0 6rem;
+  position: relative;
+  overflow: hidden;
+}
+/* watermark — graph grid, fades toward center, forest stays dominant */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right,  rgba(238,230,214,0.08) 0 0.5px, transparent 0.5px 100%),
+    linear-gradient(to bottom, rgba(238,230,214,0.08) 0 0.5px, transparent 0.5px 100%);
+  background-size: 56px 56px, 56px 56px;
+  background-position: 0 0, 0 0;
+  -webkit-mask-image: radial-gradient(ellipse 60% 55% at 50% 50%, transparent 0%, transparent 35%, rgba(0,0,0,0.55) 70%, #000 100%);
+          mask-image: radial-gradient(ellipse 60% 55% at 50% 50%, transparent 0%, transparent 35%, rgba(0,0,0,0.55) 70%, #000 100%);
+  z-index: 0;
+}
+/* secondary, finer grid for texture on the outer band */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right,  rgba(238,230,214,0.04) 0 0.5px, transparent 0.5px 100%),
+    linear-gradient(to bottom, rgba(238,230,214,0.04) 0 0.5px, transparent 0.5px 100%);
+  background-size: 14px 14px, 14px 14px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 15%, rgba(0,0,0,0.4) 60%, #000 100%);
+          mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 15%, rgba(0,0,0,0.4) 60%, #000 100%);
+  z-index: 0;
+}
+.hero > .wrap { position: relative; z-index: 1; }
+.hero-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 4rem;
+}
+.hero-mark {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+.hero-mark svg { width: 130px; height: 104px; }
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-align: center;
+  max-width: 920px;
+  margin: 0 auto 1.5rem;
+}
+.hero-lede {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  line-height: 1.55;
+  text-align: center;
+  max-width: 660px;
+  margin: 0 auto;
+  opacity: 0.88;
+}
+.hero-byline {
+  margin-top: 3rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+/* === SECTION === */
+section {
+  padding: 6rem 0;
+  position: relative;
+}
+.section-bone { background: var(--bone); color: var(--forest); }
+.section-forest { background: var(--forest); color: var(--bone); }
+.section-rust { background: var(--rust); color: var(--bone); }
+.section-clay { background: var(--clay); color: var(--forest); }
+.section-moss { background: var(--moss); color: var(--bone); }
+
+.section-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.section-rust .section-tag,
+.section-moss .section-tag,
+.section-forest .section-tag { color: var(--clay); }
+
+.section-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  margin-bottom: 2rem;
+}
+.section-intro {
+  font-family: var(--font-sans);
+  font-size: 1.2rem;
+  line-height: 1.55;
+  font-weight: 300;
+  margin-bottom: 3rem;
+  max-width: 620px;
+  opacity: 0.88;
+}
+
+/* === BODY TEXT === */
+p.body {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+  max-width: var(--col-w);
+}
+.section-rust p.body, .section-forest p.body, .section-moss p.body { opacity: 0.92; }
+
+em.it { font-style: italic; font-family: var(--font-display); }
+.b { font-weight: 500; }
+
+/* === STATS === */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem 3rem;
+  margin: 3rem 0;
+}
+.stat {
+  border-top: 1.5px solid currentColor;
+  padding-top: 1rem;
+}
+.stat-num {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 5vw, 3.4rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.6rem;
+}
+.stat-unit {
+  font-size: 0.55em;
+  opacity: 0.65;
+  margin-left: 0.1em;
+}
+.stat-label {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  opacity: 0.78;
+}
+
+/* === PULL QUOTE === */
+blockquote.pull {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.4rem, 2.6vw, 1.85rem);
+  line-height: 1.35;
+  margin: 3rem 0 2rem;
+  padding-left: 2rem;
+  border-left: 3px solid var(--clay);
+  max-width: 760px;
+}
+blockquote.pull cite {
+  display: block;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-top: 1.2rem;
+}
+
+/* === TRAJECTORY DIAGRAM === */
+.traj-axis {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  margin: 2.5rem 0 1.5rem;
+  position: relative;
+}
+.traj-axis::before {
+  content: '';
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 50%;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.25;
+}
+.traj-dot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  z-index: 1;
+}
+.traj-dot-circle {
+  width: 42px; height: 42px;
+  background: var(--forest);
+  border-radius: 50%;
+}
+.traj-dot:nth-child(2) .traj-dot-circle {
+  width: 54px; height: 54px;
+  background: var(--clay);
+}
+.traj-dot:nth-child(3) .traj-dot-circle {
+  width: 66px; height: 66px;
+  background: var(--rust);
+}
+/* all dots centered above their cards */
+.traj-dot { align-items: center; }
+.traj-dot .traj-dot-circle { margin: 0; }
+.traj-label { text-align: center; }
+.traj-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.traj-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+@media (max-width: 760px) {
+  .traj-grid { grid-template-columns: 1fr; }
+  .traj-axis { display: none; }
+  .traj-chart svg { font-size: 14px; }
+}
+
+/* === NEW TRAJECTORY CHART === */
+.traj-chart {
+  width: 100%;
+  margin: 3rem 0 2.5rem;
+  position: relative;
+}
+.traj-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+@media (max-width: 760px) {
+  .traj-chart { margin: 2rem -0.5rem 2rem; overflow-x: auto; }
+  .traj-chart svg { min-width: 600px; }
+}
+.traj-stage {
+  background: var(--bone);
+  border-radius: 16px;
+  padding: 2.5rem 2.25rem 2.75rem;
+  position: relative;
+}
+.traj-stage.s1 { background: #E5DECF; }
+.traj-stage.s2 { background: #EDD5C8; }
+.traj-stage.s3 { background: #D6BFB2; }
+.traj-stage-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 0.75rem;
+}
+.traj-stage .traj-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+.traj-stage h3 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.55rem;
+  line-height: 1.1;
+  margin-bottom: 1.25rem;
+}
+.traj-stage h3.traj-bigtitle {
+  font-family: "Playfair Display", "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2.4rem, 4.2vw, 3.4rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 2.25rem;
+  color: var(--forest);
+}
+.traj-stage ul { list-style: none; }
+.traj-stage li {
+  padding: 0.6rem 0;
+  border-top: 0.5px solid var(--forest-15);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+.traj-stage li:first-child { border-top: none; }
+.traj-stage li strong {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 0.2rem;
+}
+.traj-stage ul.traj-fields { display: flex; flex-direction: column; }
+.traj-stage ul.traj-fields li {
+  display: flex;
+  flex-direction: column;
+  padding: 0.9rem 0;
+  border-top: 0.5px solid rgba(26,36,25,0.2);
+  font-family: var(--font-sans);
+}
+.traj-stage ul.traj-fields li:first-child { border-top: 0.5px solid rgba(26,36,25,0.2); }
+.traj-stage ul.traj-fields li strong {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 0.35rem;
+  display: block;
+}
+.traj-stage ul.traj-fields li span {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.35;
+  color: var(--forest);
+  opacity: 0.92;
+}
+
+.callout {
+  background: var(--forest);
+  color: var(--bone);
+  padding: 1.75rem 2rem;
+  border-radius: 10px;
+  margin-top: 2rem;
+}
+.callout-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 0.75rem;
+}
+.callout p {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+/* === SEVEN PROPERTIES === */
+.props {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+.prop {
+  background: var(--forest-04);
+  border-radius: 10px;
+  padding: 1.5rem 1.4rem;
+  border-left: 3px solid var(--clay);
+}
+.prop-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 0.5rem;
+}
+.prop h4 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 1.1rem;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+.prop p {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  opacity: 0.78;
+}
+
+/* === FOUR FORCES === */
+.forces { margin-top: 2.5rem; }
+.force {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 1.25rem;
+  padding: 1.75rem 0;
+  border-top: 0.5px solid var(--forest-15);
+  align-items: start;
+}
+.force:last-child { border-bottom: 0.5px solid var(--forest-15); }
+.force-num {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  opacity: 0.5;
+  padding-top: 0.25rem;
+}
+.force h3 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 1.4rem;
+  line-height: 1.2;
+  margin-bottom: 0.6rem;
+}
+.force p {
+  font-size: 1rem;
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+/* === FOUR DIMENSIONS === */
+.dims {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+}
+.dim {
+  background: var(--forest-04);
+  border-radius: 12px;
+  padding: 1.75rem 1.6rem;
+  border-left: 3px solid var(--clay);
+}
+.dim-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 0.6rem;
+}
+.dim h3 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.5rem;
+  line-height: 1.15;
+  margin-bottom: 0.85rem;
+}
+.dim > p {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  opacity: 0.85;
+  margin-bottom: 1rem;
+}
+.dim-voice {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.4;
+  padding-top: 1rem;
+  border-top: 0.5px solid var(--forest-15);
+}
+.dim-source {
+  display: block;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-top: 0.6rem;
+}
+
+/* === RUST SECTION SYNTHESIS BOX === */
+.synthesis {
+  background: rgba(238,230,214,0.12);
+  border-left: 3px solid var(--clay);
+  border-radius: 0 10px 10px 0;
+  padding: 1.75rem 2rem;
+  margin: 2.5rem 0;
+}
+.synthesis-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 0.75rem;
+}
+.synthesis p {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.35rem;
+  line-height: 1.35;
+}
+
+/* === RECOMMENDATIONS TABLE === */
+.recs { margin-top: 2.5rem; }
+.rec {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 1.5rem 0;
+  border-top: 0.5px solid var(--forest-15);
+  align-items: start;
+}
+.rec:last-child { border-bottom: 0.5px solid var(--forest-15); }
+@media (max-width: 760px) {
+  .rec { grid-template-columns: 1fr; gap: 1rem; padding: 1.5rem 0; }
+}
+.rec-col-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.rec-problem {
+  font-size: 0.98rem;
+  line-height: 1.55;
+  opacity: 0.78;
+}
+.rec-response {
+  font-size: 0.98rem;
+  line-height: 1.55;
+  font-weight: 500;
+  color: var(--rust);
+}
+
+/* === SIGNALS === */
+.signals { margin-top: 2.5rem; }
+.signal {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-top: 0.5px solid var(--forest-15);
+  align-items: baseline;
+}
+.signal:last-child { border-bottom: 0.5px solid var(--forest-15); }
+.signal-num {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  opacity: 0.5;
+}
+.signal-text {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+.signal-text strong { font-weight: 500; }
+
+/* === CLOSING === */
+.closing {
+  text-align: left;
+}
+.closing-quote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.15;
+  margin-bottom: 2rem;
+  max-width: 880px;
+}
+.closing-source {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* === FOOTER === */
+.footer {
+  background: var(--forest);
+  color: var(--bone);
+  padding: 4rem 0 3rem;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 4rem;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .footer-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+}
+.footer-brand .brand-name { font-size: 1.1rem; }
+.footer-tagline {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  opacity: 0.75;
+  margin-top: 1.25rem;
+  max-width: 280px;
+}
+.footer-tagline .b { font-weight: 500; }
+.footer-ref-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 1rem;
+}
+.footer-ref {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  opacity: 0.82;
+}
+.footer-ref em { font-style: italic; }
+.footer-ref a {
+  color: var(--clay);
+  text-decoration: none;
+  border-bottom: 0.5px solid var(--clay);
+}
+.footer-ref a:hover { opacity: 0.8; }
+.footer-bottom {
+  margin-top: 3rem;
+  padding-top: 1.75rem;
+  border-top: 0.5px solid var(--bone-15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+@media (max-width: 540px) {
+  .footer-bottom { flex-direction: column; gap: 1rem; align-items: flex-start; }
+}
+
+/* === BACK-TO-TOP === */
+.totop {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--bone);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  z-index: 40;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+}
+.totop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.totop:hover { background: var(--clay); }
+
+/* === READING PROGRESS BAR === */
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: var(--clay);
+  z-index: 100;
+  transition: width 0.05s linear;
+}
+
+/* === APPENDIX / TEMPLATE === */
+.bloco {
+  margin-top: 4.5rem;
+  padding-top: 2.5rem;
+  border-top: 0.5px solid var(--forest-15);
+}
+.bloco:first-of-type { margin-top: 3rem; border-top: 0; padding-top: 0; }
+.bloco-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 1rem;
+  display: block;
+}
+.bloco-title {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+  max-width: var(--col-w);
+}
+
+/* two-column body inside a bloco — responsive */
+.bloco-lead {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: 820px;
+  margin-bottom: 2.25rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--clay);
+  color: var(--forest);
+}
+.bloco-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem 3.5rem;
+  margin-top: 0.5rem;
+  position: relative;
+}
+.bloco-cols::before {
+  content: "";
+  position: absolute;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 50%;
+  width: 0.5px;
+  background: var(--forest-15);
+  transform: translateX(-1.75rem);
+}
+.bloco-col-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.bloco-col-label::before {
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 0.5px;
+  background: var(--clay);
+}
+.bloco-col p.body {
+  margin-bottom: 0;
+  max-width: none;
+}
+@media (max-width: 760px) {
+  .bloco-cols { grid-template-columns: 1fr; gap: 2rem; }
+  .bloco-cols::before { display: none; }
+  .bloco-lead { font-size: 1rem; margin-bottom: 1.75rem; }
+}
+
+blockquote.entrada {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.6vw, 1.95rem);
+  line-height: 1.35;
+  margin: 1.5rem 0 1rem;
+  padding: 1.75rem 2rem;
+  background: rgba(217,107,61,0.12);
+  border-left: 3px solid var(--clay);
+  border-radius: 0 10px 10px 0;
+  max-width: 820px;
+}
+
+.bio-card {
+  background: var(--forest-04);
+  border-radius: 10px;
+  padding: 2rem 2.25rem;
+  margin-top: 1.5rem;
+  max-width: var(--col-w);
+  border-left: 3px solid var(--clay);
+}
+.bio-card p.body { margin-bottom: 1rem; }
+.bio-card p.body:last-child { margin-bottom: 0; }
+
+.imagery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+@media (max-width: 640px) { .imagery { grid-template-columns: 1fr; } }
+.imagery-card {
+  background: var(--forest-04);
+  border-radius: 10px;
+  padding: 1.5rem 1.5rem;
+  border-left: 3px solid var(--clay);
+}
+.imagery-card .rec-col-label { margin-bottom: 0.4rem; }
+.imagery-card p {
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  opacity: 0.82;
+}
+
+.qa { margin-top: 1.5rem; }
+.qa-item {
+  padding: 2rem 0;
+  border-top: 0.5px solid var(--forest-15);
+}
+.qa-item:last-child { border-bottom: 0.5px solid var(--forest-15); }
+.qa-q-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 0.6rem;
+  display: block;
+}
+.qa-q {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  margin-bottom: 1.25rem;
+  max-width: var(--col-w);
+}
+.qa-a {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: var(--col-w);
+  margin-bottom: 1rem;
+}
+.qa-a:last-child { margin-bottom: 0; }
+
+.linklist {
+  list-style: none;
+  margin-top: 1.5rem;
+  padding: 0;
+}
+.linklist li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.25rem;
+  align-items: baseline;
+  padding: 1.5rem 0;
+  border-top: 0.5px solid var(--forest-15);
+}
+.linklist li:last-child { border-bottom: 0.5px solid var(--forest-15); }
+.linklist-num {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  opacity: 0.5;
+}
+.linklist-body {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: var(--col-w);
+}
+.linklist-body em { font-style: italic; font-weight: 700; }
+.linklist-body .pub {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-top: 0.4rem;
+}
+
+.tpl-cover {
+  text-align: center;
+  padding: 3rem 0 1rem;
+  border-bottom: 0.5px solid var(--bone-15);
+  margin-bottom: 3rem;
+}
+.tpl-cover-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 1.25rem;
+}
+.tpl-cover-title {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 1.85rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.tpl-cover-ref {
+  font-family: var(--font-mono);
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  opacity: 0.85;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* === RESPONSIVE TWEAKS === */
+/* Neutralize direct-edit inline widths on smaller viewports */
+@media (max-width: 980px) {
+  .hero-title[style] { width: auto !important; max-width: 100% !important; font-size: clamp(1.6rem, 5vw, 2.1rem) !important; }
+  .section-tag[style] { width: auto !important; max-width: 100% !important; font-size: clamp(1.1rem, 3.5vw, 1.6rem) !important; letter-spacing: 0.14em !important; }
+  .wrap[style] { padding: 0 1.5rem !important; }
+  .col[style] { margin: 0 auto !important; }
+  .stat-label[style] { width: auto !important; max-width: 100% !important; }
+  .nav-meta[style] { font-size: 0.55rem !important; letter-spacing: 0.1em !important; max-width: 220px; line-height: 1.3; }
+}
+@media (max-width: 760px) {
+  .nav-meta[style] { display: none; }
+  .nav-inner { padding: 0.9rem 1.25rem; }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .props { grid-template-columns: 1fr; }
+  .dims { grid-template-columns: 1fr; }
+  .imagery { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .footer .wrap { padding: 0 1.25rem; }
+}
+@media (max-width: 640px) {
+  .wrap { padding: 0 1.25rem; }
+  section { padding: 3rem 0; }
+  .hero { padding: 2.5rem 0 3rem; }
+  .stats { gap: 1.25rem; grid-template-columns: 1fr 1fr; }
+  .stat-num { font-size: clamp(1.8rem, 6vw, 2.4rem); }
+  blockquote.pull { padding-left: 1rem; margin: 1.5rem 0; font-size: 1.1rem; }
+  blockquote.entrada { padding: 1.25rem 1.25rem; font-size: 1.1rem; }
+  .force { grid-template-columns: 1fr; gap: 0.5rem; padding: 1.25rem 0; }
+  .signal { grid-template-columns: 36px 1fr; padding: 1rem 0; gap: 0.5rem; }
+  .rec { grid-template-columns: 1fr; gap: 0.75rem; }
+  .linklist li { grid-template-columns: auto 1fr; gap: 0.75rem; }
+  .qa-item, .bloco { padding: 1.25rem 0; }
+  .section-title { font-size: clamp(1.6rem, 6vw, 2.1rem); line-height: 1.1; }
+  .section-intro { font-size: 1rem; margin-bottom: 1.5rem; }
+  .hero-title { font-size: clamp(1.6rem, 7vw, 2.4rem) !important; width: auto !important; }
+  .section-tag[style] { font-size: 0.95rem !important; }
+  .bio-card { padding: 1.25rem 1.25rem; }
+  .traj-stage, .prop, .dim { padding: 1.25rem 1.1rem; }
+  .callout, .synthesis { padding: 1.25rem 1.25rem; }
+  .col, .col[style] { margin: 0 !important; }
+}
+
+/* =========================================================
+   DYNAMISM — reveal on scroll + trajectory animations
+   ========================================================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.75s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-in { opacity: 1; transform: none; }
+.reveal { transition-delay: calc(var(--i, 0) * 0.06s); }
+
+/* trajectory horizontal line draws when section enters */
+.traj-axis::before {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.traj-axis.is-in::before { transform: scaleX(1); }
+
+/* dot pulse */
+.traj-dot .traj-dot-circle { transition: transform 0.35s ease-out; }
+.traj-dot.is-in .traj-dot-circle { animation: dotPulse 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+@keyframes dotPulse {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* subtle hover lift on cards */
+.prop, .dim, .traj-stage {
+  transition: transform 0.28s ease-out, box-shadow 0.28s ease-out, background 0.28s ease-out;
+}
+.prop:hover, .dim:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.05); }
+.traj-stage:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,0.06); }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal.is-in { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .traj-axis::before, .traj-axis.is-in::before { transform: scaleX(1) !important; transition: none !important; }
+  .traj-dot.is-in .traj-dot-circle { animation: none !important; }
+}
+
+/* =========================================================
+   FEEL MODES — palette / voice / cadence
+   reshape the page through Tweaks, not pixel-pushing
+   ========================================================= */
+
+/* PALETTE: pergaminho (sepia paper) */
+body.palette-pergaminho {
+  --forest: #2a2114;
+  --bone: #f0e8d4;
+  --clay: #c25a2a;
+  --rust: #7a2b18;
+  --moss: #595c34;
+  --forest-90: rgba(42,33,20,0.9);
+  --forest-70: rgba(42,33,20,0.7);
+  --forest-55: rgba(42,33,20,0.55);
+  --forest-30: rgba(42,33,20,0.3);
+  --forest-15: rgba(42,33,20,0.15);
+  --forest-08: rgba(42,33,20,0.08);
+  --forest-04: rgba(42,33,20,0.04);
+  --bone-90: rgba(240,232,212,0.9);
+  --bone-70: rgba(240,232,212,0.7);
+  --bone-50: rgba(240,232,212,0.5);
+  --bone-15: rgba(240,232,212,0.15);
+  --moss-15: rgba(89,92,52,0.15);
+  --moss-08: rgba(89,92,52,0.08);
+}
+/* PALETTE: crepúsculo (warm dusk, rust-led) */
+body.palette-crepusculo {
+  --forest: #1a1112;
+  --bone: #ecdcc4;
+  --clay: #e8773c;
+  --rust: #6b1c1c;
+  --moss: #4d3d2c;
+  --forest-90: rgba(26,17,18,0.9);
+  --forest-70: rgba(26,17,18,0.7);
+  --forest-55: rgba(26,17,18,0.55);
+  --forest-30: rgba(26,17,18,0.3);
+  --forest-15: rgba(26,17,18,0.15);
+  --forest-08: rgba(26,17,18,0.08);
+  --forest-04: rgba(26,17,18,0.04);
+  --bone-90: rgba(236,220,196,0.9);
+  --bone-70: rgba(236,220,196,0.7);
+  --bone-50: rgba(236,220,196,0.5);
+  --bone-15: rgba(236,220,196,0.15);
+  --moss-15: rgba(77,61,44,0.18);
+  --moss-08: rgba(77,61,44,0.1);
+}
+body.palette-pergaminho .nav,
+body.palette-crepusculo .nav { background: var(--bone); }
+
+/* VOICE: acadêmico — Playfair upright, sober */
+body.voice-academico .hero-title,
+body.voice-academico .section-title,
+body.voice-academico .traj-bigtitle,
+body.voice-academico .traj-stage h3,
+body.voice-academico blockquote.pull,
+body.voice-academico .dim h3,
+body.voice-academico .synthesis p,
+body.voice-academico .callout p,
+body.voice-academico .closing-quote,
+body.voice-academico blockquote.entrada,
+body.voice-academico .bloco-title,
+body.voice-academico em.it {
+  font-style: normal;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+body.voice-academico em.it { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; text-decoration-color: var(--clay); }
+body.voice-academico .section-title { letter-spacing: -0.005em; font-weight: 500; }
+
+/* VOICE: manifesto — mono display, brutal */
+body.voice-manifesto .hero-title,
+body.voice-manifesto .section-title,
+body.voice-manifesto .traj-bigtitle,
+body.voice-manifesto .traj-stage h3,
+body.voice-manifesto .closing-quote,
+body.voice-manifesto blockquote.entrada,
+body.voice-manifesto .bloco-title {
+  font-family: 'Space Mono', ui-monospace, monospace;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.12;
+}
+body.voice-manifesto .section-title { font-size: clamp(1.7rem, 3.6vw, 2.6rem); text-transform: uppercase; letter-spacing: -0.01em; }
+body.voice-manifesto .hero-title { font-size: clamp(1.8rem, 4.6vw, 3.2rem); text-transform: uppercase; letter-spacing: 0; }
+body.voice-manifesto blockquote.pull,
+body.voice-manifesto .dim h3,
+body.voice-manifesto .synthesis p,
+body.voice-manifesto .callout p {
+  font-family: 'Space Grotesk', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+}
+body.voice-manifesto em.it {
+  font-family: 'Space Mono', monospace;
+  font-style: normal;
+  background: var(--clay);
+  color: var(--bone);
+  padding: 0.05em 0.35em;
+  border-radius: 2px;
+}
+
+/* CADENCE: apertado — tight, dense */
+body.pace-apertado section { padding: 3.5rem 0; }
+body.pace-apertado .hero { padding: 3rem 0 4rem; }
+body.pace-apertado .section-title { font-size: clamp(1.5rem, 3.4vw, 2.1rem); margin-bottom: 1.25rem; line-height: 1.1; }
+body.pace-apertado .section-intro { font-size: 1rem; margin-bottom: 1.75rem; }
+body.pace-apertado p.body { font-size: 0.95rem; line-height: 1.55; margin-bottom: 1rem; }
+body.pace-apertado .stats { gap: 1rem 1.75rem; margin: 1.75rem 0; }
+body.pace-apertado .stat-num { font-size: clamp(1.9rem, 3.6vw, 2.4rem); }
+body.pace-apertado .prop,
+body.pace-apertado .dim { padding: 1.1rem 1.1rem; }
+body.pace-apertado .traj-stage { padding: 1.25rem 1.15rem; }
+body.pace-apertado .force { padding: 1.2rem 0; }
+body.pace-apertado .rec { padding: 1.1rem 0; gap: 1.5rem; }
+body.pace-apertado .hero-title { font-size: clamp(1.6rem, 4.2vw, 2.8rem) !important; }
+body.pace-apertado .hero-lede { font-size: 0.98rem; }
+body.pace-apertado .props,
+body.pace-apertado .dims,
+body.pace-apertado .traj-grid { gap: 0.85rem; }
+body.pace-apertado blockquote.pull { font-size: clamp(1.1rem, 1.9vw, 1.4rem); margin: 1.75rem 0 1.25rem; padding: 1rem 1.25rem; }
+
+/* CADENCE: largo — spacious, editorial */
+body.pace-largo section { padding: 9rem 0; }
+body.pace-largo .hero { padding: 7rem 0 9rem; }
+body.pace-largo .section-title { font-size: clamp(2.4rem, 5.5vw, 4rem); margin-bottom: 2.75rem; line-height: 1; }
+body.pace-largo .section-intro { font-size: 1.3rem; line-height: 1.6; margin-bottom: 3.75rem; }
+body.pace-largo p.body { font-size: 1.15rem; line-height: 1.85; margin-bottom: 1.5rem; }
+body.pace-largo .stats { margin: 4rem 0; gap: 2.5rem 4rem; }
+body.pace-largo .stat-num { font-size: clamp(3rem, 6vw, 4rem); }
+body.pace-largo .force { padding: 2.75rem 0; }
+body.pace-largo .rec { padding: 2.25rem 0; }
+body.pace-largo .hero-title { font-size: clamp(3rem, 7.5vw, 5.5rem) !important; }
+body.pace-largo .hero-lede { font-size: 1.25rem; }
+body.pace-largo blockquote.pull { font-size: clamp(1.8rem, 3.2vw, 2.3rem); margin: 4rem 0 3rem; padding-left: 2.5rem; }
+body.pace-largo .props,
+body.pace-largo .dims { gap: 1.75rem; }
+
+/* =========================================================
+   TWEAKS PANEL
+   ========================================================= */
+.tw-panel {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 320px;
+  background: var(--bone);
+  color: var(--forest);
+  border: 0.5px solid var(--forest-30);
+  border-radius: 14px;
+  padding: 1.1rem 1.15rem 1.25rem;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+  font-family: var(--font-sans);
+  z-index: 60;
+  display: none;
+  animation: twSlideIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.tw-panel.is-open { display: block; }
+@keyframes twSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+.tw-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 0.5px solid var(--forest-15);
+}
+.tw-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--forest);
+}
+.tw-close {
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  color: var(--forest-70);
+  font-size: 0.95rem;
+  transition: background 0.15s, color 0.15s;
+}
+.tw-close:hover { background: var(--forest-08); color: var(--forest); }
+
+.tw-group { margin-bottom: 1.05rem; }
+.tw-group:last-child { margin-bottom: 0; }
+.tw-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.tw-label .tw-current {
+  color: var(--forest-55);
+  letter-spacing: 0.12em;
+  font-weight: 400;
+}
+.tw-seg {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--forest-04);
+  border: 0.5px solid var(--forest-15);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+.tw-seg button {
+  border: none;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.6rem 0.3rem;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--forest-55);
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+  white-space: nowrap;
+}
+.tw-seg button:hover { color: var(--forest); background: var(--forest-04); }
+.tw-seg button.is-active {
+  background: var(--forest);
+  color: var(--bone);
+}
+body.palette-pergaminho .tw-seg button.is-active,
+body.palette-crepusculo .tw-seg button.is-active { background: var(--forest); color: var(--bone); }
+
+.tw-foot {
+  margin-top: 1.1rem;
+  padding-top: 0.85rem;
+  border-top: 0.5px solid var(--forest-15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.tw-foot-hint {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--forest-55);
+}
+.tw-reset {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: none;
+  border: 0.5px solid var(--forest-30);
+  color: var(--forest);
+  padding: 0.45rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.tw-reset:hover { background: var(--forest); color: var(--bone); }
+
+@media (max-width: 560px) {
+  .tw-panel { width: calc(100vw - 2rem); right: 1rem; bottom: 1rem; }
+}
+
+/* =========================================================
+   TRAJECTORY CARDS — typography contrast on moss/clay/rust
+   ========================================================= */
+.traj-stage.s1 .traj-stage-num,
+.traj-stage.s3 .traj-stage-num,
+.traj-stage.s1 ul.traj-fields li strong,
+.traj-stage.s3 ul.traj-fields li strong {
+  color: var(--bone) !important;
+  opacity: 0.62;
+}
+.traj-stage.s1 .traj-bigtitle,
+.traj-stage.s3 .traj-bigtitle {
+  color: var(--bone) !important;
+}
+.traj-stage.s1 ul.traj-fields li span,
+.traj-stage.s3 ul.traj-fields li span {
+  color: var(--bone) !important;
+  opacity: 0.94;
+}
+.traj-stage.s1 ul.traj-fields li,
+.traj-stage.s3 ul.traj-fields li,
+.traj-stage.s1 ul.traj-fields li:first-child,
+.traj-stage.s3 ul.traj-fields li:first-child {
+  border-top-color: rgba(238,230,214,0.22) !important;
+}
+
+.traj-stage.s2 .traj-stage-num,
+.traj-stage.s2 ul.traj-fields li strong {
+  color: #2A1810;
+  opacity: 0.68;
+}
+.traj-stage.s2 .traj-bigtitle {
+  color: #2A1810;
+}
+.traj-stage.s2 ul.traj-fields li span {
+  color: #2A1810;
+  opacity: 0.96;
+}
+.traj-stage.s2 ul.traj-fields li,
+.traj-stage.s2 ul.traj-fields li:first-child {
+  border-top-color: rgba(42,24,16,0.22) !important;
+}
+
+/* =========================================================
+   BLOCO 03 — Researcher card w/ photo slot
+   ========================================================= */
+.researcher {
+  margin-top: 1rem;
+  background: var(--forest);
+  color: var(--bone);
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+}
+.researcher-top {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+  padding: 1.75rem 1.75rem 1.5rem;
+  align-items: center;
+}
+.researcher-photo-wrap {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bone-15);
+  border: 0.5px solid rgba(238,230,214,0.18);
+}
+.researcher-photo-wrap image-slot {
+  width: 100%;
+  height: 100%;
+  display: block;
+  --image-slot-bg: transparent;
+  --image-slot-fg: rgba(238,230,214,0.7);
+  --image-slot-border: transparent;
+}
+.researcher-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.8rem, 3.4vw, 2.4rem);
+  line-height: 1.05;
+  margin-bottom: 0.5rem;
+  color: var(--bone);
+}
+.researcher-role {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 1.25rem;
+}
+.researcher-cred {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.4rem 0.85rem;
+  margin-top: 0.5rem;
+}
+.researcher-cred-item {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0;
+  border-top: 0.5px solid rgba(238,230,214,0.18);
+}
+.researcher-cred-item:nth-child(-n+2) { border-top-color: rgba(238,230,214,0.32); }
+.researcher-cred-item .cr-where {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bone-70);
+  margin-bottom: 0.15rem;
+}
+.researcher-cred-item .cr-what {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  color: var(--bone);
+}
+.researcher-bio {
+  padding: 1.75rem;
+  border-top: 0.5px solid rgba(238,230,214,0.15);
+  background: rgba(238,230,214,0.04);
+}
+.researcher-bio p {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  color: rgba(238,230,214,0.92);
+  max-width: 62ch;
+}
+.researcher-bio p:last-child { margin-bottom: 0; }
+.researcher-pubs {
+  padding: 1.5rem 1.75rem 1.75rem;
+  border-top: 0.5px solid rgba(238,230,214,0.15);
+}
+.researcher-pubs-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 0.85rem;
+  display: block;
+}
+.researcher-pubs ul { list-style: none; display: grid; gap: 0.5rem; }
+.researcher-pubs li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  color: var(--bone);
+}
+.researcher-pubs li::before {
+  content: "·";
+  font-family: var(--font-mono);
+  color: var(--clay);
+  font-size: 1.4rem;
+  line-height: 0.5;
+  transform: translateY(-2px);
+}
+@media (max-width: 760px) {
+  .researcher-top { grid-template-columns: 1fr; gap: 1.25rem; padding: 1.25rem; }
+  .researcher-photo-wrap { max-width: 280px; }
+  .researcher-cred { grid-template-columns: 1fr; }
+  .researcher-cred-item:nth-child(2) { border-top-color: rgba(238,230,214,0.18); }
+  .researcher-bio, .researcher-pubs { padding: 1.25rem; }
+}
+
+/* =========================================================
+   BLOCO 04 — Magazine-style Q&A
+   ========================================================= */
+.qa-mag {
+  margin-top: 2rem;
+  display: grid;
+  gap: 1.25rem;
+}
+.qa-card {
+  background: var(--bone);
+  border: 0.5px solid var(--forest-15);
+  border-left: 3px solid var(--clay);
+  border-radius: 10px;
+  padding: 1.75rem 1.75rem 1.5rem;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 1.5rem;
+  transition: transform 0.25s ease-out, box-shadow 0.25s ease-out, border-left-color 0.25s ease-out;
+}
+.qa-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(26,36,25,0.06);
+  border-left-color: var(--rust);
+}
+.qa-card-num {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--clay);
+  letter-spacing: -0.02em;
+  padding-top: 0.15rem;
+}
+.qa-card-body { min-width: 0; }
+.qa-card-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 0.6rem;
+  display: block;
+}
+.qa-card-q {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.15rem, 1.85vw, 1.5rem);
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  color: var(--forest);
+  margin-bottom: 1.25rem;
+  max-width: 62ch;
+}
+.qa-card-a {
+  font-family: var(--font-sans);
+  font-size: 0.96rem;
+  line-height: 1.7;
+  color: var(--forest-90);
+  margin-bottom: 0.85rem;
+  max-width: 64ch;
+}
+.qa-card-a:last-child { margin-bottom: 0; }
+.qa-card-pull {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.15rem;
+  line-height: 1.35;
+  color: var(--rust);
+  border-top: 0.5px solid var(--forest-15);
+  border-bottom: 0.5px solid var(--forest-15);
+  padding: 1rem 0;
+  margin: 1.25rem 0;
+  max-width: 58ch;
+}
+@media (max-width: 760px) {
+  .qa-card { grid-template-columns: 1fr; padding: 1.25rem; gap: 0.5rem; }
+  .qa-card-num { font-size: 2.2rem; }
+}
+
+/* =========================================================
+   BLOCO 05 — Observatório como ponte (new proposal)
+   ========================================================= */
+.ponte {
+  margin-top: 1.5rem;
+  background: var(--forest-04);
+  border-radius: 14px;
+  padding: 2rem 2rem 2.25rem;
+}
+.ponte-diagram {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
+  margin-bottom: 1.5rem;
+}
+.ponte-bank {
+  background: var(--bone);
+  border: 0.5px solid var(--forest-15);
+  border-radius: 10px;
+  padding: 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 150px;
+}
+.ponte-bank.is-origin { border-left: 3px solid var(--moss); }
+.ponte-bank.is-destination { border-left: 3px solid var(--clay); }
+.ponte-bank-tag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 0.5rem;
+}
+.ponte-bank.is-origin .ponte-bank-tag { color: var(--moss); }
+.ponte-bank-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.55rem;
+  line-height: 1.1;
+  margin-bottom: 0.65rem;
+  color: var(--forest);
+}
+.ponte-bank-desc {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--forest-90);
+}
+.ponte-bridge {
+  position: relative;
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.ponte-bridge svg { display: block; width: 100%; height: 64px; }
+.ponte-bridge-mark {
+  margin-top: 0.5rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: -0.005em;
+  color: var(--forest);
+  white-space: nowrap;
+}
+.ponte-bridge-mark .dot { color: var(--clay); }
+.ponte-bridge-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  background: var(--clay);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 0 rgba(217,107,61,0.45);
+  animation: pontePulse 2.2s ease-out infinite;
+}
+@keyframes pontePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(217,107,61,0.5); }
+  70%  { box-shadow: 0 0 0 18px rgba(217,107,61,0); }
+  100% { box-shadow: 0 0 0 0 rgba(217,107,61,0); }
+}
+
+.ponte-actors-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--forest-55);
+  margin: 1.75rem 0 0.85rem;
+  display: block;
+}
+.ponte-actors {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+}
+.ponte-actor {
+  background: var(--bone);
+  border: 0.5px solid var(--forest-15);
+  border-radius: 8px;
+  padding: 0.85rem 0.95rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.65rem;
+  align-items: center;
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+.ponte-actor:hover {
+  background: var(--bone);
+  border-color: var(--clay);
+  transform: translateY(-1px);
+}
+.ponte-actor-num {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--clay);
+  padding: 0.18rem 0.4rem;
+  background: rgba(217,107,61,0.12);
+  border-radius: 3px;
+  align-self: center;
+}
+.ponte-actor-name {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--forest);
+}
+
+.ponte-foot {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 0.5px solid var(--forest-15);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--forest-90);
+  max-width: 70ch;
+}
+.ponte-foot strong { color: var(--forest); font-weight: 600; }
+.ponte-foot-quote {
+  font-style: italic;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  line-height: 1.55;
+  display: block;
+}
+.ponte-foot-quote .ponte-foot-text { display: block; }
+.ponte-foot-cite {
+  display: block;
+  margin-top: 0.85rem;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+@media (max-width: 880px) {
+  .ponte-diagram {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+  .ponte-bridge {
+    width: 100%;
+    height: 100px;
+  }
+  .ponte-bridge svg { transform: rotate(90deg); width: 64px; height: 100px; }
+  .ponte-actors { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 540px) {
+  .ponte { padding: 1.25rem 1.25rem; }
+  .ponte-actors { grid-template-columns: 1fr; }
+}
+
+/* Quote-figure — image slot after a pull quote */
+.quote-figure {
+  margin: 2rem 0 1rem;
+  max-width: 760px;
+}
+.quote-figure image-slot {
+  display: block;
+  width: 100%;
+  height: 380px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 0.5px solid var(--forest-15);
+  --image-slot-bg: var(--forest-04);
+}
+.quote-figure figcaption {
+  margin-top: 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--forest-55);
+}
+@media (max-width: 640px) {
+  .quote-figure image-slot { height: 240px; }
+}
+
+/* =========================================================
+   VOICE CARDS — colorful redesign for section 05 (dimensões)
+   ========================================================= */
+.voices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+}
+.voice-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  padding: 2.25rem 2rem 1.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  color: var(--bone);
+  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.3s ease-out;
+}
+.voice-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(26,36,25,0.18);
+}
+.voice-card::before {
+  content: "\201C";
+  position: absolute;
+  top: -2.2rem;
+  right: -0.4rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 14rem;
+  line-height: 1;
+  opacity: 0.13;
+  pointer-events: none;
+  user-select: none;
+}
+.voice-card.is-rust   { background: var(--rust);   color: var(--bone); }
+.voice-card.is-forest { background: var(--forest); color: var(--bone); }
+.voice-card.is-clay   { background: var(--clay);   color: var(--forest); }
+.voice-card.is-moss   { background: var(--moss);   color: var(--bone); }
+.voice-card.is-clay::before { opacity: 0.18; color: var(--forest); }
+
+.voice-head { display: flex; flex-direction: column; gap: 0.35rem; position: relative; z-index: 1; }
+.voice-num {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.75;
+}
+.voice-card.is-clay .voice-num { opacity: 0.8; }
+.voice-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+}
+.voice-eng {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: lowercase;
+  font-style: italic;
+  opacity: 0.65;
+  margin-top: 0.1rem;
+}
+
+.voice-quote {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.25rem, 1.9vw, 1.55rem);
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  position: relative;
+  z-index: 1;
+  padding: 0.5rem 0;
+  border-top: 0.5px solid currentColor;
+  border-bottom: 0.5px solid currentColor;
+  border-color: rgba(238,230,214,0.25);
+}
+.voice-card.is-clay .voice-quote { border-color: rgba(26,36,25,0.22); }
+.voice-quote::before { content: ""; }
+
+.voice-source {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.8;
+  display: block;
+  margin-top: -0.35rem;
+}
+
+.voice-context {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  opacity: 0.78;
+  max-width: none;
+  margin: 0;
+}
+.voice-context em.it {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+}
+
+@media (max-width: 880px) {
+  .voices { grid-template-columns: 1fr; gap: 1rem; }
+  .voice-card { padding: 1.75rem 1.5rem 1.5rem; }
+  .voice-card::before { font-size: 10rem; top: -1.5rem; }
+}
+
+/* =========================================================
+   GUEST NOTE — comment from outside the research flow
+   ========================================================= */
+.guest-note {
+  max-width: 760px;
+  margin: 2rem auto 0;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.75rem;
+  align-items: center;
+  position: relative;
+  background: rgba(74, 93, 58, 0.10);
+  border: 0.5px solid rgba(74, 93, 58, 0.22);
+  border-radius: 14px;
+  padding: 1.5rem 1.6rem;
+}
+.guest-note-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.guest-mark-card {
+  background: transparent;
+  border-radius: 0;
+  padding: 0.5rem 0.25rem;
+  box-shadow: none;
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.guest-mark-card svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 170px;
+}
+.guest-mark-wordmark {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: var(--forest);
+  letter-spacing: -0.005em;
+  text-align: center;
+  white-space: nowrap;
+}
+.guest-mark-wordmark .dot { color: var(--clay); }
+.guest-mark-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: guestDotPulse 2.4s ease-out infinite;
+}
+@keyframes guestDotPulse {
+  0%   { transform: scale(1);   opacity: 1; }
+  50%  { transform: scale(1.18); opacity: 0.92; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+.guest-tag { display: none; }
+
+.guest-note-bubble {
+  position: relative;
+  padding: 0;
+}
+.guest-note-bubble::before { display: none; }
+.guest-note-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--moss);
+  margin-bottom: 0.7rem;
+  display: block;
+  font-weight: 700;
+}
+.guest-note-text {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  color: var(--forest);
+  margin-bottom: 1.1rem;
+  max-width: 56ch;
+}
+.guest-note-person {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 0.7rem;
+  align-items: center;
+  padding-top: 0;
+  border-top: none;
+}
+.guest-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(74, 93, 58, 0.12);
+  border: 0.5px solid rgba(74, 93, 58, 0.28);
+  flex-shrink: 0;
+}
+.guest-avatar image-slot {
+  width: 100%;
+  height: 100%;
+  display: block;
+  --image-slot-bg: transparent;
+  --image-slot-fg: var(--moss);
+  --image-slot-border: transparent;
+}
+.guest-name {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--forest);
+  line-height: 1.2;
+}
+.guest-role {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--moss);
+  margin-top: 0.2rem;
+}
+@media (max-width: 720px) {
+  .guest-note {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding: 1.25rem 1.25rem;
+  }
+  .guest-note-mark { max-width: 200px; margin: 0 auto; }
+  .guest-note-bubble {
+    padding-left: 0;
+    padding-top: 0.5rem;
+  }
+}
+
+/* =========================================================
+   RESEARCHER V2 — full-width moss section with 3 photos
+   ========================================================= */
+.section-researcher {
+  background: var(--moss);
+  color: var(--bone);
+  padding: 6rem 0 7rem;
+  position: relative;
+  overflow: hidden;
+}
+.section-researcher .wrap-wide {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  position: relative;
+}
+.section-researcher .section-tag {
+  color: var(--clay);
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.researcher-headline {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--bone);
+  margin-bottom: 0.4rem;
+  text-transform: lowercase;
+}
+.researcher-role-v2 {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 3rem;
+  font-weight: 700;
+}
+.researcher-photos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+.researcher-photo-slot {
+  aspect-ratio: 4 / 5;
+  background: rgba(238,230,214,0.12);
+  border: 0.5px solid rgba(238,230,214,0.18);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.researcher-photo-slot image-slot {
+  width: 100%;
+  height: 100%;
+  display: block;
+  --image-slot-bg: transparent;
+  --image-slot-fg: rgba(238,230,214,0.6);
+  --image-slot-border: transparent;
+}
+.researcher-meta {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 3.5rem;
+  align-items: start;
+}
+.researcher-meta-bio p {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(238,230,214,0.92);
+  margin-bottom: 1.25rem;
+  max-width: 60ch;
+}
+.researcher-meta-bio p:last-child { margin-bottom: 0; }
+.researcher-meta-creds { display: grid; gap: 0; }
+.researcher-meta-cred {
+  padding: 0.95rem 0;
+  border-top: 0.5px solid rgba(238,230,214,0.22);
+  display: flex;
+  flex-direction: column;
+}
+.researcher-meta-cred:last-child { border-bottom: 0.5px solid rgba(238,230,214,0.22); }
+.researcher-meta-cred .cr-where {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 0.3rem;
+  font-weight: 700;
+}
+.researcher-meta-cred .cr-what {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--bone);
+}
+@media (max-width: 880px) {
+  .researcher-photos { grid-template-columns: 1fr 1fr; }
+  .researcher-meta { grid-template-columns: 1fr; gap: 2rem; }
+}
+@media (max-width: 560px) {
+  .researcher-photos { grid-template-columns: 1fr; }
+}
+
+/* =========================================================
+   LINK CARDS — Bloco 06 redesign
+   ========================================================= */
+.links-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+@media (max-width: 880px) { .links-grid { grid-template-columns: 1fr; } }
+.link-card {
+  background: var(--forest-04);
+  border-radius: 14px;
+  padding: 2.25rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+.link-card-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rust);
+}
+.link-card-title {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.2vw, 1.85rem);
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+  color: var(--forest);
+  text-transform: lowercase;
+  margin: 0;
+}
+.link-card-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  color: var(--forest-90);
+}
+.link-card-fields strong {
+  font-weight: 700;
+  color: var(--forest);
+  margin-right: 0.4rem;
+}
+.link-card-desc {
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--forest-90);
+  margin: 0;
+}
+.link-card-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding-top: 0.5rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.95rem 1.4rem;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--rust);
+  color: var(--bone);
+  border: 0.5px solid var(--rust);
+}
+.btn-primary:hover { background: #6e2415; transform: translateY(-1px); }
+.btn-secondary {
+  background: transparent;
+  color: var(--forest);
+  border: 0.5px solid var(--forest-30);
+}
+.btn-secondary:hover { background: var(--forest-04); }
+
+/* =========================================================
+   PRÓXIMO PASSO — contact section with grid watermark
+   ========================================================= */
+.section-proximo {
+  background: var(--bone);
+  position: relative;
+  overflow: hidden;
+  padding: 6rem 0 7rem;
+}
+.section-proximo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right,  rgba(138,47,29,0.12) 0 0.5px, transparent 0.5px 100%),
+    linear-gradient(to bottom, rgba(138,47,29,0.12) 0 0.5px, transparent 0.5px 100%);
+  background-size: 56px 56px, 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 25%, transparent 95%);
+          mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 25%, transparent 95%);
+}
+.section-proximo > .wrap { position: relative; z-index: 1; }
+.proximo-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+@media (max-width: 880px) {
+  .proximo-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+}
+.proximo-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rust);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 2rem;
+}
+.proximo-tag::before {
+  content: "";
+  width: 28px;
+  height: 1.5px;
+  background: var(--rust);
+}
+.proximo-title {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--forest);
+  text-transform: lowercase;
+  margin-bottom: 1.5rem;
+}
+.proximo-desc {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--forest-90);
+  margin-bottom: 2rem;
+  max-width: 52ch;
+}
+.proximo-actions {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+.contact-list { display: grid; gap: 0; }
+.contact-row {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  gap: 1.5rem;
+  padding: 1.4rem 0;
+  border-top: 0.5px solid var(--forest-30);
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.18s ease;
+}
+.contact-row:last-child { border-bottom: 0.5px solid var(--forest-30); }
+.contact-row:hover { background: rgba(26,36,25,0.03); }
+.contact-row:hover .contact-arrow { transform: translateX(3px); }
+.contact-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--forest-55);
+  font-weight: 700;
+}
+.contact-value {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--forest);
+}
+.contact-arrow {
+  font-family: var(--font-mono);
+  color: var(--forest);
+  opacity: 0.6;
+  transition: transform 0.2s ease;
+}
+@media (max-width: 540px) {
+  .contact-row { grid-template-columns: 80px 1fr auto; gap: 0.85rem; }
+  .contact-label { font-size: 0.66rem; }
+  .contact-value { font-size: 0.88rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- === PROGRESS BAR === -->
+<div class="progress" id="progress"></div>
+
+<!-- === NAV === -->
+<nav class="nav">
+  <div class="nav-inner" style="justify-content: space-between; padding: 17.6px 32px; gap: 132px; flex-direction: row; align-items: center">
+    <a href="#top" class="brand">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="50" cy="50" r="28" fill="none" stroke="currentColor" stroke-width="3"/>
+        <circle cx="56" cy="42" r="6" fill="#D96B3D"/>
+        <path d="M 14 64 C 30 63, 50 65, 86 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-name">observatório<span class="dot">.</span></span>
+    </a>
+    <span class="nav-meta" style="font-size: 8.8px; font-family: &quot;Space Mono&quot;; font-weight: 600; opacity: 0.6; white-space: nowrap">CIÊNCIAS COMPORTAMENTAIS APLICADAS À INCLUSÃO, EDUCAÇÃO E PLANEJAMENTO FINANCEIRO NO SUL GLOBAL</span>
+  </div>
+</nav>
+
+<!-- === HERO === -->
+<header class="hero" id="top" style="background-color: rgb(26, 36, 25); text-align: right">
+  <div class="wrap" style="font-family: ui-monospace">
+    <div class="hero-meta" style="text-align: left; justify-content: space-around">
+      <span style="padding: 0px 0px 0px 30px; width: 406.492px; text-align: left">ARTIGO ORIGINAL:
+FROM ORDER TO CHAOS: HOW CONSUMERS LOSE CONTROL OF RISKS (AND OF THEMSELVES), 2025</span>
+      <span style="text-align: right; padding: 0px 30px 0px 0px; width: 204.984px">PESQUISADORES: JULIO C. LEANDRO
+E DELANE BOTELHO</span>
+    </div>
+
+    <div class="hero-eyebrow"></div>
+    <h1 class="hero-title" style="font-family: &quot;Space Mono&quot;; font-weight: 600; font-size: 43px; width: 950px; text-align: center; margin: 0px auto 24px"><span style="color: #eee6d6">DA ORDEM AO CAOS: a trajetória de 37 consumidores superendividados em São Paulo e o que ela nos ensina sobre </span><span style="color: var(--clay)">os limites da educação financeira individual</span></h1>
+    <p class="hero-lede" style="color: rgb(217, 107, 61); font-weight: 600; text-align: center; margin: 20px 119px 0px; font-size: 32.4px; line-height: 1.2">
+</p>
+
+    <div class="hero-byline" style="text-align: center">
+</div>
+  </div>
+</header>
+
+<!-- === SECTION 00 — OBSERVATÓRIO COMO PONTE === -->
+<section class="section-moss" id="ponte-abertura">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">
+</span>
+      <h2 class="section-title" style="color: rgb(217, 107, 61); font-weight: 600; font-size: 32.57px; font-family: &quot;Space Mono&quot;; line-height: 1.2">observatório como ponte<span style="color: #eee6d6">_</span></h2>
+      <p class="body">O observatório existe para encurtar a distância entre a pesquisa que entende o problema e a prática que tem o poder de mitigá-lo.</p>
+    </div>
+
+    <div class="col" style="max-width: var(--max-w); margin-top: 2.5rem;">
+      <div class="ponte" style="background: rgba(238,230,214,0.08);">
+        <div class="ponte-diagram">
+          <div class="ponte-bank is-origin">
+            <span class="ponte-bank-tag">DA ACADEMIA</span>
+            <div class="ponte-bank-title" style="font-size: 20.8px; font-weight: 600">Pesquisa de campo</div>
+            <div class="ponte-bank-desc">Crédito, endividamento e vulnerabilidade financeira estudadas a partir de trajetórias reais, com suas dimensões emocionais, com lente no estágio de caos.</div>
+          </div>
+
+          <div class="ponte-bridge" aria-hidden="true">
+            <svg viewBox="0 0 180 64" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 4 50 C 40 8, 140 8, 176 50" fill="none" stroke="#EEE6D6" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 4"/>
+              <line x1="4"   y1="50" x2="4"   y2="60" stroke="#EEE6D6" stroke-width="1.5" stroke-linecap="round" style="opacity: 0"/>
+              <line x1="176" y1="50" x2="176" y2="60" stroke="#EEE6D6" stroke-width="1.5" stroke-linecap="round" style="opacity: 0"/>
+            </svg>
+            <span class="ponte-bridge-pulse"></span>
+            <div class="ponte-bridge-mark" style="color: var(--bone); font-size: 15.2px">observatório<span class="dot">.</span></div>
+          </div>
+
+          <div class="ponte-bank is-destination">
+            <span class="ponte-bank-tag">PARA A PRÁTICA</span>
+            <div class="ponte-bank-title" style="font-size: 20.8px; font-weight: 600">Decisão informada</div>
+            <div class="ponte-bank-desc">Políticas públicas, regulação, práticas institucionais mais responsáveis e ações no mais sensíveis à realidade dos consumidores.</div>
+          </div>
+        </div>
+
+        <span class="ponte-actors-label" style="color: rgba(238,230,214,0.7);">QUEM CAMINHA JUNTO</span>
+        <div class="ponte-actors">
+          <div class="ponte-actor"><span class="ponte-actor-num">01</span><span class="ponte-actor-name">Formuladores de políticas públicas</span></div>
+          <div class="ponte-actor"><span class="ponte-actor-num">02</span><span class="ponte-actor-name">Reguladores</span></div>
+          <div class="ponte-actor"><span class="ponte-actor-num">03</span><span class="ponte-actor-name">Instituições financeiras</span></div>
+          <div class="ponte-actor"><span class="ponte-actor-num">04</span><span class="ponte-actor-name">Planejadores financeiros</span></div>
+          <div class="ponte-actor"><span class="ponte-actor-num">05</span><span class="ponte-actor-name">Organizações da sociedade civil</span></div>
+          <div class="ponte-actor"><span class="ponte-actor-num">06</span><span class="ponte-actor-name">Projetos locais</span></div>
+        </div>
+
+        <blockquote class="ponte-foot ponte-foot-quote" style="color: rgba(238,230,214,0.92); border-top-color: rgba(238,230,214,0.18);">
+          <span class="ponte-foot-text">"No fundo, busco contribuir para um ecossistema em que <strong style="color: var(--bone);">governo, mercado e sociedade</strong> atuem de forma mais coordenada — promovendo decisões financeiras sustentáveis e reduzindo a vulnerabilidade."</span>
+          <cite class="ponte-foot-cite">Júlio Leandro</cite>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION 01 — ABERTURA === -->
+<section class="section-bone" id="abertura">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">01 · Abertura</span>
+      <h2 class="section-title" style="font-size: 32.57px; font-weight: 600">"O problema do superendividamento não é apenas a dívida — pode ser a perda progressiva de controle sobre a própria vida"</h2>
+      <p class="body">
+        A forma mais comum de entender o superendividamento é simples: a
+        pessoa gastou demais ou tomou decisões ruins. Mas nossa pesquisa
+        mostra algo diferente. O superendividamento não acontece de uma
+        vez — ele se constrói ao longo do tempo, como um processo.
+      </p>
+
+      <p class="body">
+        Na maioria dos casos, tudo começa de forma legítima: usar crédito
+        para pagar contas, lidar com imprevistos ou manter o padrão de
+        vida. O problema é que, ao longo do tempo, diferentes eventos
+        começam a se acumular — perda de renda, problemas de saúde,
+        mudanças familiares, gastos inesperados. Para lidar com isso, as
+        pessoas recorrem a mais crédito, renegociam dívidas e tentam
+        resolver tudo sozinhas. Nesse processo, dois fatores são
+        decisivos: a ilusão de que ainda estão no controle e o medo de
+        admitir o problema. Aos poucos, as dívidas deixam de ser
+        administráveis e passam a crescer de forma desordenada. Quando a
+        pessoa percebe, já está em uma situação em que não consegue mais
+        controlar o que acontece. Nesse estágio, o problema deixa de ser
+        apenas financeiro. Ele afeta a saúde mental, as relações pessoais
+        e a forma como a pessoa se vê. Muitos relatam vergonha,
+        isolamento, ansiedade constante e a sensação de que perderam o
+        controle da própria vida.
+      </p>
+
+      <p class="body">
+        O que nossa pesquisa mostra é que o superendividamento não é
+        apenas um erro individual — é um processo complexo, marcado por
+        eventos inesperados, decisões difíceis e um ambiente que facilita
+        o acúmulo de riscos.
+      </p>
+
+      <p class="section-intro" style="max-width: var(--col-w); font-size: 16.8px; line-height: 1.7; margin: 0px 0px 20px">Neste artigo, Leandro e Botelho examinam como consumidores deixam de ter controle sobre os riscos do crédito e migram para um estado de endividamento crônico, no qual a capacidade de gerenciar a própria situação financeira se desfaz.</p>
+
+      <p class="body">
+        Os autores entrevistaram 37 brasileiros superendividados em
+        São Paulo ao longo de 2018 e 2019, recrutados em um órgão
+        público de defesa do consumidor que oferece programa de
+        renegociação de dívidas. Também observaram seis reuniões de
+        Devedores Anônimos, palestras, seminários e materiais
+        institucionais. O recorte é amplo: participantes de diferentes
+        classes sociais, idades, profissões e níveis de escolaridade —
+        inclusive consumidores com alta escolaridade e educação
+        financeira formal.
+      </p>
+
+      <p class="body">
+</p>
+    </div>
+
+    <div class="col">
+      <div class="stats">
+        <div class="stat" style="--i:0">
+          <div class="stat-num" data-count="76,1">76,1<span class="stat-unit">%</span></div>
+          <div class="stat-label">das famílias brasileiras tinham alguma dívida em janeiro de 2025 (Fonte: CNC).</div>
+        </div>
+        <div class="stat" style="--i:1">
+          <div class="stat-num" data-count="73,5">73,5<span class="stat-unit"> mi</span></div>
+          <div class="stat-label">de brasileiros estavam inadimplentes em dezembro de 2024 (Fonte: Serasa Experian).</div>
+        </div>
+        <div class="stat" style="--i:2">
+          <div class="stat-num" data-count="27,9">27,9<span class="stat-unit">%</span></div>
+          <div class="stat-label">da renda das famílias era destinada a serviço da dívida em 2022 — em 2005, eram 18%
+(Fonte: Banco Central).</div>
+        </div>
+        <div class="stat" style="--i:3">
+          <div class="stat-num" data-count="59,5">59,5<span class="stat-unit">%</span></div>
+          <div class="stat-label">dos participantes do estudo perderam emprego, renda ou tiveram diminuição como ponto de partida do problema.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION 02 — CONCEITO CENTRAL === -->
+<section class="section-bone" id="conceito" style="padding-top:2rem;">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">02 · Conceito central</span>
+      <h2 class="section-title" style="font-weight: 600">A espiral descendente</h2>
+
+      <p class="body">---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- parágrafo sobre o conceito da espiral descendente da pesquisa</p>
+
+      <p class="body">
+</p>
+
+      <blockquote class="pull">
+        "Imagine um tsunami: você está no meio dele, e tudo está indo
+        para todo lado. E você quer sair, então luta, tenta escapar de
+        um ponto, acaba em outro, tentando sair. Você reza pra acabar.
+        Vai acabar uma hora — e se você sair vivo, ótimo."
+        <cite>Luke · participante do estudo · superendividado</cite>
+      </blockquote>
+
+      <figure class="quote-figure">
+        <image-slot
+          id="tsunami-image"
+          shape="rounded"
+          radius="10"
+          placeholder="Imagem para o trecho do tsunami" style="margin: 60px 0px 0px">
+        </image-slot>
+        <figcaption>
+</figcaption>
+      </figure>
+
+      <p class="body">----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- parágrafo comentando a imagem (que será refeita)</p>
+    </div>
+  </div>
+</section>
+
+<!-- === GUEST COMMENT — Vívian Rodrigues (antes da trajetória) === -->
+<section class="section-bone guest-comment-block" id="comentario-vivian-trajetoria" style="padding: 2rem 0 4.5rem;">
+  <div class="wrap">
+    <aside class="guest-note" aria-label="Comentário externo" style="background-color: rgba(101, 114, 90, 0.16); border-style: none; border-radius: 0px 14px; opacity: 1">
+      <div class="guest-note-mark" aria-hidden="true">
+        <div class="guest-mark-card">
+          <svg viewBox="0 0 240 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M 18 82 C 70 20, 170 20, 222 82" fill="none" stroke="#1A2419" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 6"/>
+            <circle cx="120" cy="66" r="22" fill="rgba(217,107,61,0.32)"/>
+            <circle class="guest-mark-dot" cx="120" cy="66" r="10" fill="#D96B3D"/>
+          </svg>
+          <div class="guest-mark-wordmark">observatório como ponte<span class="dot">_</span></div>
+        </div>
+        <div class="guest-tag">Observatório como ponte</div>
+      </div>
+
+      <div class="guest-note-bubble">
+        <span class="guest-note-label">COMENTÁRIO EXTERNO</span>
+        <p class="guest-note-text">"ler esse trecho me lembrou o quanto, no início da minha carreira como planejadora bla bla bla ------------------------------------------------------------------------------------------------------------------"</p>
+        <div class="guest-note-person">
+          <div class="guest-avatar">
+            <image-slot
+              id="vivian-avatar-trajetoria"
+              shape="circle"
+              src="assets/vivian.png"
+              placeholder="Foto · Vívian">
+            </image-slot>
+          </div>
+          <div class="guest-meta">
+            <div class="guest-name">Vívian Rodrigues</div>
+            <div class="guest-role">Planejadora financeira</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- === SECTION 04 — TRAJETÓRIA === -->
+<section class="section-bone" id="trajetoria" style="padding-top:2rem;">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">03 · Trajetória de transição</span>
+      <h2 class="section-title" style="font-weight: 600">Os estágios entre a ordem ao caos</h2>
+      <p class="section-intro">
+        A pesquisa identifica três fases na trajetória do consumidor,
+        que acontecem de forma consecutiva, contínua e sobreposta.
+      </p>
+      <p class="section-intro">
+        Elas se apresentam de forma independente da motivação inicial
+        para busca do crédito, seja devido a consumo excessivo ou perda
+        de emprego.
+      </p>
+      <p class="section-intro">
+        Em maior ou menor grau, todos os participantes enfrentam riscos
+        crescentes e migram de alguma forma de ordem para algum nível de
+        caos, vivenciando múltiplos eventos concomitantes, efeitos de
+        estigma, ilusão de controle e autonegação.
+      </p>
+    </div>
+
+    <div class="traj-axis" aria-hidden="true">
+      <div class="traj-dot" style="--i:0">
+        <div class="traj-dot-circle" style="background-color: rgb(74, 93, 58)"></div>
+        <div class="traj-label">Risco baixo</div>
+      </div>
+      <div class="traj-dot" style="--i:1">
+        <div class="traj-dot-circle"></div>
+        <div class="traj-label">Risco médio e crescente</div>
+      </div>
+      <div class="traj-dot" style="--i: 2; text-align: center">
+        <div class="traj-dot-circle"></div>
+        <div class="traj-label">Risco alto</div>
+      </div>
+    </div>
+
+    <div class="traj-grid">
+      <div class="traj-stage s1" style="--i: 0; background-color: rgb(74, 93, 58)">
+        <div class="traj-stage-num traj-eyebrow" style="font-size: 11.2px">ESTÁGIO DE ORDEM</div>
+        <h3 class="traj-bigtitle" style="font-size: 25px; color: rgb(254, 254, 254)">"tudo está sob controle"</h3>
+        <ul class="traj-fields">
+          <li><strong>Sentido de controle</strong><span>Sensação de controle</span></li>
+          <li><strong>Emoções</strong><span>Estáveis e controladas</span></li>
+          <li><strong>Identidade</strong><span>Afirmativa e autônoma</span></li>
+          <li><strong>Esforço de mitigação</strong><span>Baixo — não há necessidade percebida</span></li>
+          <li><strong>Segurança ontológica</strong><span>Presente e estável</span></li>
+          <li><strong>
+</strong><span>
+</span></li>
+        </ul>
+      </div>
+
+      <div class="traj-stage s2" style="--i: 1; background-color: rgb(217, 107, 61)">
+        <div class="traj-stage-num traj-eyebrow">ESTÁGIO INTERMEDIÁRIO</div>
+        <h3 class="traj-bigtitle" style="font-size: 29px"><span style="color: rgb(238, 229, 214)">"a bola de neve se inicia, pareço estar perdendo o controle"</span></h3>
+        <ul class="traj-fields">
+          <li><strong>Sentido de controle</strong><span style="color: rgb(42, 24, 16)">Sensação de estar perdendo o controle</span></li>
+          <li><strong>Emoções</strong><span>Ansiedade emergente</span></li>
+          <li><strong>Identidade</strong><span>Enfraquecendo</span></li>
+          <li><strong>Esforço de mitigação</strong><span>Tentando gerenciar e mitigar (sem sucesso)</span></li>
+          <li><strong>Segurança ontológica</strong><span>Sentido de perda de segurança</span></li>
+          <li><strong>
+</strong><span>
+</span></li>
+        </ul>
+      </div>
+
+      <div class="traj-stage s3" style="--i: 2; background-color: rgb(138, 46, 29); color: rgb(255, 255, 255)">
+        <div class="traj-stage-num traj-eyebrow">ESTÁGIO DE CAOS</div>
+        <h3 class="traj-bigtitle" style="color: rgb(255, 255, 255); font-size: 25px">"caos, fundo do poço, não tenho mais controle"</h3>
+        <ul class="traj-fields">
+          <li><strong>Sentido de controle</strong><span style="color: rgb(255, 255, 255)">Sentimentos crônicos de não controle</span></li>
+          <li><strong>Emoções</strong><span style="color: rgb(255, 255, 255)">Tempestade de emoções negativas</span></li>
+          <li><strong>Identidade</strong><span style="color: rgb(255, 255, 255)">Diminuída e depreciada</span></li>
+          <li><strong>Esforço de mitigação</strong><span style="color: rgb(255, 255, 255)">Baixo — passividade e desistência</span></li>
+          <li><strong>Segurança ontológica</strong><span style="color: rgb(255, 255, 255)">Majoritariamente perdida (ansiedade existencial)</span></li>
+          <li><strong>
+</strong><span>
+</span></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- === GUEST COMMENT — Vívian Rodrigues (antes dos Fatores agravantes) === -->
+<section class="section-bone guest-comment-block" id="comentario-vivian" style="padding: 2rem 0 4.5rem;">
+  <div class="wrap">
+    <aside class="guest-note" aria-label="Comentário externo" style="background-color: rgba(101, 114, 90, 0.16); border-style: none; border-radius: 0px 14px; opacity: 1">
+      <div class="guest-note-mark" aria-hidden="true">
+        <div class="guest-mark-card">
+          <svg viewBox="0 0 240 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M 18 82 C 70 20, 170 20, 222 82" fill="none" stroke="#1A2419" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 6"/>
+            <circle cx="120" cy="66" r="22" fill="rgba(217,107,61,0.32)"/>
+            <circle class="guest-mark-dot" cx="120" cy="66" r="10" fill="#D96B3D"/>
+          </svg>
+          <div class="guest-mark-wordmark">observatório como ponte<span class="dot">_</span></div>
+        </div>
+        <div class="guest-tag">Observatório como ponte</div>
+      </div>
+
+      <div class="guest-note-bubble">
+        <span class="guest-note-label">COMENTÁRIO EXTERNO</span>
+        <p class="guest-note-text">"ler esse trecho me lembrou o quanto, no início da minha carreira como planejadora bla bla bla ------------------------------------------------------------------------------------------------------------------"</p>
+        <div class="guest-note-person">
+          <div class="guest-avatar">
+            <image-slot
+              id="vivian-avatar-v2"
+              shape="circle"
+              src="assets/vivian.png"
+              placeholder="Foto · Vívian">
+            </image-slot>
+          </div>
+          <div class="guest-meta">
+            <div class="guest-name">Vívian Rodrigues</div>
+            <div class="guest-role">Planejadora financeira</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- === SECTION 05 — QUATRO FATORES AGRAVANTES === -->
+<section class="section-bone" id="forcas" style="padding-top:2rem;">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">04 · Fatores agravantes</span>
+      <h2 class="section-title" style="font-weight: 600">Quatro fatores que levam do médio ao alto risco</h2>
+      <p class="section-intro">
+        Os quatro fatores podem se combinar de maneiras distintas, e os
+        consumidores nem sempre percebem que estão ocorrendo ou que
+        efeito têm. Quando finalmente percebem, já passaram do ponto em
+        que seria possível retomar o controle.
+      </p>
+
+      <div class="forces">
+        <div class="force" style="--i:0">
+          <div class="force-num">01</div>
+          <div>
+            <h3>Eventos múltiplos simultâneos</h3>
+            <p style="font-family: 'Space Mono', ui-monospace, monospace;">Os eventos não acontecem de forma isolada, eles se sobrepõem. Um dos participantes (John) acompanhados na pesquisa começa uma construção, toma empréstimo, então o parceiro adoece e perde o emprego, depois o sogro adoece e mais despesas surgem; outra participante (Farah) perde o cargo de professora, perde contratos de arquitetura e se divorcia, simultaneamente. Em meio ao turbilhão, Farah se percebe desorganizada financeiramente e desenvolve certa propensão (ocasional) ao consumismo. 
+
+
+Os autores reforçam, citando Stone &amp; Maury, que nenhum conjunto único de fatores (econômicos, situacionais, psicológicos) é suficiente para explicar o superendividamento. A natureza complexa, ambígua e imprevisível dos riscos torna a gestão inviável quando vários eventos colidem.</p>
+          </div>
+        </div>
+
+        <div class="force" style="--i:1">
+          <div class="force-num">02</div>
+          <div>
+            <h3>Efeitos do estigma</h3>
+            <p>Os participantes são fortemente marcados pela vergonha e tentam esconder o problema. Com medo da crítica e do julgamento, em uma tentativa de não decepcionar as pessoa queridas, tentam resolvê-lo sozinhos.
+
+
+Vários só foram descobertos quando ligações de cobrança chegaram a familiares (caso do Rick). Outros (como Naomi) escondem dos irmãos e de amigas mais ricas, e se culpam.
+
+
+Louis comenta que muita gente vê o endividamento como "doença crônica", algo incurável, uma mácula eterna. O medo do "nome sujo" leva consumidores a contraírem novas dívidas para evitar a inadimplência — Owen e Fae descrevem exatamente esse movimento. Renegociar postergando prazos parece uma boa solução de curto prazo, mas amplia o problema. Neil descreve o isolamento e a instabilidade emocional que isso gera, levando a decisões ainda piores. O estigma, portanto, não apenas adoece o consumidor: também contribui diretamente para que ele gerencie mal o risco. Em última instância, aqueles em situação de superendividamento se percebem incapazes.</p>
+          </div>
+        </div>
+
+        <div class="force" style="--i:2">
+          <div class="force-num">03</div>
+          <div>
+            <h3>Ilusão de controle</h3>
+            <p>Os consumidores frequentemente creem estar no controle, mesmo quando já o perderam. O risco cresce com a acumulação de dívidas, mas a percepção não acompanha. Louis, por exemplo, relata o momento em que parou de monitorar receitas e despesas, achando que tudo estava sob controle, quando na verdade tudo já estava perdido.
+
+
+Os participantes parecem incapazes de agir, possivelmente por acreditarem que conseguirão resolver depois — Ella, pro exemplo, reflete, com sua terapeuta, ter esperado demais para decidir, achando que conseguiria administrar e descobrindo que não.</p>
+          </div>
+        </div>
+
+        <div class="force" style="--i:3">
+          <div class="force-num">04</div>
+          <div>
+            <h3>Autoengano (self-denial)</h3>
+            <p>A autonegação é a recusa em reconhecer o problema, mesmo quando os sinais são evidentes. Caroline conta que só percebeu o problema quando todas as opções de crédito lhe foram retiradas — e, perguntada se sabia que as dívidas poderiam chegar àquele nível, responde que sempre achou que daria conta. Os autores comparam esse padrão a evidências clínicas em pacientes com câncer de mama que negam a doença e resistem ao tratamento, e em pessoas com transtornos alimentares que escondem o problema.
+
+
+Laura, conselheira financeira da ProConsumer, observa que ninguém calcula previamente a linha em que deixará teoricamente de administrar a dívida e passará a ser superendividado, e que, enquanto o consumidor consegue transferir um crédito para outro, segue achando que ainda está do lado seguro da linha.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION 06 — QUATRO DIMENSÕES (redesign colorido) === -->
+<section class="section-bone" id="dimensoes" style="padding-top:2rem;">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">05 · Experiência do caos</span>
+      <h2 class="section-title" style="font-weight: 600">Quatro dimensões<br/>da narrativa de caos</h2>
+      <p class="section-intro">
+        Apoiados na conceitualização de "narrativas de caos" de Arthur
+        Frank (1998, 2013), os autores identificam quatro elementos-chave
+        da experiência vivida pelos participantes no estágio de Caos.
+      </p>
+    </div>
+
+    <div class="voices">
+      <article class="voice-card is-rust" style="--i:0">
+        <div class="voice-head">
+          <span class="voice-num">DIMENSÃO 01 - EMOCIONAL BATTERING</span>
+          <h3 class="voice-title" style="font-family: &quot;Space Mono&quot;; font-weight: 600">Espancamento emocional</h3>
+          <span class="voice-eng">
+</span>
+        </div>
+        <blockquote class="voice-quote">
+          "Eu já pensei até em me matar. Eu sentia desespero em minha
+          casa, quebrei muitas coisas de desespero."
+        </blockquote>
+        <span class="voice-source" style="opacity: 0.6">Angela · participante do estudo</span>
+        <p class="voice-context">
+          Os consumidores relatam arrependimento, ressentimento,
+          autocensura, opressão, medo, desespero e pânico. Essas
+          emoções são associadas à tentativas de suicídio, problemas
+          com álcool, dependência de drogas e transtornos neuróticos.
+        </p>
+      </article>
+
+      <article class="voice-card is-forest" style="--i:1">
+        <div class="voice-head">
+          <span class="voice-num">DIMENSÃO 02 - UNMAKING THE WORLD</span>
+          <h3 class="voice-title" style="font-family: &quot;Space Mono&quot;; font-weight: 600">Desmoronar do mundo</h3>
+          <span class="voice-eng">
+</span>
+        </div>
+        <blockquote class="voice-quote">
+          "Eu fui ficando pior, pior, pior, até o momento em que me
+          encontrei no fundo do poço."
+        </blockquote>
+        <span class="voice-source" style="opacity: 0.5">Louis · participante do estudo</span>
+        <p class="voice-context">
+          A sensação é que o problema financeiro original se
+          espalha como metástase. Frank chama de
+          <em class="it">unmaking of the person's world</em>: uma
+          sobredeterminação em que o caos atinge profundidades insondáveis
+          e tudo parece dar errado.
+        </p>
+      </article>
+
+      <article class="voice-card is-clay" style="--i:2">
+        <div class="voice-head">
+          <span class="voice-num">DIMENSÃO 03 - LIVING ON IMMEDIACY</span>
+          <h3 class="voice-title" style="font-family: &quot;Space Mono&quot;; font-weight: 600">Vivendo no imediato</h3>
+          <span class="voice-eng">
+</span>
+        </div>
+        <blockquote class="voice-quote">
+          "Minha preocupação com a dívida consome 99% do meu tempo. De
+          manhã, à noite, nos sonhos. Não há outros pensamentos."
+        </blockquote>
+        <span class="voice-source" style="opacity: 0.5">Sandra · participante do estudo</span>
+        <p class="voice-context">
+          O indivíduo é tomado pelo presente e pelo imediato . Uma
+          narrativa coerente exige passado, presente e futuro;
+          narrativas de caos (com seus buracos, silêncios e interrupções)
+          carecem de qualquer busca por propósito ou senso de futuro.
+        </p>
+      </article>
+
+      <article class="voice-card is-moss" style="--i:3">
+        <div class="voice-head">
+          <span class="voice-num">DIMENSÃO 04 - LOSS OF CONSUMPTION &amp; THREATENED SUBSISTENCE</span>
+          <h3 class="voice-title" style="font-family: &quot;Space Mono&quot;; font-weight: 600">Subsistência ameaçada</h3>
+          <span class="voice-eng">
+</span>
+        </div>
+        <blockquote class="voice-quote">
+          "Eu não tenho nem dinheiro para comprar um par de óculos (ou)
+          consertar meus dentes. Não tenho dinheiro; eu só pago contas.
+          Eu vivo para pagar contas."
+        </blockquote>
+        <span class="voice-source" style="opacity: 0.5">Mary · participante do estudo</span>
+        <p class="voice-context">
+          Mesmo após cortes drásticos, o déficit persiste, provocando um
+          padrão de vida que exclui lazer, consumo compensatório ou
+          supérfluo. Devido à inadimplência, frequentemente perdem acesso
+          a cartões e cheque especial. O resultado é uma vida que beira a
+          subsistência.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION 07 — RUST · RESPONSABILIZAÇÃO === -->
+<section class="section-rust" id="responsabilizacao">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag">06 · Limites da responsabilização</span>
+      <h2 class="section-title" style="color:var(--bone); font-weight: 600;">Responsabilidade pessoal não pode ser exercida de dentro do caos</h2>
+      <p class="section-intro">
+
+      </p>
+
+      <p class="body">No âmbito individual, a maioria dos participantes do estudo demonstrava consciência na tomada de crédito e se sentiam responsáveis por suas dívidas. Enquanto sociedade contemporânea de orientação ocidental, percebemos que valoriza,-se normas culturais de responsabilidade pessoal, controle e autogerenciamento, segundo as quais os indivíduos devem assumir as rédeas da própria vida.</p>
+
+      <p class="body">Essas normas exerceram influência ambivalente sobre os participantes: ao mesmo tempo em que incentivaram a tomada de risco, dificultaram a resolução, já que os consumidores tentaram resolver os problemas sozinhos. Quando falharam em quitar as dívidas, sentiram-se responsáveis e foram emocionalmente espancados por sentimentos de fracasso pessoal.</p>
+
+      <p class="body">
+        Pesquisas anteriores citadas pelos autores mostram que
+        obrigações e responsabilidades em torno da dívida do
+        consumidor têm sido deslocadas do Estado e das corporações
+        para os consumidores por discursos dominantes (Giesler e
+        Veresiu, 2014). Esses discursos exigem um consumidor
+        otimizado, racional e financeiramente educado, capaz de
+        gerenciar riscos efetivamente.
+      </p>
+
+      <div class="synthesis">
+        <div class="synthesis-label">
+</div>
+        <p style="font-size: 17.6px">
+          "Ansiedade não é uma base sólida para ação racional (Beck,
+          1992). Como argumenta Frank (1998, 2013), indivíduos não
+          conseguem exercer responsabilidade pessoal de dentro do caos.
+          [...] As experiências [dos participantes] sublinham uma
+          falha societal crítica em reconhecer que a responsabilidade
+          pessoal não pode ser exercida dentro do caos."
+        </p>
+      </div>
+
+      <p class="body">Colocar todo o ônus de evitar o superendividamento sobre o consumidor implica expectativas irrealistas: altos níveis de literacia financeira, monitoramento orçamentário constante, resiliência psicológica diante do estigma, capacidade de antecipar perdas de renda ou aumentos súbitos de despesas, e controle sobre as incertezas da vida.</p>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION 08 — INTERVENÇÕES RECOMENDADAS === -->
+<section class="section-bone" id="recomendacoes">
+  <div class="wrap" style="font-weight: 400">
+    <div class="col">
+      <span class="section-tag">07 · INTERVENÇÕES</span>
+      <h2 class="section-title">Seis problemas observados,
+seis respostas propostas</h2>
+      <p class="section-intro">Recomendações baseadas em evidência para ajudar consumidores a reconhecer, evitar e manejar riscos que escalam.</p>
+    </div>
+
+    <div class="recs">
+      <div class="rec" style="--i:0">
+        <div>
+          <span class="rec-col-label">Problema observado</span>
+          <p class="rec-problem">Uso de crédito para suprir necessidades correntes ou complementar renda.</p>
+        </div>
+        <div>
+          <span class="rec-col-label">Resposta sugerida</span>
+          <p class="rec-response">Evitar depender de crédito para subsistência. Usar crédito apenas para fins financeiramente sustentáveis (ex.: investimentos com retorno positivo ou bens essenciais dentro das possibilidades).</p>
+        </div>
+      </div>
+
+      <div class="rec" style="--i:1">
+        <div>
+          <span class="rec-col-label">Problema observado</span>
+          <p class="rec-problem">Tentativa de resolver problemas de dívida sozinho, por causa do estigma.</p>
+        </div>
+        <div>
+          <span class="rec-col-label">Resposta sugerida</span>
+          <p class="rec-response">Reconhecer o problema cedo. Buscar apoio de pessoas de confiança e instituições especializadas antes que o problema escale.</p>
+        </div>
+      </div>
+
+      <div class="rec" style="--i:2">
+        <div>
+          <span class="rec-col-label">Problema observado</span>
+          <p class="rec-problem">Aceitação de riscos desconhecidos e não gerenciáveis por falta de literacia financeira e ilusão de controle.</p>
+        </div>
+        <div>
+          <span class="rec-col-label">Resposta sugerida</span>
+          <p class="rec-response">Tomar apenas riscos compreensíveis e gerenciáveis na eventualidade de surpresas negativas. Evitar risco sob condições de negação ou compreensão limitada.</p>
+        </div>
+      </div>
+
+      <div class="rec" style="--i:3">
+        <div>
+          <span class="rec-col-label">Problema observado</span>
+          <p class="rec-problem">Exposição a perda imprevisível de renda e despesas súbitas sem rede de proteção.</p>
+        </div>
+        <div>
+          <span class="rec-col-label">Resposta sugerida</span>
+          <p class="rec-response">Construir reserva de emergência para absorver choques financeiros e reduzir dependência de crédito em momentos vulneráveis.</p>
+        </div>
+      </div>
+
+      <div class="rec" style="--i:4">
+        <div>
+          <span class="rec-col-label">Problema observado</span>
+          <p class="rec-problem">Espancamento emocional e caos diminuindo a capacidade de resposta do consumidor.</p>
+        </div>
+        <div>
+          <span class="rec-col-label">Resposta sugerida</span>
+          <p class="rec-response">Buscar apoio psicológico para reconstruir resiliência emocional e recuperar a capacidade de lidar com a pressão financeira.</p>
+        </div>
+      </div>
+
+      <div class="rec" style="--i:5">
+        <div>
+          <span class="rec-col-label">Problema observado</span>
+          <p class="rec-problem">Sentir-se sobrecarregado por riscos complexos e compostos.</p>
+        </div>
+        <div>
+          <span class="rec-col-label">Resposta sugerida</span>
+          <p class="rec-response">Engajar advogados e consultores financeiros para navegar processos institucionais e acessar soluções viáveis além do esforço individual.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top: 3rem; padding: 40px 40px 40px 32px">
+      <div class="callout-label">JÚLIO C. LEANDRO E DELANE BOTELHO</div>
+      <p>"Os consumidores precisam de pelo menos três fontes de apoio externo para superar o problema: orientação financeira, apoio jurídico e apoio psicológico. Enfrentar o desafio exige engajamento institucional e responsabilidade compartilhada entre formuladores de políticas, reguladores, credores e consumidores."
+</p>
+    </div>
+  </div>
+</section>
+
+<!-- === GUEST COMMENT — Vívian Rodrigues (depois do Júlio) === -->
+<section class="section-bone guest-comment-block" id="comentario-vivian-recomendacoes" style="padding: 2rem 0 4.5rem;">
+  <div class="wrap">
+    <aside class="guest-note" aria-label="Comentário externo" style="background-color: rgba(101, 114, 90, 0.16); border-style: none; border-radius: 0px 14px; opacity: 1">
+      <div class="guest-note-mark" aria-hidden="true">
+        <div class="guest-mark-card">
+          <svg viewBox="0 0 240 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M 18 82 C 70 20, 170 20, 222 82" fill="none" stroke="#1A2419" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 6"/>
+            <circle cx="120" cy="66" r="22" fill="rgba(217,107,61,0.32)"/>
+            <circle class="guest-mark-dot" cx="120" cy="66" r="10" fill="#D96B3D"/>
+          </svg>
+          <div class="guest-mark-wordmark">observatório como ponte<span class="dot">_</span></div>
+        </div>
+        <div class="guest-tag">Observatório como ponte</div>
+      </div>
+
+      <div class="guest-note-bubble">
+        <span class="guest-note-label">COMENTÁRIO EXTERNO</span>
+        <p class="guest-note-text">"ler esse trecho me lembrou o quanto, no início da minha carreira como planejadora bla bla bla ------------------------------------------------------------------------------------------------------------------"</p>
+        <div class="guest-note-person">
+          <div class="guest-avatar">
+            <image-slot
+              id="vivian-avatar-recomendacoes"
+              shape="circle"
+              src="assets/vivian.png"
+              placeholder="Foto · Vívian">
+            </image-slot>
+          </div>
+          <div class="guest-meta">
+            <div class="guest-name">Vívian Rodrigues</div>
+            <div class="guest-role">Planejadora financeira</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- === CLOSING SECTION === -->
+<section class="section-forest" id="fechamento" style="background-color: rgb(138, 46, 29)">
+  <div class="wrap">
+    <div class="col closing">
+      <span class="section-tag">
+</span>
+      <p class="closing-quote" style="font-size: 37.3px; font-weight: 600">"A pessoa imersa no caos é tomada pelo presente e pelo imediato"</p>
+      <div class="closing-source">
+        Arthur Frank · Just Listening: Narrative and Deep Illness · 1998
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION: O PESQUISADOR (full-bleed moss) === -->
+<section class="section-researcher" id="pesquisador" style="background-color: rgb(26, 36, 25)">
+  <div class="wrap-wide">
+    <span class="section-tag">O PESQUISADOR</span>
+    <h2 class="researcher-headline">julio c. leandro.</h2>
+    <div class="researcher-role-v2">PESQUISADOR · COLOCAR ÁREA DE PESQUISA</div>
+
+    <div class="researcher-photos">
+      <div class="researcher-photo-slot">
+        <image-slot id="julio-photo-1" shape="rect" placeholder="Foto"></image-slot>
+      </div>
+      <div class="researcher-photo-slot">
+        <image-slot id="julio-photo-2" shape="rect" placeholder="Foto"></image-slot>
+      </div>
+      <div class="researcher-photo-slot">
+        <image-slot id="julio-photo-3" shape="rect" placeholder="Foto"></image-slot>
+      </div>
+    </div>
+
+    <div class="researcher-meta">
+      <div class="researcher-meta-bio">
+        <p>
+          Minha pesquisa parte de problemas reais vividos pelos
+          consumidores, especialmente em temas como crédito, endividamento
+          e vulnerabilidade financeira. Busco entender como decisões
+          financeiras moldam a vida cotidiana, indo além do aspecto
+          econômico para explorar também suas dimensões emocionais,
+          simbólicas e relacionais.
+        </p>
+        <p>
+          Meu objetivo é produzir pesquisas que, além de rigor acadêmico,
+          sejam relevantes e capazes de gerar impacto positivo na vida
+          dos consumidores e na sociedade.
+        </p>
+      </div>
+      <div class="researcher-meta-creds">
+        <div class="researcher-meta-cred">
+          <span class="cr-where">FGV EAESP</span>
+          <span class="cr-what">Doutorado em Marketing</span>
+        </div>
+        <div class="researcher-meta-cred">
+          <span class="cr-where">Univ. of Melbourne</span>
+          <span class="cr-what">Pesquisador visitante</span>
+        </div>
+        <div class="researcher-meta-cred">
+          <span class="cr-where">Mackenzie</span>
+          <span class="cr-what">Professor (Brasil)</span>
+        </div>
+        <div class="researcher-meta-cred">
+          <span class="cr-where">NEOMA Business School</span>
+          <span class="cr-what">Professor · ago/2026 (França)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION: ENTREVISTA === -->
+<section class="section-bone" id="entrevista">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag" style="font-size: 45.6px; font-weight: 600">MICROFONE NA MÃO DO JÚLIO</span>
+      <h2 class="section-title">
+</h2>
+    </div>
+
+    <div class="col">
+      <div class="qa-mag">
+          <div class="qa-card" style="--i:0">
+            <div class="qa-card-num">01</div>
+            <div class="qa-card-body">
+              <span class="qa-card-label">Pergunta · agenda de pesquisa</span>
+              <p class="qa-card-q">
+                Se você fosse chefe de um núcleo de pesquisa e tivesse 5
+                doutorandos, quais rotas sugeriria a eles?
+              </p>
+              <p class="qa-card-a">
+                Orientaria o trabalho a partir de problemas reais vividos pelos
+                consumidores, e não apenas de questões abstratas ou
+                experimentais de laboratório.
+              </p>
+              <p class="qa-card-pull">
+                "Uma primeira linha seria entender, em profundidade, como
+                consumidores enfrentam desafios concretos no dia a dia —
+                especialmente em crédito, endividamento e vulnerabilidade financeira."
+              </p>
+              <p class="qa-card-a">
+                Direcionaria parte das pesquisas para temas com grande
+                impacto sobre a vida financeira dos brasileiros: crédito
+                consignado, parcelamentos e o crescimento das apostas online —
+                contextos em que o acesso ao crédito ocorre com baixa fricção,
+                mas com riscos muitas vezes subestimados.
+              </p>
+              <p class="qa-card-a">
+                Uma segunda frente: investigar não apenas o comportamento
+                individual, mas também as falhas e limitações do próprio
+                sistema — o papel de instituições, produtos financeiros e
+                dinâmicas de mercado. Pesquisas que não se limitem à
+                explicação, mas que avancem para implicações práticas
+                capazes de informar políticas públicas e regulação.
+              </p>
+              <p class="qa-card-a">
+                Por fim, estimularia o uso de dados ricos e abordagens
+                qualitativas profundas — entrevistas e estudos de campo —
+                combinadas, sempre que possível, com outras metodologias.
+              </p>
+            </div>
+          </div>
+
+          <div class="qa-card" style="--i:1">
+            <div class="qa-card-num">02</div>
+            <div class="qa-card-body">
+              <span class="qa-card-label">Pergunta · impacto desejado</span>
+              <p class="qa-card-q">
+                Quais são seus anseios para a utilização da sua pesquisa?
+                Em quais instituições você sonha vê-la sendo usada como
+                referência?
+              </p>
+              <p class="qa-card-pull">
+                "A principal ambição é que ela seja utilizada por reguladores e
+                formuladores de políticas públicas."
+              </p>
+              <p class="qa-card-a">
+                Hoje, vejo o Brasil como um mercado ainda pouco regulado em
+                relação ao crédito e ao endividamento, especialmente diante
+                da complexidade e dos riscos que os consumidores enfrentam.
+                Uma melhor compreensão de como o superendividamento se forma —
+                como processo gradual de perda de controle, e não apenas
+                como resultado de decisões individuais — pode ajudar a
+                orientar políticas com foco em prevenção, proteção e
+                sustentabilidade financeira.
+              </p>
+              <p class="qa-card-a">
+                Também gostaria que esse conhecimento fosse incorporado por
+                instituições financeiras e credores, contribuindo para
+                práticas de concessão de crédito mais responsáveis — não
+                apenas avaliar capacidade de pagamento, mas reconhecer os
+                limites reais dos consumidores em contextos de incerteza,
+                estresse e vulnerabilidade. E vejo um papel importante para
+                planejadores financeiros, educadores e organizações da
+                sociedade civil, que interagem diretamente com consumidores.
+              </p>
+              <p class="qa-card-a">
+                No fundo, busco contribuir para um sistema mais equilibrado,
+                em que o crédito cumpra seu papel de inclusão e desenvolvimento —
+                e não de aprofundamento da vulnerabilidade.
+              </p>
+            </div>
+          </div>
+
+          <div class="qa-card" style="--i:2">
+            <div class="qa-card-num">03</div>
+            <div class="qa-card-body">
+              <span class="qa-card-label">Pergunta · o dia mais feliz</span>
+              <p class="qa-card-q">
+                A jornada até aqui envolveu altos e baixos. Descreva como
+                foi o dia mais feliz.
+              </p>
+              <p class="qa-card-a">
+                Um dos momentos mais marcantes foi a conclusão do doutorado —
+                combinação de realização e alívio. Não apenas por terminar
+                um ciclo longo e exigente, mas por saber que havia construído
+                um trabalho relevante, que fazia sentido para mim e que
+                estava conectado a problemas reais.
+              </p>
+              <p class="qa-card-pull">
+                "A aceitação no Journal of Consumer Research teve um significado
+                ainda mais forte, por ser uma das principais referências mundiais na área."
+              </p>
+              <p class="qa-card-a">
+                Ser aceito como pesquisador visitante na University of Melbourne
+                foi outro reconhecimento importante, assim como ver o trabalho
+                ganhar espaço em periódicos internacionais — a publicação no
+                Journal of Business Research já foi uma grande conquista.
+                Mais do que marcos isolados, esses momentos representam a
+                sensação de estar construindo uma agenda de pesquisa
+                consistente, com relevância acadêmica e, ao mesmo tempo,
+                potencial de impacto fora da universidade.
+              </p>
+            </div>
+          </div>
+
+          <div class="qa-card" style="--i:3">
+            <div class="qa-card-num">04</div>
+            <div class="qa-card-body">
+              <span class="qa-card-label">Pergunta · impacto direto</span>
+              <p class="qa-card-q">
+                Existiram pessoas ou projetos que se beneficiaram de maneira
+                direta da pesquisa produzida?
+              </p>
+              <p class="qa-card-a">
+                O impacto da pesquisa ainda é, em grande parte, indireto —
+                o que é natural para um trabalho acadêmico. Mas ele já começa
+                a se materializar em alguns contextos. Durante o desenvolvimento,
+                tive contato direto com consumidores em situação de
+                superendividamento, especialmente em programas de apoio e
+                renegociação de dívidas. Esse contato foi fundamental para
+                compreender a profundidade do problema e já permitiu
+                compartilhar reflexões com profissionais que atuam
+                diretamente com esse público.
+              </p>
+              <p class="qa-card-pull">
+                "Meu interesse, daqui para frente, é justamente aproximar
+                mais esse conhecimento da prática — criando pontes para que
+                esses insights sejam utilizados por quem atua na linha de frente."
+              </p>
+              <p class="qa-card-a">
+                Vejo grande potencial de aplicação prática para diferentes
+                atores: instituições públicas, programas de apoio ao consumidor,
+                planejadores financeiros e profissionais que lidam diariamente
+                com pessoas endividadas — muitos se reconhecem nas situações
+                descritas, mesmo que ainda não utilizem formalmente os conceitos.
+              </p>
+            </div>
+          </div>
+
+          <div class="qa-card" style="--i: 4; border-width: 0px 0px 0px 3px">
+            <div class="qa-card-num">
+</div>
+            <div class="qa-card-body">
+              <span class="qa-card-label">Pergunta · formatos de mídia</span>
+              <p class="qa-card-q">
+</p>
+              <p class="qa-card-a">
+                Tenho buscado levar minha pesquisa para além do ambiente
+                acadêmico por meio de artigos para a grande mídia,
+                especialmente sobre crédito e endividamento. O objetivo é
+                apresentar novos olhares — não limitados à culpabilização
+                do consumidor — considerando também fatores estruturais e o
+                funcionamento do sistema.
+              </p>
+              <p class="qa-card-pull" style="border-width: 0px 0px 0.5px">
+</p>
+              <p class="qa-card-a">
+</p>
+            </div>
+          </div>
+
+          <div class="qa-card" style="--i:5">
+            <div class="qa-card-num">05</div>
+            <div class="qa-card-body">
+              <span class="qa-card-label">Pergunta · insights centrais</span>
+              <p class="qa-card-q">
+                Durante o processo de pesquisa, você teve algum insight mais
+                específico que gostaria de compartilhar?
+              </p>
+              <p class="qa-card-pull">
+                "O superendividamento não surge de um único erro, mas da
+                combinação de fragilidades que se acumulam ao longo do tempo."
+              </p>
+              <p class="qa-card-a">
+                Em muitos casos, tudo começa com o uso do crédito para cobrir
+                necessidades básicas ou compensar uma renda insuficiente — a
+                vulnerabilidade já está presente desde o início. Ao longo do
+                processo, diversos fatores agravam a situação: o medo e a
+                vergonha levam muitas pessoas a tentarem resolver o problema
+                sozinhas; a sensação de ainda estar no controle faz com que
+                decisões de risco continuem sendo tomadas; eventos inesperados,
+                como perda de renda ou despesas emergenciais, aumentam a pressão.
+              </p>
+              <p class="qa-card-a">
+                Com o tempo, o problema deixa de ser apenas financeiro. As
+                pessoas passam a lidar com estresse constante, ansiedade e
+                desorganização da própria vida. O que a pesquisa mostra é
+                que os consumidores enfrentam esse processo com recursos
+                limitados — em informação, planejamento ou apoio emocional —
+                e acabam expostos a riscos complexos, imprevisíveis e
+                difíceis de gerenciar. Isso ajuda a explicar por que o
+                superendividamento não pode ser entendido apenas como falha
+                individual, mas como um fenômeno mais amplo, que envolve
+                também o contexto em que essas decisões são tomadas.
+              </p>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION: LINKS IMPORTANTES === -->
+<section class="section-bone" id="links">
+  <div class="wrap">
+    <div class="col">
+      <span class="section-tag" style="font-weight: 700; font-size: 65.6px">LINKS IMPORTANTES</span>
+      <h2 class="section-title" style="font-weight: 600">
+</h2>
+      <p class="section-intro">
+</p>
+    </div>
+
+    <div class="links-grid">
+      <article class="link-card">
+        <span class="link-card-meta">001 · Core paper</span>
+        <h3 class="link-card-title">from order to chaos: how consumers lose control of risks (and of themselves)</h3>
+        <div class="link-card-fields">
+          <div><strong>autores</strong>julio c. leandro · delane botelho ·</div>
+          <div><strong>periódico</strong>journal of consumer research · 2025</div>
+        </div>
+        <p class="link-card-desc">
+          modelo processual de como consumidores perdem o controle
+          sobre riscos financeiros ao longo do tempo. método qualitativo,
+          baseado em entrevistas em profundidade.
+        </p>
+        <div class="link-card-actions">
+          <a class="btn btn-primary" href="https://drive.google.com/file/d/1GX8lIJMZFpC8QqNN0ltAiJPeYWgUte-G/view?usp=sharing" target="_blank" rel="noopener">Ler artigo ↗</a>
+          <a class="btn btn-secondary" href="assets/from-order-to-chaos.pdf" target="_blank" rel="noopener" download>PDF ↓</a>
+        </div>
+      </article>
+
+      <article class="link-card">
+        <span class="link-card-meta">002 · Review</span>
+        <h3 class="link-card-title">consumer over-indebtedness: a review and future research agenda</h3>
+        <div class="link-card-fields">
+          <div><strong>autores</strong>julio c. leandro · delane botelho ·</div>
+          <div><strong>periódico</strong>journal of business research · 2022</div>
+        </div>
+        <p class="link-card-desc">
+          revisão sistemática da literatura sobre superendividamento e
+          agenda futura — bases conceituais que sustentam o trabalho
+          processual.
+        </p>
+        <div class="link-card-actions">
+          <a class="btn btn-primary" href="https://drive.google.com/file/d/1U6ial7WlW921bDdcEUPDw_JRz52O3x_Q/view?usp=sharing" target="_blank" rel="noopener">Ler artigo ↗</a>
+          <a class="btn btn-secondary" href="assets/consumer-over-indebtedness.pdf" target="_blank" rel="noopener" download>PDF ↓</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- === SECTION: PRÓXIMO PASSO === -->
+<section class="section-proximo" id="proximo-passo">
+  <div class="wrap">
+    <div class="proximo-grid">
+      <div>
+        <span class="proximo-tag"></span>
+        <h2 class="proximo-title">converse com o pesquisador.</h2>
+        <p class="proximo-desc">----------- parágrafo de incentivo para puxarem uma conversa??</p>
+        <div class="proximo-actions">
+          <a class="btn btn-primary" href="mailto:julio.leandro@neoma-bs.fr">Iniciar conversa →</a>
+          <a class="btn btn-secondary" href="#top">Compartilhar estudo</a>
+        </div>
+      </div>
+
+      <div class="contact-list">
+        <a class="contact-row" href="mailto:julio.leandro@neoma-bs.fr">
+          <span class="contact-label">Email</span>
+          <span class="contact-value">julio.leandro@neoma-bs.fr</span>
+          <span class="contact-arrow">→</span>
+        </a>
+        <a class="contact-row" href="https://orcid.org/" target="_blank" rel="noopener">
+          <span class="contact-label">TELEFONE</span>
+          <span class="contact-value">0000-0000-0000-0000</span>
+          <span class="contact-arrow">→</span>
+        </a>
+        <a class="contact-row" href="https://www.linkedin.com/in/julioleandro" target="_blank" rel="noopener">
+          <span class="contact-label">Linkedin</span>
+          <span class="contact-value">/in/julioleandro</span>
+          <span class="contact-arrow">→</span>
+        </a>
+        <a class="contact-row" href="https://scholar.google.com/" target="_blank" rel="noopener">
+          <span class="contact-label">LATTES</span>
+          <span class="contact-value">perfil acadêmico</span>
+          <span class="contact-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === FOOTER === -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#top" class="brand" style="color:var(--bone);">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="50" cy="50" r="28" fill="none" stroke="currentColor" stroke-width="3"/>
+            <circle cx="56" cy="42" r="6" fill="#D96B3D"/>
+            <path d="M 14 64 C 30 63, 50 65, 86 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <span class="brand-name">observatório<span class="dot">.</span></span>
+        </a>
+        <div class="footer-tagline">
+          <span class="b">ciências comportamentais</span> aplicadas à
+          inclusão, educação e planejamento financeiro no
+          <span class="b">sul global</span>.
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-ref-label">OBSERVATÓRIO | VERA, VIVI E AMURI</div>
+        <p class="footer-ref">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© OBSERVATÓRIO · 2026 · XXXXXXX</span>
+      <span>XXXXXXXX</span>
+    </div>
+  </div>
+</footer>
+
+<!-- === BACK TO TOP === -->
+<a href="#top" class="totop" id="totop" aria-label="Voltar ao topo">↑</a>
+
+<script src="image-slot.js"></script>
+<script>
+  // =========================================================
+  // Reading progress bar + back-to-top
+  // =========================================================
+  const progress = document.getElementById('progress');
+  const totop = document.getElementById('totop');
+
+  function onScroll() {
+    const h = document.documentElement;
+    const scrollTop = h.scrollTop || document.body.scrollTop;
+    const scrollHeight = h.scrollHeight - h.clientHeight;
+    const pct = (scrollTop / scrollHeight) * 100;
+    progress.style.width = pct + '%';
+
+    if (scrollTop > 600) {
+      totop.classList.add('visible');
+    } else {
+      totop.classList.remove('visible');
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // =========================================================
+  // DYNAMISM — reveal on scroll, stat counters, trajectory anim
+  // =========================================================
+  const revealSelector = [
+    '.section-tag', '.section-title', '.section-intro',
+    '.stat', '.prop', '.force', '.dim', '.rec',
+    '.traj-stage', '.traj-dot', '.traj-axis',
+    'blockquote.pull', '.callout', '.synthesis',
+    '.bloco-title', '.bloco-lead', '.bloco-col', '.linklist li'
+  ].join(',');
+
+  document.querySelectorAll(revealSelector).forEach((el, idx) => {
+    el.classList.add('reveal');
+    if (!el.style.getPropertyValue('--i')) {
+      // assign a stagger index relative to siblings inside same container
+      const parent = el.parentElement;
+      const siblings = parent ? Array.from(parent.children).filter(c => c.classList.contains('reveal')) : [];
+      const localIdx = siblings.indexOf(el);
+      el.style.setProperty('--i', Math.max(0, localIdx));
+    }
+  });
+
+  const revealIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-in');
+        revealIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => revealIO.observe(el));
+
+  // Stat counters
+  function animateCounter(el) {
+    const target = el.getAttribute('data-count');
+    if (!target) return;
+    const value = parseFloat(target.replace(',', '.'));
+    if (!isFinite(value)) return;
+    const decimals = (target.split(',')[1] || '').length;
+    const unit = el.querySelector('.stat-unit');
+    const unitHTML = unit ? unit.outerHTML : '';
+    const duration = 1400;
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const v = value * eased;
+      const formatted = decimals > 0 ? v.toFixed(decimals).replace('.', ',') : Math.round(v).toString();
+      el.innerHTML = formatted + unitHTML;
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  const statIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        statIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.stat-num[data-count]').forEach(el => statIO.observe(el));
+
+  // =========================================================
+  // TWEAKS PANEL — palette / voice / cadence
+  // =========================================================
+  const TWEAKS_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "palette": "observatorio",
+    "voice": "editorial",
+    "pace": "generoso"
+  }/*EDITMODE-END*/;
+
+  const TWEAK_GROUPS = [
+    {
+      key: 'palette',
+      label: 'Paleta',
+      options: [
+        { id: 'observatorio', label: 'Observatório' },
+        { id: 'pergaminho',   label: 'Pergaminho' },
+        { id: 'crepusculo',   label: 'Crepúsculo' }
+      ],
+      apply: (v) => {
+        document.body.classList.remove('palette-observatorio','palette-pergaminho','palette-crepusculo');
+        document.body.classList.add('palette-' + v);
+      }
+    },
+    {
+      key: 'voice',
+      label: 'Voz tipográfica',
+      options: [
+        { id: 'editorial',  label: 'Editorial' },
+        { id: 'academico',  label: 'Acadêmico' },
+        { id: 'manifesto',  label: 'Manifesto' }
+      ],
+      apply: (v) => {
+        document.body.classList.remove('voice-editorial','voice-academico','voice-manifesto');
+        document.body.classList.add('voice-' + v);
+      }
+    },
+    {
+      key: 'pace',
+      label: 'Cadência',
+      options: [
+        { id: 'generoso', label: 'Generoso' },
+        { id: 'apertado', label: 'Apertado' },
+        { id: 'largo',    label: 'Largo' }
+      ],
+      apply: (v) => {
+        document.body.classList.remove('pace-generoso','pace-apertado','pace-largo');
+        document.body.classList.add('pace-' + v);
+      }
+    }
+  ];
+
+  const tweakState = { ...TWEAKS_DEFAULTS };
+
+  // Apply initial state (defaults)
+  TWEAK_GROUPS.forEach(g => g.apply(tweakState[g.key]));
+
+  // Build panel
+  function buildPanel() {
+    const panel = document.createElement('div');
+    panel.className = 'tw-panel';
+    panel.id = 'tw-panel';
+    panel.innerHTML = `
+      <div class="tw-head">
+        <span class="tw-title">Tweaks</span>
+        <button class="tw-close" aria-label="Fechar">✕</button>
+      </div>
+      ${TWEAK_GROUPS.map(g => `
+        <div class="tw-group" data-group="${g.key}">
+          <div class="tw-label">
+            <span>${g.label}</span>
+            <span class="tw-current" data-current="${g.key}"></span>
+          </div>
+          <div class="tw-seg" role="tablist">
+            ${g.options.map(o => `
+              <button data-key="${g.key}" data-value="${o.id}" type="button">${o.label}</button>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')}
+      <div class="tw-foot">
+        <span class="tw-foot-hint">Reformula o tom</span>
+        <button class="tw-reset" type="button">Reset</button>
+      </div>
+    `;
+    document.body.appendChild(panel);
+    return panel;
+  }
+
+  const panel = buildPanel();
+
+  function syncUI() {
+    TWEAK_GROUPS.forEach(g => {
+      const val = tweakState[g.key];
+      panel.querySelectorAll(`button[data-key="${g.key}"]`).forEach(btn => {
+        btn.classList.toggle('is-active', btn.dataset.value === val);
+      });
+      const cur = panel.querySelector(`[data-current="${g.key}"]`);
+      const opt = g.options.find(o => o.id === val);
+      if (cur && opt) cur.textContent = opt.label;
+    });
+  }
+  syncUI();
+
+  function setTweak(key, value, persist = true) {
+    tweakState[key] = value;
+    const group = TWEAK_GROUPS.find(g => g.key === key);
+    if (group) group.apply(value);
+    syncUI();
+    if (persist) {
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: value } }, '*');
+    }
+  }
+
+  panel.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-key]');
+    if (btn) {
+      setTweak(btn.dataset.key, btn.dataset.value);
+      return;
+    }
+    if (e.target.closest('.tw-close')) {
+      panel.classList.remove('is-open');
+      window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+      return;
+    }
+    if (e.target.closest('.tw-reset')) {
+      TWEAK_GROUPS.forEach(g => setTweak(g.key, g.options[0].id));
+      return;
+    }
+  });
+
+  // Edit-mode protocol — listener FIRST, then announce
+  window.addEventListener('message', (e) => {
+    const t = e.data && e.data.type;
+    if (t === '__activate_edit_mode')   panel.classList.add('is-open');
+    if (t === '__deactivate_edit_mode') panel.classList.remove('is-open');
+  });
+  window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+</script>
+
+</body>
+</html>
+
+<style id="__om-edit-overrides">
+#top :is(h1,h2,h3,h4,h5,h6) >:is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) >b { font-family: "Playfair Display" !important }
+#top :is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) >div:nth-child(1) { font-size: 42.4px !important }
+#ponte-abertura :is(h1,h2,h3,h4,h5,h6) >:is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) { line-height: 1.6 !important }
+#ponte-abertura :is(h1,h2,h3,h4,h5,h6) >:is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) { letter-spacing: -0.152px !important }
+#ponte-abertura :is(h1,h2,h3,h4,h5,h6) >:is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) { font-weight: 700 !important }
+#forcas >.wrap .reveal div:nth-child(3) { font-weight: 600 !important }
+#forcas >.wrap .reveal div:nth-child(3) { font-weight: 400 !important }
+</style>

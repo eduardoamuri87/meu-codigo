@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Por que investir focado em dividendos não faz sentido</title>
+<style>
+  :root {
+    --bg: #0e1116;
+    --surface: #161b22;
+    --surface-2: #1c2230;
+    --border: #283040;
+    --text: #e6edf3;
+    --muted: #9aa7b8;
+    --accent: #4dabf7;
+    --accent-soft: rgba(77, 171, 247, 0.12);
+    --danger: #ff6b6b;
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero */
+  header.hero {
+    background: radial-gradient(1200px 400px at 50% -10%, rgba(77,171,247,0.18), transparent),
+                var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 72px 0 56px;
+  }
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 6px 12px;
+    border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 16px; }
+  .lede { font-size: 18px; color: var(--muted); max-width: 640px; }
+
+  /* Sticky nav */
+  nav.toc {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(14,17,22,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav.toc .wrap { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 12px; padding-bottom: 12px; }
+  nav.toc a {
+    font-size: 14px; color: var(--muted); text-decoration: none;
+    padding: 6px 12px; border-radius: 8px; border: 1px solid transparent;
+    transition: all 0.15s ease;
+  }
+  nav.toc a:hover { color: var(--text); background: var(--surface-2); border-color: var(--border); }
+
+  main { padding: 48px 0 80px; }
+
+  /* Summary card */
+  .summary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 48px;
+    box-shadow: var(--shadow);
+  }
+  .summary h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 10px; }
+  .summary p { color: var(--text); }
+
+  /* Reason cards */
+  .reason {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px;
+    margin-bottom: 28px;
+    scroll-margin-top: 72px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .reason:hover { border-color: #36465c; transform: translateY(-2px); }
+  .reason-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 18px; }
+  .num {
+    flex: 0 0 auto;
+    width: 48px; height: 48px;
+    display: grid; place-items: center;
+    font-size: 22px; font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 12px;
+  }
+  .reason h3 { font-size: 22px; line-height: 1.25; letter-spacing: -0.01em; }
+  .reason ul { list-style: none; display: flex; flex-direction: column; gap: 14px; margin: 8px 0; }
+  .reason li { position: relative; padding-left: 26px; color: var(--text); }
+  .reason li::before {
+    content: ""; position: absolute; left: 4px; top: 10px;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .reason strong { color: #fff; }
+
+  .callout {
+    margin-top: 18px;
+    background: var(--surface-2);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 15px;
+    color: var(--muted);
+    border-left: 3px solid var(--danger);
+  }
+  .callout b { color: var(--text); }
+
+  /* Explainer sections */
+  .explainer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px;
+    margin-bottom: 28px;
+    scroll-margin-top: 72px;
+  }
+  .explainer-tag {
+    display: inline-block;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent); background: var(--accent-soft);
+    padding: 5px 11px; border-radius: 999px; margin-bottom: 14px;
+  }
+  .explainer h2 { font-size: 24px; letter-spacing: -0.01em; margin-bottom: 12px; }
+  .explainer p { color: var(--text); margin-bottom: 14px; }
+  .explainer em { color: var(--muted); font-style: italic; }
+
+  .factor-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px; margin: 18px 0 4px;
+  }
+  .factor {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 15px; color: var(--muted);
+  }
+  .factor-name {
+    display: block; color: #fff; font-weight: 600; font-size: 16px; margin-bottom: 6px;
+  }
+  .factor-name small { color: var(--accent); font-weight: 500; font-size: 13px; }
+
+  .compare {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 18px 0 4px;
+  }
+  .compare-col {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+  }
+  .compare-col.active { border-top: 3px solid var(--danger); }
+  .compare-col.passive { border-top: 3px solid #51cf66; }
+  .compare-col h4 { font-size: 18px; margin-bottom: 10px; }
+  .compare-col p { font-size: 15px; color: var(--muted); margin-bottom: 12px; }
+  .compare-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .compare-col li { position: relative; padding-left: 22px; font-size: 15px; color: var(--text); }
+  .compare-col.active li::before { content: "−"; position: absolute; left: 4px; top: -1px; color: var(--danger); font-weight: 700; }
+  .compare-col.passive li::before { content: "+"; position: absolute; left: 4px; top: -1px; color: #51cf66; font-weight: 700; }
+
+  /* Conclusion */
+  .conclusion {
+    background: linear-gradient(160deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px;
+    margin-top: 16px;
+    scroll-margin-top: 72px;
+  }
+  .conclusion h2 { font-size: 24px; margin-bottom: 14px; letter-spacing: -0.01em; }
+  .conclusion p { color: var(--muted); }
+  .conclusion p + p { margin-top: 12px; }
+
+  /* Sources */
+  .sources { margin-top: 48px; padding-top: 28px; border-top: 1px solid var(--border); }
+  .sources h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 14px; }
+  .sources a { color: var(--accent); text-decoration: none; word-break: break-word; }
+  .sources a:hover { text-decoration: underline; }
+  .sources li { margin-bottom: 10px; color: var(--muted); list-style: none; }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 32px 0 48px; }
+
+  @media (max-width: 600px) {
+    .reason { padding: 24px; }
+    .reason-head { gap: 14px; }
+    .num { width: 40px; height: 40px; font-size: 18px; }
+    .compare { grid-template-columns: 1fr; }
+    .explainer { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Relatório · Finanças pessoais</span>
+    <h1>Por que uma estratégia focada em dividendos não faz sentido</h1>
+    <p class="lede">Três motivos pelos quais selecionar ações pelo dividendo é, na melhor das hipóteses, irrelevante — e, na pior, prejudicial ao retorno.</p>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="wrap">
+    <a href="#resumo">Resumo</a>
+    <a href="#motivo-1">1 · Não cria valor</a>
+    <a href="#motivo-2">2 · Ineficiência fiscal</a>
+    <a href="#motivo-3">3 · Menos diversificação</a>
+    <a href="#fatores">O que são fatores?</a>
+    <a href="#fundos">Ativos vs. passivos</a>
+    <a href="#conclusao">Conclusão</a>
+    <a href="#fontes">Fontes</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <section class="summary" id="resumo">
+      <h2>Resumo</h2>
+      <p>A preferência por ações que pagam dividendos é uma das crenças mais difundidas entre investidores — e uma das menos sustentadas pela teoria financeira. O apelo é <strong>psicológico</strong> (a sensação de "renda" caindo na conta), não econômico. O que importa é o <strong>retorno total</strong>, não a forma como ele é embalado.</p>
+    </section>
+
+    <article class="reason" id="motivo-1">
+      <div class="reason-head">
+        <div class="num">1</div>
+        <h3>O dividendo não cria valor — é dinheiro saindo do seu próprio bolso</h3>
+      </div>
+      <p>Este é o ponto central da <strong>teoria da irrelevância dos dividendos</strong> (Miller &amp; Modigliani, 1961).</p>
+      <ul>
+        <li>Quando uma empresa paga R$ 1 de dividendo, o preço da ação <strong>cai exatamente R$ 1</strong> na data ex-dividendo. O valor não foi criado — foi apenas transferido de "dentro" para "fora" da empresa. O patrimônio total é idêntico.</li>
+        <li>Receber dividendo é economicamente equivalente a <strong>vender uma pequena fração das suas ações</strong>. É o conceito de <em>"homemade dividend"</em> (dividendo caseiro): quem quer renda pode simplesmente vender ações e gerar o mesmo fluxo de caixa, controlando <strong>quanto</strong> e <strong>quando</strong>.</li>
+        <li>O que importa é o <strong>retorno total</strong> (valorização + dividendos), não como esse retorno é dividido.</li>
+      </ul>
+      <div class="callout"><b>Conclusão:</b> dividendo não é "renda extra" nem "dinheiro de graça". É o seu próprio capital sendo devolvido — e forçando uma decisão que deveria ser sua.</div>
+    </article>
+
+    <article class="reason" id="motivo-2">
+      <div class="reason-head">
+        <div class="num">2</div>
+        <h3>É ineficiente do ponto de vista tributário e de controle</h3>
+      </div>
+      <p>Mesmo que o dividendo fosse neutro em valor, ele frequentemente é <strong>pior</strong> que a alternativa de vender ações:</p>
+      <ul>
+        <li>O dividendo é um <strong>evento tributável forçado</strong>: o investidor recebe (e potencialmente é tributado) quer queira ou não, sem controle sobre o momento.</li>
+        <li>Ao vender ações para gerar caixa, o investidor controla a realização do ganho, e apenas a <strong>parcela de lucro</strong> é tributada — não o valor cheio. Isso permite diferir impostos.</li>
+        <li>A reaplicação dos dividendos (DRIP) ainda gera custos de transação e fricção, recriando a posição que a empresa desfez ao distribuir.</li>
+      </ul>
+      <div class="callout">No contexto do PWL (Canadá) os dividendos têm tratamento fiscal próprio; o princípio geral, porém, vale em qualquer regime: <b>distribuir e reinvestir é, em geral, menos eficiente do que deixar o capital trabalhando e sacar sob demanda.</b></div>
+    </article>
+
+    <article class="reason" id="motivo-3">
+      <div class="reason-head">
+        <div class="num">3</div>
+        <h3>Reduz a diversificação e não entrega "prêmio" nenhum</h3>
+      </div>
+      <p>Selecionar ações pelo dividendo é uma forma <strong>ruim e enviesada</strong> de montar carteira:</p>
+      <ul>
+        <li>Filtrar por pagadoras de dividendos <strong>encolhe drasticamente o universo de investimento</strong>, concentrando a carteira em poucos setores (utilities, bancos, telecom, consumo básico) e excluindo empresas de crescimento. Isso aumenta o risco específico sem compensação.</li>
+        <li>A aparente vantagem das ações de dividendo <strong>desaparece quando se controla por fatores de risco conhecidos</strong> (valor, rentabilidade, investimento). O dividendo não é um fator independente: ele apenas se correlaciona com empresas de perfil <em>value</em> e alta rentabilidade.</li>
+        <li>Qualquer retorno superior atribuído a dividendos é, na verdade, <strong>exposição a fatores</strong> — que pode ser obtida de forma mais ampla, barata e diversificada, sem o filtro arbitrário do dividendo.</li>
+      </ul>
+      <div class="callout"><b>Conclusão:</b> o investidor que busca dividendos está pagando, em diversificação, por uma exposição a fatores que conseguiria de modo mais eficiente em uma carteira ampla.</div>
+    </article>
+
+    <section class="explainer" id="fatores">
+      <span class="explainer-tag">Entenda melhor</span>
+      <h2>O que são "fatores"?</h2>
+      <p>Os <strong>fatores</strong> (em inglês, <em>factors</em>) são características mensuráveis das ações que historicamente explicam por que algumas carteiras rendem mais que outras, no longo prazo. Em vez de "esta ação é boa", a lógica é "ações com <em>esta característica</em> tendem a ter retorno e risco diferentes".</p>
+      <p>Os fatores mais aceitos na academia (modelos de Fama-French e Carhart) são:</p>
+      <div class="factor-grid">
+        <div class="factor"><span class="factor-name">Mercado</span>Exposição ao risco do mercado de ações como um todo — o retorno por simplesmente estar investido.</div>
+        <div class="factor"><span class="factor-name">Tamanho <small>(size)</small></span>Empresas pequenas tendem, no longo prazo, a render mais que as grandes — em troca de mais risco.</div>
+        <div class="factor"><span class="factor-name">Valor <small>(value)</small></span>Ações "baratas" em relação aos fundamentos (preço/lucro, preço/patrimônio) tendem a superar as "caras".</div>
+        <div class="factor"><span class="factor-name">Rentabilidade <small>(profitability)</small></span>Empresas mais lucrativas e operacionalmente eficientes tendem a render mais.</div>
+        <div class="factor"><span class="factor-name">Investimento</span>Empresas que crescem o ativo de forma conservadora tendem a superar as que investem de forma agressiva.</div>
+        <div class="factor"><span class="factor-name">Momentum</span>Ações que vêm subindo tendem a continuar subindo no curto/médio prazo.</div>
+      </div>
+      <div class="callout">A ligação com o tema: o "dividendo" <b>não é um fator</b>. Quando se separam os fatores acima, o suposto prêmio das ações de dividendos some — ele era apenas exposição disfarçada a <b>valor</b> e <b>rentabilidade</b>. Logo, dá para buscar esses fatores de forma direta, ampla e barata, sem o filtro arbitrário do dividendo.</div>
+    </section>
+
+    <section class="explainer" id="fundos">
+      <span class="explainer-tag">Entenda melhor</span>
+      <h2>Fundos ativos vs. fundos passivos</h2>
+      <p>Outra escolha central para o investidor — e diretamente ligada à discussão de fatores e custos:</p>
+      <div class="compare">
+        <div class="compare-col active">
+          <h4>Fundos ativos</h4>
+          <p>Um gestor tenta <strong>"bater o mercado"</strong>, escolhendo quais ações comprar e vender no momento certo.</p>
+          <ul>
+            <li><strong>Custo alto:</strong> taxas de administração e performance elevadas.</li>
+            <li><strong>Aposta na habilidade</strong> de prever o mercado.</li>
+            <li>A grande maioria <strong>não supera o índice</strong> de forma consistente no longo prazo — e os poucos que superam são difíceis de identificar com antecedência.</li>
+            <li>Maior giro da carteira → mais custos e eventos tributáveis.</li>
+          </ul>
+        </div>
+        <div class="compare-col passive">
+          <h4>Fundos passivos (índice / ETF)</h4>
+          <p>O fundo apenas <strong>replica um índice</strong> (ex.: Ibovespa, S&amp;P 500) ou uma exposição a fatores, sem tentar adivinhar o mercado.</p>
+          <ul>
+            <li><strong>Custo baixo:</strong> taxas mínimas, pouco giro.</li>
+            <li><strong>Diversificação ampla</strong> e automática.</li>
+            <li>Captura o <strong>retorno total do mercado</strong> — exatamente o que importa.</li>
+            <li>Permite exposição a fatores de forma <strong>direta e barata</strong>, sem o filtro do dividendo.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout">A ligação com o tema: montar uma carteira "de dividendos" é, na prática, fazer <b>gestão ativa amadora</b> — escolher ações por um critério único e enviesado. Um <b>fundo passivo amplo</b> entrega mais diversificação, menos custo e o mesmo (ou melhor) retorno total, sem o trabalho e sem a ilusão de "renda".</div>
+    </section>
+
+    <section class="conclusion" id="conclusao">
+      <h2>Conclusão geral</h2>
+      <p>Os três argumentos se reforçam: o dividendo <strong>não cria valor</strong> (motivo 1), tende a ser <strong>fiscalmente ineficiente</strong> (motivo 2) e leva a uma carteira <strong>menos diversificada e sem prêmio de retorno</strong> (motivo 3).</p>
+      <p>A estratégia sobrevive por razões comportamentais — a satisfação psicológica de ver "renda" entrando — e não por mérito financeiro. Para a maioria dos investidores, o foco correto é <strong>retorno total</strong>, diversificação ampla e exposição deliberada a fatores, sacando capital conforme a necessidade.</p>
+    </section>
+
+    <section class="sources" id="fontes">
+      <h2>Fontes</h2>
+      <ul>
+        <li><a href="https://pwlcapital.com/some-tough-love-about-dividend-investing/" target="_blank" rel="noopener">Some Tough Love About Dividend Investing — Ben Felix / PWL Capital</a></li>
+        <li><a href="https://www.investopedia.com/terms/d/dividendirrelevance.asp" target="_blank" rel="noopener">Dividend Irrelevance Theory — Investopedia (Miller &amp; Modigliani)</a></li>
+      </ul>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  Relatório gerado para consulta · baseado nas fontes acima
+</footer>
+
+</body>
+</html>

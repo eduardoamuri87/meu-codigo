@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar compra — Dinheiro Sem Medo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Condensed:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <!-- Meta Pixel -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1690349805231152');
+    fbq('track', 'PageView');
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #F7EBE3;
+            color: #333;
+            line-height: 1.6;
+            padding: 30px 20px;
+        }
+        .checkout-wrap {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px 28px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+        }
+        .checkout-titulo {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .checkout-sub { font-size: 15px; color: #777; margin-bottom: 24px; }
+
+        /* Texto de incentivo */
+        .upsell {
+            background: #FDF5F0;
+            border-radius: 10px;
+            padding: 18px 18px 6px;
+            margin-bottom: 18px;
+        }
+        .upsell p { font-size: 16.7px; margin-bottom: 12px; color: #444; }
+        .upsell b { color: #2D8E44; }
+
+        /* Seletor de exemplares */
+        .opcoes { display: flex; flex-direction: column; gap: 12px; margin-bottom: 26px; }
+        .opcao {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 2px solid #E6D9CE;
+            border-radius: 10px;
+            padding: 16px;
+            cursor: pointer;
+            transition: border-color .15s ease, background .15s ease;
+        }
+        .opcao:hover { border-color: #C9B5A6; }
+        .opcao.selecionada { border-color: #34A853; background: #F4FBF6; }
+        .opcao input { position: absolute; opacity: 0; pointer-events: none; }
+        .radio-visual {
+            flex: 0 0 auto;
+            width: 22px; height: 22px;
+            border: 2px solid #C9B5A6;
+            border-radius: 50%;
+            position: relative;
+            transition: border-color .15s ease;
+        }
+        .opcao.selecionada .radio-visual { border-color: #34A853; }
+        .opcao.selecionada .radio-visual::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 11px; height: 11px;
+            background: #34A853;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .opcao-info { flex: 1 1 auto; }
+        .opcao-titulo { font-weight: 700; font-size: 16px; }
+        .opcao-desc { font-size: 13px; color: #777; }
+        .opcao-preco { font-family: 'Roboto Condensed', sans-serif; font-weight: 700; font-size: 20px; white-space: nowrap; }
+        .badge {
+            position: absolute;
+            top: -10px; right: 14px;
+            background: #34A853;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        #mensagem-erro {
+            display: none;
+            background: #FDECEA;
+            color: #B71C1C;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+        .carregando-inicial { text-align: center; color: #999; padding: 40px 0; font-size: 15px; }
+        .seguro { text-align: center; font-size: 12px; color: #999; margin-top: 18px; }
+        .voltar { display: inline-block; margin-bottom: 18px; font-size: 14px; color: #777; text-decoration: none; }
+        .voltar:hover { text-decoration: underline; }
+    </style>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18247939771"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-18247939771');
+</script>
+
+</head>
+<body>
+    <div class="checkout-wrap">
+        <a href="index-livro.html" class="voltar">← voltar</a>
+        <h1 class="checkout-titulo">Logo mais o livro chega aí!</h1>
+        <p class="checkout-sub">Dinheiro Sem Medo · Eduardo Amuri</p>
+
+        <div class="upsell">
+            <p>Acredito, do fundo do coração, que <b>não há nada mais poderoso do que encontrar confidentes financeiros</b>.</p>
+            <p>Presentear alguém pode servir de gancho para que esse aspecto da relação floresça.</p>
+            <p>Se fizer sentido, compre um exemplar para você e outro para um grande amigo. Ele(a) ficará feliz! :)</p>
+        </div>
+
+        <div class="opcoes" id="opcoes">
+            <label class="opcao" data-produto="2">
+                <span class="badge">desconto extra</span>
+                <input type="radio" name="produto" value="2" checked>
+                <span class="radio-visual"></span>
+                <span class="opcao-info">
+                    <span class="opcao-titulo">2 exemplares</span>
+                    <span class="opcao-desc">um pra você, outro pra presentear · frete grátis</span>
+                </span>
+                <span class="opcao-preco">R$ 144</span>
+            </label>
+            <label class="opcao" data-produto="1">
+                <input type="radio" name="produto" value="1">
+                <span class="radio-visual"></span>
+                <span class="opcao-info">
+                    <span class="opcao-titulo">1 exemplar</span>
+                    <span class="opcao-desc">só pra mim · frete grátis</span>
+                </span>
+                <span class="opcao-preco">R$ 89</span>
+            </label>
+        </div>
+
+        <!-- Checkout embedded do Stripe: e-mail, endereço, cartão E PIX, total e
+             botão de pagar são renderizados aqui dentro pelo Stripe. O PIX só
+             aparece por este caminho (o Payment Element o filtra nesta conta). -->
+        <div id="carregando-inicial" class="carregando-inicial">Preparando o pagamento…</div>
+        <div id="checkout"></div>
+
+        <p class="seguro">🔒 Pagamento processado com segurança pela Stripe</p>
+        <div id="mensagem-erro"></div>
+    </div>
+
+    <script>
+    (function () {
+        // Preços só para o pixel/UX; o backend é a fonte da verdade do valor.
+        const PRECOS = { '1': 8900, '2': 14400 };
+
+        // Produto inicial: respeita ?produto=1, senão começa em 2 exemplares.
+        const urlInicial = new URLSearchParams(window.location.search).get('produto');
+        let produto = urlInicial === '1' ? '1' : '2';
+
+        // Parâmetros de rastreio (UTM etc.) para repassar ao backend (metadata).
+        const tracking = {};
+        new URLSearchParams(window.location.search).forEach(function (value, key) {
+            if (key !== 'produto') tracking[key] = value;
+        });
+
+        // Preserva os parâmetros (UTM etc.) também no link "voltar", para não
+        // perder o rastreio se a pessoa retornar e entrar de novo no checkout.
+        (function () {
+            const q = window.location.search;
+            const voltar = document.querySelector('.voltar');
+            if (voltar && q && q !== '?') voltar.href = 'index-livro.html' + q;
+        })();
+
+        const erroEl = document.getElementById('mensagem-erro');
+        const carregando = document.getElementById('carregando-inicial');
+        function mostrarErro(msg) { erroEl.textContent = msg; erroEl.style.display = 'block'; }
+
+        let stripe, checkout, montando = false;
+
+        // 1) Pega a chave publicável e monta o Checkout embedded.
+        fetch('stripe/criar-checkout-embedded.php')
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data.publishableKey) throw new Error('Configuração de pagamento indisponível.');
+                stripe = Stripe(data.publishableKey);
+                montarCheckout();
+            })
+            .catch(function (err) {
+                carregando.style.display = 'none';
+                mostrarErro(err.message || 'Erro ao iniciar o checkout.');
+            });
+
+        // (Re)cria a sessão de Checkout para o produto atual e monta o embedded.
+        // Como 1 e 2 exemplares têm preços diferentes, ao trocar a opção criamos
+        // uma nova sessão e remontamos.
+        function montarCheckout() {
+            if (!stripe || montando) return;
+            montando = true;
+            erroEl.style.display = 'none';
+            if (checkout) { try { checkout.destroy(); } catch (e) {} checkout = null; }
+            carregando.style.display = 'block';
+
+            fetch('stripe/criar-checkout-embedded.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ produto: produto, tracking: tracking })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.error || !data.clientSecret) {
+                    throw new Error(data.error || 'Não foi possível iniciar o checkout.');
+                }
+                return stripe.initEmbeddedCheckout({ clientSecret: data.clientSecret });
+            })
+            .then(function (c) {
+                checkout = c;
+                carregando.style.display = 'none';
+                checkout.mount('#checkout');
+                if (window.fbq) {
+                    fbq('track', 'InitiateCheckout', { value: PRECOS[produto] / 100, currency: 'BRL' });
+                }
+                montando = false;
+            })
+            .catch(function (err) {
+                montando = false;
+                carregando.style.display = 'none';
+                mostrarErro(err.message || 'Erro ao iniciar o checkout.');
+            });
+        }
+
+        // 2) Seletor de exemplares: destaca e remonta o Checkout para o novo preço.
+        const opcoes = document.querySelectorAll('.opcao');
+        function sincronizarSelecao() {
+            opcoes.forEach(function (op) {
+                const selecionada = op.dataset.produto === produto;
+                op.classList.toggle('selecionada', selecionada);
+                op.querySelector('input').checked = selecionada;
+            });
+        }
+        opcoes.forEach(function (op) {
+            op.addEventListener('click', function () {
+                if (op.dataset.produto === produto) return;
+                produto = op.dataset.produto;
+                sincronizarSelecao();
+                montarCheckout();
+            });
+        });
+        sincronizarSelecao();
+    })();
+    </script>
+</body>
+</html>

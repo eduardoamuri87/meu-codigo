@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulador de aposentadoria — Dinheiro sem Medo</title>
+<style>
+  @font-face {
+    font-family: 'Vinila Condensed';
+    src: url('fonts/Vinila-CondensedLight.woff2') format('woff2'),
+         url('fonts/Vinila-CondensedLight.woff') format('woff');
+    font-weight: 300 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Helvetica Neue Condensed Black';
+    src: url('fonts/HelveticaNeueLTPro-BlkCn.otf') format('opentype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    --ink: #242424;
+    --ink-soft: #2d313f;
+    --muted: #868787;
+    --muted-2: #666;
+    --line: #e6e6e6;
+    --bg: #ffffff;
+    --accent: #6c9486;
+    --accent-soft: #e7eee9;
+    --dark-pill: #32373c;
+    --serif-display: 'Helvetica Neue Condensed Black', 'Vinila Condensed', 'Arial Narrow', sans-serif;
+    --serif-body: 'Vinila Condensed', 'Roboto Condensed', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif-body);
+    font-size: 18px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+  }
+
+  /* Brand */
+  .brand-mark {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin: 0 0 40px;
+  }
+  .brand-mark img {
+    display: block;
+    height: 132px;
+    width: auto;
+    flex-shrink: 0;
+  }
+  .brand-note {
+    flex: 1;
+    background: var(--accent-soft);
+    border-radius: 14px;
+    padding: 18px 22px;
+    color: var(--ink-soft);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .brand-note a {
+    color: var(--accent);
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .brand-note a:hover {
+    text-decoration: underline;
+  }
+  @media (max-width: 720px) {
+    .brand-mark {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+  }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  @media (max-width: 720px) {
+    .grid { grid-template-columns: 1fr; gap: 24px; }
+    .wrap { padding: 36px 18px 64px; }
+  }
+
+  /* Card */
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px 28px 24px;
+  }
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 4px;
+  }
+  .card-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--serif-display);
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .card-num > span {
+    display: block;
+    transform: translateY(1px);
+  }
+  .card h2 {
+    font-family: var(--serif-display);
+    font-size: 22px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    margin: 0;
+    font-weight: 900;
+  }
+  .card .desc {
+    color: var(--muted-2);
+    font-size: 15px;
+    margin: 0 0 9px;
+    line-height: 1.45;
+    min-height: 22px;
+  }
+
+  /* Rows */
+  .row {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 2px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    min-height: 72px;
+  }
+  .row:last-of-type { border-bottom: none; }
+  label {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .prefix, .suffix {
+    color: var(--muted-2);
+    font-size: 18px;
+    user-select: none;
+  }
+  .prefix { margin-right: 8px; }
+  .suffix { margin-left: 8px; font-size: 15px; color: var(--muted); }
+  input[type="text"], input[type="number"] {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font: inherit;
+    font-family: var(--serif-body);
+    font-size: 22px;
+    color: var(--ink);
+    padding: 4px 0;
+    outline: none;
+    width: 100%;
+    -moz-appearance: textfield;
+    letter-spacing: 0.005em;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input:focus { box-shadow: inset 0 -1px 0 var(--ink); }
+
+  .derived .value {
+    font-size: 22px;
+    line-height: 1.5;
+    padding: 4px 0;
+    color: var(--ink);
+    font-family: var(--serif-body);
+    letter-spacing: 0.005em;
+  }
+
+  /* Card result */
+  .card-result {
+    margin-top: 22px;
+    padding: 16px 18px;
+    background: var(--accent-soft);
+    border-radius: 12px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .card-result-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .card-result-value {
+    font-family: var(--serif-display);
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: 0.005em;
+  }
+
+  /* Pill */
+  .pill {
+    display: inline-block;
+    font-family: var(--serif-body);
+    font-size: 11px;
+    background: var(--dark-pill);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* Note below cards, full width */
+  .note {
+    margin: 32px 0 0;
+    color: var(--muted-2);
+    font-size: 17px;
+    line-height: 1.55;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="brand-mark">
+  <a href="https://amuri.substack.com" target="_blank" rel="noopener">
+    <img src="logo.png" alt="Amuri">
+  </a>
+  <div class="brand-note">
+    Pessoas queridas, esse é um simulador simples, para facilitar a vida daqueles que gostariam de fazer projeções. Você provavelmente vai curtir os últimos episódios da <em>uma horinha sobre investimentos</em>, meu podcast. <a href="https://open.spotify.com/episode/6LNtZH8nbeqwX1IxdIf3oP?si=d87OLV5dQAurmfO3-pmRLw" target="_blank" rel="noopener">Dê o play aqui→</a>
+  </div>
+</div>
+
+<div class="grid">
+
+  <section class="card">
+    <div class="card-head">
+      <span class="card-num"><span>1</span></span>
+      <h2>Fase acúmulo</h2>
+    </div>
+    <p class="desc">Do agora até a idade em que você começa a usufruir.</p>
+
+    <div class="row">
+      <label for="pv">Valor inicial investido</label>
+      <div class="input-wrap">
+        <span class="prefix">R$</span>
+        <input id="pv" type="text" inputmode="decimal" value="0">
+      </div>
+    </div>
+
+    <div class="row">
+      <label for="pmt">Aplicação mensal</label>
+      <div class="input-wrap">
+        <span class="prefix">R$</span>
+        <input id="pmt" type="text" inputmode="decimal" value="500">
+      </div>
+    </div>
+
+    <div class="row">
+      <label for="ageNow">Idade atual</label>
+      <div class="input-wrap">
+        <input id="ageNow" type="number" min="0" max="120" value="35">
+        <span class="suffix">anos</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <label for="ageRet">Idade de início do usufruto</label>
+      <div class="input-wrap">
+        <input id="ageRet" type="number" min="0" max="120" value="60">
+        <span class="suffix">anos</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <label for="rateAcc">Taxa de juros (por ano)</label>
+      <div class="input-wrap">
+        <input id="rateAcc" type="number" step="0.1" value="4">
+        <span class="suffix">% a.a.</span>
+      </div>
+    </div>
+
+    <div class="card-result">
+      <span class="card-result-label">Patrimônio acumulado</span>
+      <span class="card-result-value" id="patrimonio">—</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <span class="card-num"><span>2</span></span>
+      <h2>Fase usufruto</h2>
+    </div>
+    <p class="desc">Do início do usufruto até a idade final.</p>
+
+    <div class="row derived">
+      <label>Patrimônio acumulado</label>
+      <div class="value" id="pvUsu">—</div>
+    </div>
+
+    <div class="row">
+      <label for="fvTarget">Patrimônio desejado ao final</label>
+      <div class="input-wrap">
+        <span class="prefix">R$</span>
+        <input id="fvTarget" type="text" inputmode="decimal" value="">
+      </div>
+    </div>
+
+    <div class="row">
+      <label for="ageRetUsu">Idade de início do usufruto</label>
+      <div class="input-wrap">
+        <input id="ageRetUsu" type="number" min="0" max="120" value="60">
+        <span class="suffix">anos</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <label for="ageEnd">Idade final</label>
+      <div class="input-wrap">
+        <input id="ageEnd" type="number" min="0" max="120" value="100">
+        <span class="suffix">anos</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <label for="rateUsu">Taxa de juros (por ano)</label>
+      <div class="input-wrap">
+        <input id="rateUsu" type="number" step="0.1" value="4">
+        <span class="suffix">% a.a.</span>
+      </div>
+    </div>
+
+    <div class="card-result">
+      <span class="card-result-label">Renda mensal</span>
+      <span class="card-result-value" id="rendaCard">—</span>
+    </div>
+  </section>
+
+</div>
+
+<p class="note">Comentário rápido: os cálculos usam taxa real (descontada da inflação), então tudo está em poder de compra de hoje. Se o patrimônio desejado ao final for igual ao inicial, você vive só dos juros reais — sem dilapidar nada. Se for menor (ex: zero), você consome o principal ao longo do período :)</p>
+
+</div>
+
+<script>
+const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+const brlPrecise = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+function parseBR(str) {
+  if (typeof str === 'number') return str;
+  if (!str) return 0;
+  let s = String(str).trim().replace(/\s/g, '').replace(/R\$/g, '');
+  if (s.includes(',') && s.includes('.')) {
+    s = s.replace(/\./g, '').replace(',', '.');
+  } else if (s.includes(',')) {
+    s = s.replace(',', '.');
+  } else {
+    const parts = s.split('.');
+    if (parts.length > 2) s = s.replace(/\./g, '');
+    else if (parts[1] && parts[1].length === 3) s = s.replace(/\./g, '');
+  }
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+
+function formatBR(n) {
+  if (!isFinite(n)) return '0';
+  return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 }).format(Math.round(n));
+}
+
+function accumulate(pv, pmt, monthlyRate, nMonths) {
+  if (monthlyRate === 0) return pv + pmt * nMonths;
+  const f = Math.pow(1 + monthlyRate, nMonths);
+  return pv * f + pmt * (f - 1) / monthlyRate;
+}
+
+function withdrawalIncome(pv, fvTarget, monthlyRate, nMonths) {
+  if (nMonths <= 0) return 0;
+  if (monthlyRate === 0) return (pv - fvTarget) / nMonths;
+  const f = Math.pow(1 + monthlyRate, nMonths);
+  return (pv * f - fvTarget) * monthlyRate / (f - 1);
+}
+
+const $ = id => document.getElementById(id);
+const els = {
+  pv: $('pv'),
+  pmt: $('pmt'),
+  ageNow: $('ageNow'),
+  ageRet: $('ageRet'),
+  rateAcc: $('rateAcc'),
+  patrimonio: $('patrimonio'),
+  pvUsu: $('pvUsu'),
+  fvTarget: $('fvTarget'),
+  ageRetUsu: $('ageRetUsu'),
+  ageEnd: $('ageEnd'),
+  rateUsu: $('rateUsu'),
+  rendaCard: $('rendaCard'),
+};
+
+let userTouchedFvTarget = false;
+els.fvTarget.addEventListener('input', () => { userTouchedFvTarget = true; });
+
+els.ageRet.addEventListener('input', () => { els.ageRetUsu.value = els.ageRet.value; });
+els.ageRetUsu.addEventListener('input', () => { els.ageRet.value = els.ageRetUsu.value; });
+
+function recalc() {
+  const pv = parseBR(els.pv.value);
+  const pmt = parseBR(els.pmt.value);
+  const ageNow = parseFloat(els.ageNow.value) || 0;
+  const ageRet = parseFloat(els.ageRet.value) || 0;
+  const rateAccAnnual = (parseFloat(els.rateAcc.value) || 0) / 100;
+  const rateAccMonthly = Math.pow(1 + rateAccAnnual, 1/12) - 1;
+  const monthsAcc = Math.max(0, (ageRet - ageNow) * 12);
+
+  const patrimonio = accumulate(pv, pmt, rateAccMonthly, monthsAcc);
+
+  els.patrimonio.textContent = brl.format(patrimonio);
+  els.pvUsu.textContent = brl.format(patrimonio);
+
+  if (!userTouchedFvTarget) {
+    els.fvTarget.value = formatBR(patrimonio);
+  }
+  const fvTarget = parseBR(els.fvTarget.value);
+
+  const ageEnd = parseFloat(els.ageEnd.value) || 0;
+  const rateUsuAnnual = (parseFloat(els.rateUsu.value) || 0) / 100;
+  const rateUsuMonthly = Math.pow(1 + rateUsuAnnual, 1/12) - 1;
+  const monthsUsu = Math.max(0, (ageEnd - ageRet) * 12);
+
+  const renda = withdrawalIncome(patrimonio, fvTarget, rateUsuMonthly, monthsUsu);
+
+  els.rendaCard.textContent = brlPrecise.format(renda);
+}
+
+function attachCurrencyFormatting(el) {
+  el.addEventListener('blur', () => {
+    const n = parseBR(el.value);
+    el.value = formatBR(n);
+    recalc();
+  });
+}
+attachCurrencyFormatting(els.pv);
+attachCurrencyFormatting(els.pmt);
+attachCurrencyFormatting(els.fvTarget);
+
+['input', 'change'].forEach(evt => {
+  document.querySelectorAll('input').forEach(i => i.addEventListener(evt, recalc));
+});
+
+recalc();
+</script>
+</body>
+</html>
