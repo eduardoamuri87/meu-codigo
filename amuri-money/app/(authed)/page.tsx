@@ -19,6 +19,7 @@ import {
   getCachedMonthTotals,
 } from "@/lib/queries/page-data";
 import {
+  SALDO_GENESIS,
   getMonthDeltas,
   monthsBetween,
   type YearMonth,
@@ -202,10 +203,9 @@ export default async function HomePage({
     year > today.year || (year === today.year && month > today.month);
   const viewIsPast =
     year < today.year || (year === today.year && month < today.month);
-  // Saldo zero em 1º de abril/2026; tudo posterior acumula o delta de cada
-  // mês para que saldoInicial(M+1) = saldoFinalProjetado(M) e o "saldo atual"
-  // do mês corrente seja saldoInicial + (recebido − pago) realizado.
-  const SALDO_GENESIS = { year: 2026, month: 4 };
+  // saldoInicial(M+1) = saldoFinalProjetado(M), e o "saldo atual" do mês corrente
+  // é saldoInicial + (recebido − pago) realizado. A gênese vive em
+  // month-projection porque o aquecimento em background também precisa dela.
   const carryMonths = monthsBetween(
     SALDO_GENESIS.year,
     SALDO_GENESIS.month,

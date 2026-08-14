@@ -1,5 +1,6 @@
 import "server-only";
 import { currentYearMonth } from "@/lib/format";
+import { warmMonthSnapshots } from "@/lib/queries/month-projection";
 import { getIuguMonthTotals } from "./iugu";
 import { getStripeBooksMonthTotals, getStripeMonthTotals } from "./stripe";
 
@@ -49,7 +50,17 @@ export async function warmGateways(reason: string): Promise<void> {
     else if (r.value.error) failures++;
   }
 
+  // Por último os snapshots dos meses fechados, já com a janela da Iugu quente
+  // em memória: sem isso a primeira carga do dashboard pagaria por construí-los.
+  let snapshots = { criados: 0, falhas: 0 };
+  try {
+    snapshots = await warmMonthSnapshots();
+  } catch (e) {
+    console.error("[warm] snapshots falharam:", e);
+  }
+
   console.log(
-    `[warm] ${reason}: ${Date.now() - startedAt}ms, ${failures} de ${results.length} com falha`,
+    `[warm] ${reason}: ${Date.now() - startedAt}ms, ${failures} de ${results.length} com falha, ` +
+      `${snapshots.criados} snapshot(s) criado(s), ${snapshots.falhas} falha(s)`,
   );
 }

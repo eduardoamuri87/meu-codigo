@@ -12,6 +12,13 @@ import { getCachedMonthTotals } from "@/lib/queries/page-data";
 
 export type YearMonth = { year: number; month: number };
 
+/**
+ * Saldo zero em 1º de abril/2026; tudo posterior acumula o delta de cada mês.
+ * Vive aqui, e não na página, porque o aquecimento em background também precisa
+ * saber de onde começar a acumular.
+ */
+export const SALDO_GENESIS: YearMonth = { year: 2026, month: 4 };
+
 function snapshotId(year: number, month: number): string {
   return `${year}-${String(month).padStart(2, "0")}`;
 }
@@ -136,6 +143,64 @@ export async function getMonthDeltas(months: YearMonth[]): Promise<number[]> {
   }
 
   return deltas;
+}
+
+/**
+ * Constrói os snapshots que faltam, fora do caminho de uma request.
+ *
+ * Sem isso a primeira carga do dashboard depois de um mês virar paga pela
+ * construção — que é justamente o custo que o aquecimento existe para evitar.
+ *
+ * Só toca em gateway e no drizzle, de propósito: `getCachedMonthTotals` é
+ * `unstable_cache` e depende de contexto de request, que não existe aqui.
+ * A parte de banco do delta continua sendo calculada ao vivo no render.
+ *
+ * Sequencial por mês, para não saturar a CPU do shared-cpu-1x — o mesmo motivo
+ * pelo qual o warm é escalonado.
+ */
+export async function warmMonthSnapshots(): Promise<{
+  criados: number;
+  falhas: number;
+}> {
+  const today = currentYearMonth();
+  const months = monthsBetween(
+    SALDO_GENESIS.year,
+    SALDO_GENESIS.month,
+    today.year,
+    today.month,
+  );
+  if (months.length === 0) return { criados: 0, falhas: 0 };
+
+  const existing = new Set(
+    (await db.select({ id: monthSnapshots.id }).from(monthSnapshots)).map(
+      (r) => r.id,
+    ),
+  );
+
+  let criados = 0;
+  let falhas = 0;
+  for (const m of months) {
+    const id = snapshotId(m.year, m.month);
+    if (existing.has(id)) continue;
+    try {
+      const gatewayDelta = await computeGatewayDelta(m.year, m.month);
+      await db
+        .insert(monthSnapshots)
+        .values({
+          id,
+          year: m.year,
+          month: m.month,
+          gatewayDelta,
+          computedAt: Date.now(),
+        })
+        .onConflictDoNothing();
+      criados++;
+    } catch {
+      // Gateway indisponível para este mês: não grava, tenta no próximo ciclo.
+      falhas++;
+    }
+  }
+  return { criados, falhas };
 }
 
 /** Descarta todos os snapshots, forçando recálculo na próxima carga. */
