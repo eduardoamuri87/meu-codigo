@@ -10,18 +10,25 @@ import "server-only";
  * inteira, senão 50 páginas de 10s viram 500s.
  */
 
-/** Timeout de uma request isolada. */
-export const REQUEST_TIMEOUT_MS = 10_000;
+/**
+ * Timeout de uma request isolada.
+ *
+ * Medido em produção: /v1/invoices da Iugu leva 15 a 25s por página, e isso é
+ * custo fixo da API — não muda tirando `sortBy`, nem `status_filter`, nem
+ * reduzindo a janela (67 faturas ainda levaram 15s). Um teto de 10s aqui não
+ * protegia nada: só garantia que a Iugu nunca respondesse.
+ */
+export const REQUEST_TIMEOUT_MS = 35_000;
 
 /**
  * Orçamento de uma operação inteira, incluindo todas as páginas.
  *
- * Medido: /v1/checkout/sessions chegou a 10 páginas / 21s quando a carga que
- * constrói os snapshots roda ~12 operações concorrentes disputando banda. O teto
- * existe para impedir que uma API pendurada trave o render para sempre, não para
- * cortar trabalho legítimo — daí a folga.
+ * A janela de 24 meses da Iugu são 4 páginas; em paralelo isso fica na casa dos
+ * 30 a 50s. Medido também: /v1/checkout/sessions da Stripe chegou a 10 páginas /
+ * 21s. O teto existe para impedir que uma API pendurada trave o render para
+ * sempre, não para cortar trabalho legítimo.
  */
-export const OPERATION_BUDGET_MS = 40_000;
+export const OPERATION_BUDGET_MS = 120_000;
 
 /** Teto de páginas por operação, para que um cursor bugado não rode para sempre. */
 export const MAX_PAGES = 50;

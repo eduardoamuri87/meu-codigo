@@ -172,6 +172,20 @@ export function mostRecentCheckpointMs(now: number = Date.now()): number {
   return yesterdayMidnight + lastHourYesterday * 3600 * 1000;
 }
 
+/**
+ * Próximo instante em que o cache vence. O aquecimento em background usa isso
+ * para não ter uma definição de checkpoint própria, que poderia divergir daqui.
+ */
+export function nextCheckpointMs(now: number = Date.now()): number {
+  const { y, m, d, h } = brtParts(now);
+  const midnight = brtMidnightUtcMs(y, m, d);
+  for (const hour of CHECKPOINT_HOURS_BRT) {
+    if (h < hour) return midnight + hour * 3600 * 1000;
+  }
+  // Já passou do último checkpoint do dia: vale o primeiro de amanhã.
+  return midnight + 86400 * 1000 + CHECKPOINT_HOURS_BRT[0] * 3600 * 1000;
+}
+
 export function withCheckpointCache<Args extends unknown[], T>(
   prefix: string,
   fn: (...args: Args) => Promise<T>,

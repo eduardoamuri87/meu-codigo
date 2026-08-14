@@ -48,14 +48,11 @@ async function fetchAllPaidInvoices(
   paidTo: string,
 ): Promise<IuguInvoice[]> {
   const limit = 100;
-  const all: IuguInvoice[] = [];
-  let start = 0;
   const auth = authHeader();
   const deadline = new Deadline();
   const startedAt = Date.now();
-  let pages = 0;
 
-  while (pages < MAX_PAGES) {
+  const fetchPage = (start: number) => {
     const url = new URL("/v1/invoices", IUGU_BASE);
     url.searchParams.set("limit", String(limit));
     url.searchParams.set("start", String(start));
@@ -63,23 +60,37 @@ async function fetchAllPaidInvoices(
     url.searchParams.set("paid_at_from", paidFrom);
     url.searchParams.set("paid_at_to", paidTo);
     url.searchParams.set("sortBy[paid_at]", "asc");
-
-    const data = await fetchJson<IuguListResponse>(
+    return fetchJson<IuguListResponse>(
       "Iugu",
       url,
       { Authorization: auth, Accept: "application/json" },
       deadline,
     );
-    pages++;
-    const items = data.items ?? [];
-    all.push(...items);
-    const total = data.totalItems ?? 0;
-    if (all.length >= total || items.length === 0) break;
-    start += limit;
+  };
+
+  // A primeira página já traz totalItems, então as demais não precisam esperar
+  // umas pelas outras. Como a API cobra ~25s fixos por request, em série 4
+  // páginas dão ~100s; em paralelo o custo passa a ser o da página mais lenta.
+  const first = await fetchPage(0);
+  const all: IuguInvoice[] = [...(first.items ?? [])];
+  const total = first.totalItems ?? all.length;
+  const wantedPages = Math.ceil(total / limit);
+  const pages = Math.min(wantedPages, MAX_PAGES);
+
+  if (pages > 1) {
+    const rest = await Promise.all(
+      Array.from({ length: pages - 1 }, (_, i) => fetchPage((i + 1) * limit)),
+    );
+    for (const page of rest) all.push(...(page.items ?? []));
   }
 
+  if (wantedPages > MAX_PAGES) {
+    console.warn(
+      `[iugu] truncado em ${MAX_PAGES} páginas: a API reportou ${total} faturas (${wantedPages} páginas).`,
+    );
+  }
   console.log(
-    `[iugu] ${all.length} faturas em ${pages} página(s), ${Date.now() - startedAt}ms`,
+    `[iugu] ${all.length} faturas em ${pages} página(s) em paralelo, ${Date.now() - startedAt}ms`,
   );
   return all;
 }
