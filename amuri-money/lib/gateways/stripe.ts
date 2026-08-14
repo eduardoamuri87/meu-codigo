@@ -710,12 +710,17 @@ function emptyStripeMonth(): StripeMonthTotals {
   };
 }
 
-export async function getStripeBooksMonthTotals(
-  year: number,
-  month: number,
-): Promise<StripeBooksMonthTotals> {
-  if (!process.env.STRIPE_API_TOKEN) return emptyStripeBooksMonth();
-  try {
+/**
+ * Agregado do mês, e não as listas brutas, é o que vai para o disco.
+ *
+ * Medido em produção: `stripe-charge-btxs-by-created-v1` sozinho ocupava 5,53 MB
+ * de um arquivo de 6 MB — ~308 KB por mês navegado, sem nunca ser removido — e
+ * esse arquivo era lido e parseado a cada sincronização numa VM de 512 MB. Mesmo
+ * padrão que a Iugu já usava com `iugu-month-v3`.
+ */
+const cachedBooksMonth = withCheckpointCache(
+  "stripe-books-month-v1",
+  async (year: number, month: number): Promise<StripeBooksMonthTotals> => {
     const [txs, sessions, bookLinks] = await Promise.all([
       cachedChargeBalanceTransactions(year, month),
       cachedBookCheckoutSessions(year, month),
@@ -729,6 +734,16 @@ export async function getStripeBooksMonthTotals(
       year,
       month,
     );
+  },
+);
+
+export async function getStripeBooksMonthTotals(
+  year: number,
+  month: number,
+): Promise<StripeBooksMonthTotals> {
+  if (!process.env.STRIPE_API_TOKEN) return emptyStripeBooksMonth();
+  try {
+    return await cachedBooksMonth(year, month);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("[stripe-books] falhou:", msg);

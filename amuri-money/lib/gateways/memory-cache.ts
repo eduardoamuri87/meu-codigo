@@ -13,11 +13,19 @@ if (!existsSync(CACHE_DIR)) {
   } catch {}
 }
 
-// Prefixos que nunca vão para o disco. A janela de 24 meses de faturas da Iugu
-// passava de 2,4 MB num arquivo de 2,9 MB — e o único consumidor dela são os
-// agregados por mês, que continuam sendo persistidos (~11 KB cada). Mantê-la só
-// em memória evita reescrever megabytes de JSON a cada miss.
-const MEMORY_ONLY_PREFIXES = ["iugu-invoices-window-v1"];
+// Prefixos que nunca vão para o disco: são listas brutas grandes cujo único
+// consumidor são os agregados por mês, e esses sim são persistidos (~11 KB cada
+// contra centenas de KB da lista). Sem isso o arquivo era reescrito e reparseado
+// inteiro, com megabytes de JSON, num container de 512 MB.
+//
+// Medido em produção: 6,0 MB no total, sendo 5,53 MB só de
+// stripe-charge-btxs-by-created-v1 acumulado por mês navegado, sem expurgo.
+// Em dev, iugu-invoices-window-v1 chegava a 2,44 MB de 2,88 MB.
+const MEMORY_ONLY_PREFIXES = [
+  "iugu-invoices-window-v1",
+  "stripe-charge-btxs-by-created-v1",
+  "stripe-book-sessions-v2",
+];
 
 function isMemoryOnly(key: string): boolean {
   return MEMORY_ONLY_PREFIXES.some((p) => key.startsWith(p + ":"));
