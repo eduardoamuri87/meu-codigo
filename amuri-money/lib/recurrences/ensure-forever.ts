@@ -1,8 +1,10 @@
 import "server-only";
 import crypto from "node:crypto";
+import { revalidateTag } from "next/cache";
 import { desc, eq, isNull } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { recurrences, transactions } from "@/lib/db/schema";
+import { CACHE_TAGS } from "@/lib/queries/page-data";
 
 const FOREVER_BATCH = 240;
 const EXTEND_WHEN_WITHIN_MONTHS = 24;
@@ -48,6 +50,7 @@ async function runEnsureForeverRecurrences(): Promise<void> {
 
   const threshold = thresholdDateStr(EXTEND_WHEN_WITHIN_MONTHS);
   const now = Date.now();
+  let inserted = false;
 
   await Promise.all(
     foreverRecs.map(async (rec) => {
@@ -79,18 +82,34 @@ async function runEnsureForeverRecurrences(): Promise<void> {
         updatedAt: now,
       }));
       await db.insert(transactions).values(extras);
+      inserted = true;
     }),
   );
+
+  // Sem isso as 240 parcelas recém-inseridas ficam invisíveis no unstable_cache
+  // até que alguma outra ação invalide a tag.
+  if (inserted) {
+    try {
+      revalidateTag(CACHE_TAGS.transactions, "max");
+    } catch (e) {
+      console.error("[ensure-forever] revalidateTag falhou:", e);
+    }
+  }
 }
 
 export async function ensureForeverRecurrences(): Promise<void> {
   if (inflight) return inflight;
   if (Date.now() - lastRunAt < MIN_RUN_INTERVAL_MS) return;
+  // lastRunAt no finally, não no then: se a rotina falhar (SQLITE_BUSY, por
+  // exemplo) ela não pode voltar a rodar em toda request. E o catch fica aqui
+  // dentro porque o call site dispara isso sem await — no Node uma rejeição
+  // não tratada mata o processo.
   inflight = runEnsureForeverRecurrences()
-    .then(() => {
-      lastRunAt = Date.now();
+    .catch((e) => {
+      console.error("[ensure-forever] falhou:", e);
     })
     .finally(() => {
+      lastRunAt = Date.now();
       inflight = null;
     });
   return inflight;

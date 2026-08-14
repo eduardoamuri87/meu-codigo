@@ -1,4 +1,5 @@
 import "server-only";
+import { Deadline, MAX_PAGES, fetchJson } from "./http";
 import { withCheckpointCache } from "./memory-cache";
 import type { IuguDetailItem } from "./types";
 
@@ -50,8 +51,11 @@ async function fetchAllPaidInvoices(
   const all: IuguInvoice[] = [];
   let start = 0;
   const auth = authHeader();
+  const deadline = new Deadline();
+  const startedAt = Date.now();
+  let pages = 0;
 
-  while (true) {
+  while (pages < MAX_PAGES) {
     const url = new URL("/v1/invoices", IUGU_BASE);
     url.searchParams.set("limit", String(limit));
     url.searchParams.set("start", String(start));
@@ -60,14 +64,13 @@ async function fetchAllPaidInvoices(
     url.searchParams.set("paid_at_to", paidTo);
     url.searchParams.set("sortBy[paid_at]", "asc");
 
-    const resp = await fetch(url, {
-      headers: { Authorization: auth, Accept: "application/json" },
-      cache: "no-store",
-    });
-    if (!resp.ok) {
-      throw new Error(`Iugu HTTP ${resp.status}: ${await resp.text()}`);
-    }
-    const data = (await resp.json()) as IuguListResponse;
+    const data = await fetchJson<IuguListResponse>(
+      "Iugu",
+      url,
+      { Authorization: auth, Accept: "application/json" },
+      deadline,
+    );
+    pages++;
     const items = data.items ?? [];
     all.push(...items);
     const total = data.totalItems ?? 0;
@@ -75,6 +78,9 @@ async function fetchAllPaidInvoices(
     start += limit;
   }
 
+  console.log(
+    `[iugu] ${all.length} faturas em ${pages} página(s), ${Date.now() - startedAt}ms`,
+  );
   return all;
 }
 

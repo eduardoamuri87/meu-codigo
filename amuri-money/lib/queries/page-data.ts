@@ -18,6 +18,11 @@ export const CACHE_TAGS = {
 
 export type TypeFilter = "todos" | "receita" | "despesa";
 
+/** Teto de resultados da busca global (sem filtro de mês). */
+const SEARCH_RESULT_LIMIT = 500;
+/** Teto de um mês. Folgado: existe só para não haver query sem limite. */
+const MONTH_RESULT_LIMIT = 2000;
+
 export type DbRow = {
   id: string;
   date: string;
@@ -110,6 +115,9 @@ export const getCachedMonthRows = unstable_cache(
         : undefined,
     );
 
+    // Buscar descarta o filtro de mês de propósito (é busca global), mas sem
+    // teto isso varre a tabela inteira — que cresce 240 linhas por recorrência
+    // infinita — e serializa tudo para o client component.
     const rows = await db
       .select({
         id: transactions.id,
@@ -135,7 +143,8 @@ export const getCachedMonthRows = unstable_cache(
       .leftJoin(costCenters, eq(transactions.costCenterId, costCenters.id))
       .leftJoin(recurrences, eq(transactions.recurrenceId, recurrences.id))
       .where(listWhere)
-      .orderBy(desc(transactions.date), asc(transactions.description));
+      .orderBy(desc(transactions.date), asc(transactions.description))
+      .limit(trimmed ? SEARCH_RESULT_LIMIT : MONTH_RESULT_LIMIT);
 
     return rows as DbRow[];
   },

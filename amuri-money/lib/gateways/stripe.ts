@@ -1,3 +1,5 @@
+import "server-only";
+import { Deadline, MAX_PAGES, fetchJson } from "./http";
 import { withCheckpointCache } from "./memory-cache";
 import type { StripeBookItem, StripeDetailItem } from "./types";
 
@@ -98,6 +100,7 @@ function authHeader(): string {
 async function stripeGet<T>(
   path: string,
   qs: Record<string, string | string[]>,
+  deadline?: Deadline,
 ): Promise<T> {
   const url = new URL(path, STRIPE_BASE);
   for (const [k, v] of Object.entries(qs)) {
@@ -107,14 +110,12 @@ async function stripeGet<T>(
       url.searchParams.set(k, v);
     }
   }
-  const resp = await fetch(url, {
-    headers: { Authorization: authHeader(), Accept: "application/json" },
-    cache: "no-store",
-  });
-  if (!resp.ok) {
-    throw new Error(`Stripe HTTP ${resp.status}: ${await resp.text()}`);
-  }
-  return (await resp.json()) as T;
+  return fetchJson<T>(
+    "Stripe",
+    url,
+    { Authorization: authHeader(), Accept: "application/json" },
+    deadline,
+  );
 }
 
 async function listPaginated<T extends { id: string }>(
@@ -123,15 +124,26 @@ async function listPaginated<T extends { id: string }>(
 ): Promise<T[]> {
   const all: T[] = [];
   let startingAfter: string | null = null;
-  while (true) {
+  // Um orçamento para o laço inteiro: só o timeout por request não impede que
+  // MAX_PAGES páginas lentas somem minutos.
+  const deadline = new Deadline();
+  const startedAt = Date.now();
+  let pages = 0;
+
+  while (pages < MAX_PAGES) {
     const qs: Record<string, string | string[]> = { ...baseQs, limit: "100" };
     if (startingAfter) qs.starting_after = startingAfter;
-    const data = await stripeGet<ListResponse<T>>(path, qs);
+    const data = await stripeGet<ListResponse<T>>(path, qs, deadline);
+    pages++;
     const items = data.data ?? [];
     all.push(...items);
     if (!data.has_more || items.length === 0) break;
     startingAfter = items[items.length - 1].id;
   }
+
+  console.log(
+    `[stripe] ${path}: ${all.length} itens em ${pages} página(s), ${Date.now() - startedAt}ms`,
+  );
   return all;
 }
 

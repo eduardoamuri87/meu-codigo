@@ -29,6 +29,13 @@
       "when": 1778249072190,
       "tag": "0003_certain_rumiko_fujikawa",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1786719280291,
+      "tag": "0004_late_maverick",
+      "breakpoints": true
     }
   ]
 }

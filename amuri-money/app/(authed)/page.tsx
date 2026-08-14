@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { after } from "next/server";
 import {
   currentYearMonth,
   formatCurrency,
@@ -17,8 +19,9 @@ import {
   getCachedMonthTotals,
 } from "@/lib/queries/page-data";
 import {
-  getProjectedMonthDelta,
+  getMonthDeltas,
   monthsBetween,
+  type YearMonth,
 } from "@/lib/queries/month-projection";
 import { TransactionsList, type Row } from "./transactions-list";
 import { MonthNavigator } from "./month-navigator";
@@ -187,8 +190,12 @@ export default async function HomePage({
   const tipo = parseTipo(sp.tipo);
   const q = (sp.q ?? "").trim();
 
-  void ensureGatewayCategories();
-  void ensureForeverRecurrences();
+  // after() em vez de void: essas rotinas de manutenção rodam depois da
+  // resposta, sem disputar o event loop e o handle do SQLite com o render.
+  after(async () => {
+    await ensureGatewayCategories();
+    await ensureForeverRecurrences();
+  });
 
   const today = currentYearMonth();
   const viewIsFuture =
@@ -206,26 +213,99 @@ export default async function HomePage({
     month,
   );
 
-  const [totalsRow, dbRows, cats, ccs, iugu, stripe, books, carryDeltas] =
-    await Promise.all([
-      getCachedMonthTotals(year, month),
-      getCachedMonthRows(year, month, tipo, q),
-      getCachedCategories(),
-      getCachedCostCenters(),
-      getIuguMonthTotals(year, month),
-      getStripeMonthTotals(year, month),
-      getStripeBooksMonthTotals(year, month),
-      Promise.all(
-        carryMonths.map((m) => getProjectedMonthDelta(m.year, m.month)),
-      ),
-    ]);
+  // Só o que vem do banco (indexado, já em unstable_cache) bloqueia a casca da
+  // página. Tudo que depende de Iugu/Stripe fica dentro de <Suspense> e chega
+  // por streaming — com skeleton, nunca com número provisório errado.
+  const [cats, ccs] = await Promise.all([
+    getCachedCategories(),
+    getCachedCostCenters(),
+  ]);
+
+  const baseParams = new URLSearchParams();
+  if (tipo !== "todos") baseParams.set("tipo", tipo);
+  if (q) baseParams.set("q", q);
+
+  return (
+    <div className="space-y-8">
+      <section className="card-soft p-6 md:p-8">
+        <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
+          <Suspense fallback={<SaldoSkeleton viewIsFuture={viewIsFuture} />}>
+            <SaldoBlock
+              year={year}
+              month={month}
+              carryMonths={carryMonths}
+              viewIsFuture={viewIsFuture}
+              viewIsPast={viewIsPast}
+            />
+          </Suspense>
+          <div className="flex flex-wrap md:ml-auto items-center gap-3">
+            <MonthNavigator
+              year={year}
+              month={month}
+              baseParams={baseParams}
+            />
+          </div>
+        </div>
+      </section>
+
+      <Suspense fallback={<TotalsSkeleton />}>
+        <TotalsSection year={year} month={month} />
+      </Suspense>
+
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <Filters tipo={tipo} q={q} />
+        <NewTransactionDialog categories={cats} costCenters={ccs} />
+      </div>
+
+      <Suspense fallback={<ListSkeleton />}>
+        <TransactionsSection
+          year={year}
+          month={month}
+          tipo={tipo}
+          q={q}
+          categories={cats}
+          costCenters={ccs}
+        />
+      </Suspense>
+    </div>
+  );
+}
+
+/**
+ * Totais de gateway do mês visto. As três chamadas são compartilhadas entre
+ * SaldoBlock, TotalsSection e TransactionsSection pelo dedupe de in-flight do
+ * withCheckpointCache, então decompor a página em três boundaries não multiplica
+ * requisição nenhuma.
+ */
+async function getGatewayTotals(year: number, month: number) {
+  const [iugu, stripe, books] = await Promise.all([
+    getIuguMonthTotals(year, month),
+    getStripeMonthTotals(year, month),
+    getStripeBooksMonthTotals(year, month),
+  ]);
+  return { iugu, stripe, books };
+}
+
+async function SaldoBlock({
+  year,
+  month,
+  carryMonths,
+  viewIsFuture,
+  viewIsPast,
+}: {
+  year: number;
+  month: number;
+  carryMonths: YearMonth[];
+  viewIsFuture: boolean;
+  viewIsPast: boolean;
+}) {
+  const [totalsRow, { iugu, stripe, books }, carryDeltas] = await Promise.all([
+    getCachedMonthTotals(year, month),
+    getGatewayTotals(year, month),
+    getMonthDeltas(carryMonths),
+  ]);
+
   const saldoInicial = carryDeltas.reduce((s, x) => s + x, 0);
-
-  const virtualRows = buildGatewayRows(year, month, iugu, stripe, books);
-  const visibleVirtual = q || tipo === "despesa" ? [] : virtualRows;
-
-  const rows: Row[] = [...visibleVirtual, ...(dbRows as Row[])];
-
   const recebido =
     (totalsRow?.recebido ?? 0) +
     iugu.recebido.total +
@@ -242,68 +322,135 @@ export default async function HomePage({
   const saldoProjetado = saldoInicial + recebido + aReceber - pago - aPagar;
   const saldoPrincipal = viewIsFuture ? saldoInicial : saldoAtual;
 
-  const baseParams = new URLSearchParams();
-  if (tipo !== "todos") baseParams.set("tipo", tipo);
-  if (q) baseParams.set("q", q);
+  return (
+    <div className="space-y-1.5">
+      <div className="text-xs uppercase tracking-wider text-muted-foreground">
+        {viewIsFuture ? "Saldo inicial" : "Saldo atual"}
+      </div>
+      <div
+        className={`text-4xl font-semibold tabular-nums tracking-tight ${
+          saldoPrincipal >= 0 ? "text-emerald-700" : "text-rose-700"
+        }`}
+      >
+        {formatCurrency(saldoPrincipal)}
+      </div>
+      <div className="text-sm text-muted-foreground">
+        {viewIsPast
+          ? "Saldo efetivado no fim do mês"
+          : "Saldo projetado para o fim do mês"}
+        :{" "}
+        <span className="tabular-nums font-medium text-foreground">
+          {formatCurrency(viewIsPast ? saldoAtual : saldoProjetado)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function SaldoSkeleton({ viewIsFuture }: { viewIsFuture: boolean }) {
+  return (
+    <div className="space-y-1.5">
+      <div className="text-xs uppercase tracking-wider text-muted-foreground">
+        {viewIsFuture ? "Saldo inicial" : "Saldo atual"}
+      </div>
+      <div className="h-10 w-52 animate-pulse rounded bg-muted" />
+      <div className="h-5 w-72 animate-pulse rounded bg-muted" />
+    </div>
+  );
+}
+
+async function TotalsSection({
+  year,
+  month,
+}: {
+  year: number;
+  month: number;
+}) {
+  const [totalsRow, { iugu, stripe, books }] = await Promise.all([
+    getCachedMonthTotals(year, month),
+    getGatewayTotals(year, month),
+  ]);
 
   const gatewayError = iugu.error || stripe.error || books.error;
 
   return (
-    <div className="space-y-8">
-      <section className="card-soft p-6 md:p-8">
-        <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
-          <div className="space-y-1.5">
-            <div className="text-xs uppercase tracking-wider text-muted-foreground">
-              {viewIsFuture ? "Saldo inicial" : "Saldo atual"}
-            </div>
-            <div
-              className={`text-4xl font-semibold tabular-nums tracking-tight ${
-                saldoPrincipal >= 0 ? "text-emerald-700" : "text-rose-700"
-              }`}
-            >
-              {formatCurrency(saldoPrincipal)}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {viewIsPast
-                ? "Saldo efetivado no fim do mês"
-                : "Saldo projetado para o fim do mês"}
-              :{" "}
-              <span className="tabular-nums font-medium text-foreground">
-                {formatCurrency(viewIsPast ? saldoAtual : saldoProjetado)}
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-wrap md:ml-auto items-center gap-3">
-            <MonthNavigator
-              year={year}
-              month={month}
-              baseParams={baseParams}
-            />
-          </div>
-        </div>
-      </section>
-
+    <>
       <TotalsCards
-        recebido={recebido}
-        aReceber={aReceber}
-        pago={pago}
-        aPagar={aPagar}
+        recebido={
+          (totalsRow?.recebido ?? 0) +
+          iugu.recebido.total +
+          stripe.recebido.total +
+          books.recebido.total
+        }
+        aReceber={
+          (totalsRow?.aReceber ?? 0) +
+          iugu.aReceber.total +
+          stripe.aReceber.total +
+          books.aReceber.total
+        }
+        pago={totalsRow?.pago ?? 0}
+        aPagar={totalsRow?.aPagar ?? 0}
       />
-
       {gatewayError ? (
-        <div className="text-xs text-muted-foreground">
+        <div className="mt-3 text-xs text-muted-foreground">
           Algum gateway falhou ao responder e foi contado como R$ 0.
           {iugu.error ? ` Iugu: ${iugu.error}.` : ""}
           {stripe.error ? ` Stripe: ${stripe.error}.` : ""}
         </div>
       ) : null}
+    </>
+  );
+}
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-        <Filters tipo={tipo} q={q} />
-        <NewTransactionDialog categories={cats} costCenters={ccs} />
-      </div>
+function TotalsSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      {[0, 1, 2, 3].map((i) => (
+        <div key={i} className="card-soft h-24 animate-pulse bg-muted" />
+      ))}
+    </div>
+  );
+}
 
-      <TransactionsList rows={rows} categories={cats} costCenters={ccs} />
+async function TransactionsSection({
+  year,
+  month,
+  tipo,
+  q,
+  categories,
+  costCenters,
+}: {
+  year: number;
+  month: number;
+  tipo: TypeFilter;
+  q: string;
+  categories: React.ComponentProps<typeof TransactionsList>["categories"];
+  costCenters: React.ComponentProps<typeof TransactionsList>["costCenters"];
+}) {
+  const [dbRows, { iugu, stripe, books }] = await Promise.all([
+    getCachedMonthRows(year, month, tipo, q),
+    getGatewayTotals(year, month),
+  ]);
+
+  const virtualRows = buildGatewayRows(year, month, iugu, stripe, books);
+  const visibleVirtual = q || tipo === "despesa" ? [] : virtualRows;
+  const rows: Row[] = [...visibleVirtual, ...(dbRows as Row[])];
+
+  return (
+    <TransactionsList
+      rows={rows}
+      categories={categories}
+      costCenters={costCenters}
+    />
+  );
+}
+
+function ListSkeleton() {
+  return (
+    <div className="space-y-2">
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="h-12 animate-pulse rounded bg-muted" />
+      ))}
     </div>
   );
 }

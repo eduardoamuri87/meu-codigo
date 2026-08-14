@@ -99,6 +99,27 @@ export const transactions = sqliteTable(
   ],
 );
 
+/**
+ * Delta de gateway (Iugu + Stripe + Livros) de um mês já fechado.
+ *
+ * O saldo inicial do dashboard é a soma dos deltas de todo mês desde a gênese.
+ * Recalcular isso batia nos gateways uma vez por mês por carga de página — 15
+ * chamadas hoje, crescendo 3 a cada mês. Meses fechados não mudam mais, então
+ * ficam gravados aqui e são lidos numa única query.
+ *
+ * Só a parte de gateway entra no snapshot: a parte de banco continua sendo
+ * calculada ao vivo, porque editar uma transação de um mês passado muda o
+ * resultado dele.
+ */
+export const monthSnapshots = sqliteTable("month_snapshots", {
+  // "YYYY-MM", para o upsert ser idempotente.
+  id: text("id").primaryKey(),
+  year: integer("year").notNull(),
+  month: integer("month").notNull(),
+  gatewayDelta: real("gateway_delta").notNull(),
+  computedAt: integer("computed_at").notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -111,3 +132,5 @@ export type Recurrence = typeof recurrences.$inferSelect;
 export type NewRecurrence = typeof recurrences.$inferInsert;
 export type Transaction = typeof transactions.$inferSelect;
 export type NewTransaction = typeof transactions.$inferInsert;
+export type MonthSnapshot = typeof monthSnapshots.$inferSelect;
+export type NewMonthSnapshot = typeof monthSnapshots.$inferInsert;

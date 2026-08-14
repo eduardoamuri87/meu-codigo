@@ -35,9 +35,14 @@ async function run(): Promise<void> {
 export async function ensureGatewayCategories(): Promise<void> {
   if (done) return;
   if (inflight) return inflight;
+  // O catch fica aqui dentro, não no call site: page.tsx dispara isso sem await
+  // e uma rejeição não tratada mata o processo no Node.
   inflight = run()
     .then(() => {
       done = true;
+    })
+    .catch((e) => {
+      console.error("[ensure-categories] falhou:", e);
     })
     .finally(() => {
       inflight = null;

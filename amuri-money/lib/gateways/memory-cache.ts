@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
-import { unlink, writeFile } from "node:fs/promises";
+import { existsSync, mkdirSync } from "node:fs";
+import { readFile, rename, stat, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 type Entry<T> = { value: T; refreshedAt: number };
@@ -13,58 +13,113 @@ if (!existsSync(CACHE_DIR)) {
   } catch {}
 }
 
-const store: Map<string, Entry<unknown>> = new Map();
-// mtime do arquivo na última vez que sincronizamos store ↔ disco.
-// Usado para detectar quando outro processo apagou (clearGatewayCache) ou
-// regravou o cache, mantendo réplicas consistentes em deploys multi-worker.
-let lastSeenMtimeMs = 0;
+// Prefixos que nunca vão para o disco. A janela de 24 meses de faturas da Iugu
+// passava de 2,4 MB num arquivo de 2,9 MB — e o único consumidor dela são os
+// agregados por mês, que continuam sendo persistidos (~11 KB cada). Mantê-la só
+// em memória evita reescrever megabytes de JSON a cada miss.
+const MEMORY_ONLY_PREFIXES = ["iugu-invoices-window-v1"];
 
-function fileMtimeMs(): number {
+function isMemoryOnly(key: string): boolean {
+  return MEMORY_ONLY_PREFIXES.some((p) => key.startsWith(p + ":"));
+}
+
+const store: Map<string, Entry<unknown>> = new Map();
+// Buscas em andamento, por chave. É o que impede que as ~15 chamadas de gateway
+// que o dashboard dispara em paralelo executem a mesma busca 5 a 10 vezes.
+const inflight: Map<string, Promise<unknown>> = new Map();
+
+// mtime do arquivo na última vez que sincronizamos store ↔ disco, usado para
+// detectar quando outro processo apagou (clearGatewayCache) ou regravou o cache.
+let lastSeenMtimeMs = 0;
+let sawFile = false;
+
+async function fileMtimeMs(): Promise<number> {
   try {
-    return statSync(CACHE_FILE).mtimeMs;
+    return (await stat(CACHE_FILE)).mtimeMs;
   } catch {
     return 0;
   }
 }
 
-function syncFromDisk() {
-  const currentMtime = fileMtimeMs();
-  if (currentMtime === lastSeenMtimeMs) return;
+let syncing: Promise<void> | null = null;
 
-  store.clear();
+function syncFromDisk(): Promise<void> {
+  if (syncing) return syncing;
+  syncing = readFromDisk().finally(() => {
+    syncing = null;
+  });
+  return syncing;
+}
+
+async function readFromDisk(): Promise<void> {
+  const currentMtime = await fileMtimeMs();
+  if (currentMtime === lastSeenMtimeMs) return;
   lastSeenMtimeMs = currentMtime;
-  if (currentMtime === 0) return;
+
+  // Arquivo sumiu: clearGatewayCache rodou em outro processo.
+  if (currentMtime === 0) {
+    if (sawFile) store.clear();
+    sawFile = false;
+    return;
+  }
+  sawFile = true;
 
   try {
-    const raw = readFileSync(CACHE_FILE, "utf8");
-    for (const [k, v] of JSON.parse(raw) as Array<[string, Entry<unknown>]>) {
-      store.set(k, v);
+    const raw = await readFile(CACHE_FILE, "utf8");
+    const entries = JSON.parse(raw) as Array<[string, Entry<unknown>]>;
+    // Merge em vez de clear: a escrita de outro processo não pode descartar o
+    // que este processo acabou de calcular. Vence o refreshedAt mais novo.
+    for (const [k, v] of entries) {
+      if (isMemoryOnly(k)) continue;
+      const mine = store.get(k);
+      if (!mine || v.refreshedAt > mine.refreshedAt) store.set(k, v);
     }
   } catch {
-    // leitura falhou — store fica vazio, próxima miss refetcha
+    // Leitura ou parse falhou — mantém o que já está em memória e deixa o
+    // próximo miss refetchar.
   }
 }
 
-// Carrega o snapshot inicial do disco (se houver).
-syncFromDisk();
+const PERSIST_DEBOUNCE_MS = 500;
+let persistTimer: ReturnType<typeof setTimeout> | null = null;
+let persistChain: Promise<void> = Promise.resolve();
 
-function persist() {
-  const data = JSON.stringify(Array.from(store.entries()));
-  writeFile(CACHE_FILE, data)
-    .then(() => {
-      lastSeenMtimeMs = fileMtimeMs();
-    })
-    .catch(() => {});
+function schedulePersist() {
+  if (persistTimer) return;
+  persistTimer = setTimeout(() => {
+    persistTimer = null;
+    persistChain = persistChain.then(writeSnapshot);
+  }, PERSIST_DEBOUNCE_MS);
+}
+
+async function writeSnapshot(): Promise<void> {
+  const entries = [...store.entries()].filter(([k]) => !isMemoryOnly(k));
+  const data = JSON.stringify(entries);
+  // tmp + rename: o rename é atômico no mesmo filesystem, então nenhum leitor
+  // enxerga arquivo pela metade. O pid no nome evita que dois processos
+  // disputem o mesmo tmp.
+  const tmp = `${CACHE_FILE}.${process.pid}.tmp`;
+  try {
+    await writeFile(tmp, data);
+    await rename(tmp, CACHE_FILE);
+    lastSeenMtimeMs = await fileMtimeMs();
+    sawFile = true;
+  } catch (e) {
+    console.error("[gateway-cache] persist falhou:", e);
+    try {
+      await unlink(tmp);
+    } catch {}
+  }
 }
 
 export async function clearGatewayCache() {
   store.clear();
+  inflight.clear();
   lastSeenMtimeMs = 0;
-  if (existsSync(CACHE_FILE)) {
-    try {
-      await unlink(CACHE_FILE);
-    } catch {}
-  }
+  sawFile = false;
+  try {
+    await unlink(CACHE_FILE);
+  } catch {}
 }
 
 const CHECKPOINT_HOURS_BRT = [10, 16] as const;
@@ -115,14 +170,25 @@ export function withCheckpointCache<Args extends unknown[], T>(
 ): (...args: Args) => Promise<T> {
   return async (...args: Args) => {
     const key = prefix + ":" + JSON.stringify(args);
-    const now = Date.now();
-    const checkpoint = mostRecentCheckpointMs(now);
-    syncFromDisk();
+    const checkpoint = mostRecentCheckpointMs();
+    await syncFromDisk();
+
     const hit = store.get(key) as Entry<T> | undefined;
     if (hit && hit.refreshedAt >= checkpoint) return hit.value;
-    const value = await fn(...args);
-    store.set(key, { value, refreshedAt: now });
-    persist();
-    return value;
+
+    const running = inflight.get(key) as Promise<T> | undefined;
+    if (running) return running;
+
+    const pending = fn(...args)
+      .then((value) => {
+        store.set(key, { value, refreshedAt: Date.now() });
+        if (!isMemoryOnly(key)) schedulePersist();
+        return value;
+      })
+      .finally(() => {
+        inflight.delete(key);
+      });
+    inflight.set(key, pending);
+    return pending;
   };
 }
