@@ -20,14 +20,26 @@ export async function warmGateways(reason: string): Promise<void> {
   const next =
     month === 12 ? { year: year + 1, month: 1 } : { year, month: month + 1 };
 
-  const results = await Promise.allSettled([
-    getIuguMonthTotals(year, month),
-    getStripeMonthTotals(year, month),
-    getStripeBooksMonthTotals(year, month),
-    getIuguMonthTotals(next.year, next.month),
-    getStripeMonthTotals(next.year, next.month),
-    getStripeBooksMonthTotals(next.year, next.month),
-  ]);
+  // Em etapas, e não tudo de uma vez. A Stripe baixa e faz JSON.parse de
+  // megabytes; rodando junto com a Iugu num shared-cpu-1x isso satura a CPU,
+  // atrasa o event loop e infla o tempo medido da Iugu — foi o que fez o
+  // aquecimento estourar 35s quando as páginas levam 11 a 25s. Aqui fora da
+  // request, demorar mais em troca de não competir não custa nada.
+  //
+  // A Iugu vem primeiro porque é a mais lenta e a que alimenta o maior número de
+  // chaves derivadas.
+  const results: Array<PromiseSettledResult<{ error?: string }>> = [];
+  for (const stage of [
+    () => [getIuguMonthTotals(year, month)],
+    () => [getIuguMonthTotals(next.year, next.month)],
+    () => [getStripeMonthTotals(year, month), getStripeMonthTotals(next.year, next.month)],
+    () => [
+      getStripeBooksMonthTotals(year, month),
+      getStripeBooksMonthTotals(next.year, next.month),
+    ],
+  ]) {
+    results.push(...(await Promise.allSettled(stage())));
+  }
 
   // Os getters capturam os próprios erros e devolvem `error` preenchido, então
   // conto as duas formas de falha para o log dizer a verdade.

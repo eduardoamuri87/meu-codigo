@@ -13,12 +13,16 @@ import "server-only";
 /**
  * Timeout de uma request isolada.
  *
- * Medido em produção: /v1/invoices da Iugu leva 15 a 25s por página, e isso é
- * custo fixo da API — não muda tirando `sortBy`, nem `status_filter`, nem
- * reduzindo a janela (67 faturas ainda levaram 15s). Um teto de 10s aqui não
- * protegia nada: só garantia que a Iugu nunca respondesse.
+ * Medido em produção: /v1/invoices da Iugu oscila entre 11s e 25s por página, e
+ * isso é latência do servidor deles — não muda tirando `sortBy`, nem
+ * `status_filter`, nem reduzindo a janela (67 faturas ainda levaram 15s), e nem
+ * é CPU nossa (4 páginas em paralelo levam 20s contra 46s em série).
+ *
+ * Dada essa variabilidade, este valor não é uma expectativa de tempo de resposta
+ * e sim um teto contra socket pendurado. Apertá-lo só troca "lento" por "quebrado",
+ * que foi o que aconteceu com 10s e depois com 35s.
  */
-export const REQUEST_TIMEOUT_MS = 35_000;
+export const REQUEST_TIMEOUT_MS = 60_000;
 
 /**
  * Orçamento de uma operação inteira, incluindo todas as páginas.
