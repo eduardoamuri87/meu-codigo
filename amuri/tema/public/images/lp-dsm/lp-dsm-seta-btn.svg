@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="LP_Dinheiro_sem_Medo" data-name="LP Dinheiro sem Medo" xmlns="http://www.w3.org/2000/svg" width="14.723" height="15.599" version="1.1" viewBox="0 0 14.723 15.599">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #fff;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: .542px;
+      }
+    </style>
+  </defs>
+  <polyline class="cls-1" points="5.703 1.493 14.452 .271 13.668 9.02"/>
+  <line class="cls-1" x1="14.452" y1=".271" x2=".271" y2="15.328"/>
+</svg>

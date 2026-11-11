@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="LP_Dinheiro_sem_Medo" data-name="LP Dinheiro sem Medo" xmlns="http://www.w3.org/2000/svg" width="29.131" height="29.131" version="1.1" viewBox="0 0 29.131 29.131">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #f7ebe3;
+      }
+
+      .cls-1, .cls-2 {
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        fill: #2d313f;
+      }
+    </style>
+  </defs>
+  <path class="cls-2" d="M14.566,29.131c8.044,0,14.566-6.521,14.566-14.566S22.61,0,14.566,0,0,6.521,0,14.566s6.521,14.566,14.566,14.566Z"/>
+  <path class="cls-1" d="M9.413,13.182h10.306v2.768h-10.306v-2.768Z"/>
+</svg>

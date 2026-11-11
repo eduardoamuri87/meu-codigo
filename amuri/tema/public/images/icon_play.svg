@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 28.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_5" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="20px" height="20px" viewBox="0 0 20 20" style="enable-background:new 0 0 20 20;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#F7EBE3;}
+	.st1{fill:#2D313F;}
+	.st2{fill:none;stroke:#FFFFFF;stroke-width:1.7424;stroke-miterlimit:10;}
+	.st3{fill:#FFFFFF;}
+	.st4{fill:none;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st5{fill:#8EB3A7;}
+	.st6{clip-path:url(#SVGID_00000150797859660298158440000011201556769629471913_);}
+	.st7{fill:#C6D9D3;}
+	.st8{fill:none;stroke:#F7EBE3;stroke-width:23.186;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st9{fill:none;stroke:#95B2A8;stroke-width:23.186;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st10{fill:none;stroke:#FFFFFF;stroke-width:1.5251;stroke-miterlimit:10;}
+	.st11{fill:none;stroke:#F7EBE3;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st12{fill:none;stroke:#80A393;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st13{fill:none;stroke:#2D313F;stroke-width:2;stroke-miterlimit:10;}
+	.st14{clip-path:url(#SVGID_00000034792589523906889310000000984914425715549608_);}
+	.st15{fill:none;stroke:#FFFFFF;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st16{fill:none;stroke:#2D313F;stroke-width:0.5;stroke-miterlimit:10;}
+	.st17{clip-path:url(#SVGID_00000030462662891379544120000015723691575628771758_);}
+	.st18{clip-path:url(#SVGID_00000030462662891379544120000015723691575628771758_);fill:none;}
+	.st19{fill:none;}
+	.st20{clip-path:url(#SVGID_00000001648555743272636760000007799029546588122280_);}
+	.st21{clip-path:url(#SVGID_00000001648555743272636760000007799029546588122280_);fill:none;}
+	.st22{clip-path:url(#SVGID_00000143605847136659274560000006123892977952080559_);}
+	.st23{clip-path:url(#SVGID_00000143605847136659274560000006123892977952080559_);fill:none;}
+	.st24{clip-path:url(#SVGID_00000016769254393399100840000004024243449023050426_);}
+	.st25{clip-path:url(#SVGID_00000016769254393399100840000004024243449023050426_);fill:none;}
+	.st26{clip-path:url(#SVGID_00000026875257493653928080000008822476282745385639_);}
+	.st27{clip-path:url(#SVGID_00000021116644226134670380000006920945650111537796_);}
+	.st28{fill:none;stroke:#2D313F;stroke-width:0.9927;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st29{clip-path:url(#SVGID_00000026141756372637465290000005529382053874462649_);}
+	.st30{clip-path:url(#SVGID_00000075148738357170104150000004006837170800839346_);}
+	.st31{fill:none;stroke:#1D1D1B;stroke-width:4.6154;stroke-linecap:round;stroke-miterlimit:10;}
+	.st32{clip-path:url(#SVGID_00000085942667921355934210000011478766496790186391_);}
+	.st33{clip-path:url(#SVGID_00000085942667921355934210000011478766496790186391_);fill:none;}
+	.st34{fill:#F9EAE2;}
+	.st35{fill:#95B2A8;}
+	.st36{clip-path:url(#SVGID_00000139974605094843330400000006193468248363188632_);}
+	.st37{clip-path:url(#SVGID_00000139974605094843330400000006193468248363188632_);fill:none;}
+	.st38{clip-path:url(#SVGID_00000003786710837443913120000016560164775934514607_);}
+	.st39{clip-path:url(#SVGID_00000051367513316196435610000012339979950473460369_);}
+	.st40{clip-path:url(#SVGID_00000051367513316196435610000012339979950473460369_);fill:none;}
+	.st41{clip-path:url(#SVGID_00000096052816059322513520000007940069029021519499_);}
+	.st42{clip-path:url(#SVGID_00000086683592967620599870000008757459169795251110_);}
+	.st43{clip-path:url(#SVGID_00000086683592967620599870000008757459169795251110_);fill:none;}
+	.st44{clip-path:url(#SVGID_00000156566184120949912930000015460417906125445043_);}
+	.st45{clip-path:url(#SVGID_00000073707284258746620360000009162678172146007215_);}
+</style>
+<path class="st1" d="M18.125,10c0-4.487-3.638-8.125-8.125-8.125S1.875,5.513,1.875,10S5.513,18.125,10,18.125
+	S18.125,14.487,18.125,10z M0,10C0,4.477,4.477,0,10,0s10,4.477,10,10s-4.477,10-10,10S0,15.523,0,10z M7.355,5.746
+	c0.297-0.164,0.656-0.16,0.949,0.02l5.625,3.438c0.277,0.172,0.449,0.473,0.449,0.801c0,0.328-0.172,0.629-0.449,0.801l-5.625,3.438
+	c-0.289,0.176-0.652,0.184-0.949,0.02c-0.297-0.164-0.48-0.477-0.48-0.816V6.562C6.875,6.223,7.059,5.91,7.355,5.746z"/>
+</svg>

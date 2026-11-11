@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="LP_Dinheiro_sem_Medo" data-name="LP Dinheiro sem Medo" xmlns="http://www.w3.org/2000/svg" width="10.615" height="19.342" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 10.615 19.342">
+  <defs>
+    <style>
+      .cls-1 {
+        clip-path: url(#clippath);
+      }
+
+      .cls-2 {
+        stroke-width: 0px;
+      }
+
+      .cls-2, .cls-3 {
+        fill: none;
+      }
+
+      .cls-4 {
+        clip-path: url(#clippath-1);
+      }
+
+      .cls-5 {
+        clip-path: url(#clippath-4);
+      }
+
+      .cls-6 {
+        clip-path: url(#clippath-3);
+      }
+
+      .cls-7 {
+        clip-path: url(#clippath-2);
+      }
+
+      .cls-8 {
+        clip-path: url(#clippath-5);
+      }
+
+      .cls-3 {
+        stroke: #f7ebe3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: .5px;
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="cls-2" x="-736.994" y="-241.772" width="539.287" height="410.006" rx="27.883" ry="27.883" transform="translate(-504.12 430.581) rotate(90)"/>
+    </clipPath>
+    <clipPath id="clippath-1">
+      <rect class="cls-2" x="-932.347" y="-326.157" width="1070.725" height="602.563"/>
+    </clipPath>
+    <clipPath id="clippath-2">
+      <rect class="cls-2" x="-1157.994" y="-878.503" width="1523.519" height="2002.641"/>
+    </clipPath>
+    <clipPath id="clippath-3">
+      <rect class="cls-2" x="-3.042" y="-7.129" width="539.287" height="410.006" rx="27.883" ry="27.883" transform="translate(464.476 -68.728) rotate(90)"/>
+    </clipPath>
+    <clipPath id="clippath-4">
+      <rect class="cls-2" x="-198.395" y="-91.513" width="1070.725" height="602.563"/>
+    </clipPath>
+    <clipPath id="clippath-5">
+      <rect class="cls-2" x="-424.042" y="-643.859" width="1523.519" height="2002.641"/>
+    </clipPath>
+  </defs>
+  <g class="cls-1">
+    <g class="cls-4">
+      <g class="cls-7">
+        <image width="3024" height="3975" transform="translate(-1187.997 -878.503) scale(.504)" xlink:href="lp-dsm-1.png"/>
+      </g>
+    </g>
+  </g>
+  <g class="cls-6">
+    <g class="cls-5">
+      <g class="cls-8">
+        <image width="3024" height="3975" transform="translate(-454.045 -643.859) scale(.504)" xlink:href="lp-dsm-2.png"/>
+      </g>
+    </g>
+  </g>
+  <g>
+    <polyline class="cls-3" points="10.365 12.792 5.187 19.092 .25 12.659"/>
+    <line class="cls-3" x1="5.187" y1="19.092" x2="5.406"/>
+  </g>
+</svg>
