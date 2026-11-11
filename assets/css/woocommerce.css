@@ -1,0 +1,69 @@
+@tailwind base;
+
+.woocommerce form.checkout_coupon, 
+.woocommerce form.login, 
+.woocommerce form.register,
+.woocommerce form .form-row {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.woocommerce .woocommerce-form-login {
+    @apply relative;
+
+    [type="submit"] {
+        @apply mt-[50px] rounded-[20px] bg-blue-dark text-white flex justify-center items-center font-sans w-full block text-[14px] h-[42px];
+        float: none;
+        margin-right: inherit;
+    }
+
+    .woocommerce-LostPassword {
+        @apply absolute right-0 bottom-[100px] text-[14px] font-sans-black;
+    }
+
+    .required {
+        @apply absolute -left-[9999px];
+    }
+
+    .woocommerce-form-login__rememberme {
+        @apply mt-[15px] text-[14px];
+    }
+
+    label.woocommerce-form-login__rememberme {
+        @apply flex items-center gap-x-[7px];
+    }
+
+    label.woocommerce-form-login__rememberme:before {
+        content: '';
+        @apply inline-block rounded-[50%] outline-blue-dark outline outline-1 w-[16px] h-[16px];
+    }
+
+    label.woocommerce-form-login__rememberme:has([type="checkbox"]:checked):before {
+        @apply bg-blue-dark border-white border-1;
+    }
+
+    .woocommerce-form-login__rememberme [type="checkbox"] {
+        @apply absolute -left-[9999px];
+    }
+
+}
+
+.woocommerce {
+
+    .woocommerce-error {
+        border: none;
+        padding-left: 1.75em;
+        padding-right: 0;
+        padding-top: .5em;
+        padding-bottom: .5em;
+        background-color: transparent;
+
+        &:before {
+            top: .5em;
+            left: 0;
+        }
+
+    }
+
+}
