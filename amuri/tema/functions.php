@@ -21,3 +21,8 @@ require get_template_directory() . '/includes/theme-functions.php';
  * Custom post types e custom taxonomies
  */
 require get_template_directory() . '/includes/custom-types.php';
+
+/**
+ * Campos ACF registrados pelo código (complementam os grupos do banco)
+ */
+require get_template_directory() . '/includes/acf-campos-extras.php';

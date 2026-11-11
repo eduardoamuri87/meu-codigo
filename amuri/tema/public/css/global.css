@@ -6162,6 +6162,12 @@ body.woocommerce-order-received .woocommerce-thankyou-page-messages > p,
 }
 
 @media (min-width: 768px) {
+
+.lp-dsm-header {
+
+        /* campo ACF "Esconder ilustração do canto" */
+
+}
         
         .lp-dsm-header .container{
         position: relative;
@@ -6188,10 +6194,99 @@ body.woocommerce-order-received .woocommerce-thankyou-page-messages > p,
                     width: clamp(162px,23.71vw,324px)
             }
                 }
+        .lp-dsm-header.sem-ilustracao .container:before {
+            content: none;
+        }
 
     }
 
+/* campo ACF "Layout do cabeçalho" = logo à esquerda, frase à direita */
+
+@media (min-width: 768px){
+
+    .lp-dsm-header.layout-logo-frase .container{
+        align-items: center;
+    }
+}
+
+.lp-dsm-header.layout-logo-frase .lp-dsm-logo {
+            width: 344px; /* 220px do padrão +25% +25% */
+            max-width: 100%;
+            height: auto;
+        }
+
+@media (min-width: 768px){
+
+    .lp-dsm-header.layout-logo-frase .col-left{
+        width: 38%;
+    }
+
+    .lp-dsm-header.layout-logo-frase .col-right{
+        width: 60%;
+        --tw-translate-y: 0;
+        transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+    }
+}
+
+@media (max-width: 767px){
+
+    .lp-dsm-header.layout-logo-frase .col-right{
+        margin-top: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+/* fontes da coluna da direita 10% menores que no layout padrão */
+
+@media (min-width: 768px){
+
+    .lp-dsm-header.layout-logo-frase .page-title{
+        margin-top: 0;
+    }
+}
+
+/* quebras de linha do título valem só no desktop */
+
 @media (max-width: 767px) {
+                .lp-dsm-header.layout-logo-frase .page-title br {
+                    display: none;
+                }
+            }
+
+.lp-dsm-header.layout-logo-frase .page-title{
+            font-size: clamp(23.4px,5.4vw,32.4px);
+}
+
+@media (min-width: 768px) {
+
+.lp-dsm-header.layout-logo-frase .page-title {
+                font-size: clamp(28.8px,2.52vw,36px)
+        }
+            }
+
+.lp-dsm-header.layout-logo-frase .page-title strong {
+                font-size: clamp(21.6px,5.85vw,36px);
+            }
+
+@media (min-width: 768px) {
+
+.lp-dsm-header.layout-logo-frase .page-title strong {
+                    font-size: clamp(32.4px,2.7vw,37.8px)
+            }
+                }
+
+.lp-dsm-header.layout-logo-frase .btn-cta {
+            font-size: 16.2px;
+        }
+
+/* sem vídeo sobrando para baixo, não precisa da faixa branca do rodapé no mobile */
+
+@media (max-width: 767px) {
+            .lp-dsm-header.layout-logo-frase:before {
+                content: none;
+            }
 
 @media (max-width: 767px){
 
@@ -6212,8 +6307,7 @@ body.woocommerce-order-received .woocommerce-thankyou-page-messages > p,
         background-color: rgb(255 255 255 / var(--tw-bg-opacity));
             content: '';
     }
-
-    }
+        }
 
 .lp-dsm-header .container{
     margin-left: auto;
@@ -6266,6 +6360,20 @@ body.woocommerce-order-received .woocommerce-thankyou-page-messages > p,
         transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
     }
 }
+
+/* Foto no lugar do vídeo: mesma proporção (80.36%) e cantos (15px) do embed do Vimeo */
+
+.lp-dsm-header .col-right .foto img {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 100 / 80.36;
+            -o-object-fit: cover;
+               object-fit: cover;
+            -o-object-position: 50% 25%;
+               object-position: 50% 25%;
+            border-radius: 15px;
+        }
 
 .lp-dsm-header iframe{
     border-radius: 16px;

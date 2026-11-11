@@ -16,20 +16,37 @@ if ( have_posts() ):
     while ( have_posts() ): the_post();
     ?>
     
-    <header class="lp-dsm-header">
-        <div class="container">
-            <div class="col-left">
-                <img src="<?php echo public_url(); ?>images/lp-dsm/logo-dsm.svg" width="220" height="79" alt="">
+    <?php
+    // Campos de "Landing page - DSM: ajustes do cabeçalho" (includes/acf-campos-extras.php)
+    $hdr_layout = ( function_exists("get_field") && get_field("lp_dsm_hdr_layout") ) ? get_field("lp_dsm_hdr_layout") : 'padrao';
+    $hdr_classes = 'lp-dsm-header layout-' . $hdr_layout;
+    if ( function_exists("get_field") && get_field("lp_dsm_hdr_sem_ilustra") ) $hdr_classes .= ' sem-ilustracao';
+
+    // Frase + botão: na coluna da esquerda no layout padrão, na da direita no "logo-frase".
+    $hdr_titulo_cta = function () { ?>
                 <?php if ( function_exists("get_field") && get_field("lp_dsm_hdr_tit") ) { ?>
                 <h1 class="page-title"><?php the_field("lp_dsm_hdr_tit"); ?></h1>
                 <?php } ?>
                 <a href="#matricula" class="btn-cta">Quero me matricular</a>
+    <?php };
+    ?>
+    <header class="<?php echo esc_attr( $hdr_classes ); ?>">
+        <div class="container">
+            <div class="col-left">
+                <img class="lp-dsm-logo" src="<?php echo public_url(); ?>images/lp-dsm/logo-dsm.svg" width="220" height="79" alt="Dinheiro sem medo">
+                <?php if ( 'logo-frase' !== $hdr_layout ) $hdr_titulo_cta(); ?>
             </div>
             <!-- /.col-left -->
              <div class="col-right">
-                <?php if ( function_exists("get_field") && get_field("lp_dsm_hdr_vdo") ) { ?>
+                <?php if ( 'logo-frase' === $hdr_layout ) { ?>
+                    <?php $hdr_titulo_cta(); ?>
+                <?php } elseif ( function_exists("get_field") && get_field("lp_dsm_hdr_vdo") ) { ?>
                 <div class="video">
                     <?php echo get_field('lp_dsm_hdr_vdo'); ?>
+                </div>
+                <?php } elseif ( function_exists("get_field") && get_field("lp_dsm_hdr_img") ) { ?>
+                <div class="foto">
+                    <?php amrwp_img_tag_generate( get_field("lp_dsm_hdr_img"), 'large', '', false ); ?>
                 </div>
                 <?php } ?>
              </div>

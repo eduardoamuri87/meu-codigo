@@ -3044,6 +3044,69 @@ body.woocommerce-order-received {
             }
         }
 
+        /* campo ACF "Esconder ilustração do canto" */
+        &.sem-ilustracao .container:before {
+            content: none;
+        }
+
+    }
+
+    /* campo ACF "Layout do cabeçalho" = logo à esquerda, frase à direita */
+    &.layout-logo-frase {
+
+        .container {
+            @apply md:items-center;
+        }
+
+        .lp-dsm-logo {
+            width: 344px; /* 220px do padrão +25% +25% */
+            max-width: 100%;
+            height: auto;
+        }
+
+        .col-left {
+            @apply md:w-[38%];
+        }
+
+        .col-right {
+            @apply md:w-[60%] md:translate-y-0 mxmd:mt-0 mxmd:flex mxmd:flex-col mxmd:items-center;
+        }
+
+        /* fontes da coluna da direita 10% menores que no layout padrão */
+        .page-title {
+            @apply md:mt-0;
+
+            /* quebras de linha do título valem só no desktop */
+            @screen mxmd {
+                br {
+                    display: none;
+                }
+            }
+            font-size: clamp(23.4px,5.4vw,32.4px);
+
+            @screen md {
+                font-size: clamp(28.8px,2.52vw,36px);
+            }
+
+            strong {
+                font-size: clamp(21.6px,5.85vw,36px);
+
+                @screen md {
+                    font-size: clamp(32.4px,2.7vw,37.8px);
+                }
+            }
+        }
+
+        .btn-cta {
+            font-size: 16.2px;
+        }
+
+        /* sem vídeo sobrando para baixo, não precisa da faixa branca do rodapé no mobile */
+        @screen mxmd {
+            &:before {
+                content: none;
+            }
+        }
     }
 
     @screen mxmd {
@@ -3066,6 +3129,17 @@ body.woocommerce-order-received {
 
     .col-right {
         @apply md:ml-auto md:w-[54%] md:translate-y-[90px];
+
+        /* Foto no lugar do vídeo: mesma proporção (80.36%) e cantos (15px) do embed do Vimeo */
+        .foto img {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 100 / 80.36;
+            object-fit: cover;
+            object-position: 50% 25%;
+            border-radius: 15px;
+        }
     }
 
     iframe {
