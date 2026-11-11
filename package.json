@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
+  "scripts": {
+    "dev": "gulp",
+    "build:css": "postcss assets/css/*.css --dir public/css"
+  },
   "author": "Arthur Ervas",
   "license": "ISC",
   "devDependencies": {
