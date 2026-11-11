@@ -930,6 +930,10 @@ body.single-course {
 
     }
 
+    body:not(.page-template-page-editar-perfil) & .go-to-my-programas {
+        display: none;
+    }
+
     @screen mxmd {
         height: var(--site-body-h);
         overflow-y: scroll;
@@ -1589,7 +1593,6 @@ body.single-amr_plantao {
     position: relative;
     overflow: hidden;
     width: 100%;
-    padding-top: 56.25%;
 
     iframe {
         position: absolute;
@@ -2517,8 +2520,12 @@ body.woocommerce-checkout {
         @apply max-w-[980px];
     }
 
-    .checkout-container h1.typog-title {
-        @apply mt-[40px] mb-[20px];
+    /* Equivale a h1.typog-title (mesma especificidade). Escrito como [class~=] porque, com
+       a classe no seletor, o Tailwind acusa "circular dependency" com o @apply typog-title
+       logo abaixo e o build quebra. */
+    .checkout-container h1[class~="typog-title"] {
+        margin-top: 40px;
+        margin-bottom: 20px;
     }
 
     article.page {
@@ -3080,8 +3087,9 @@ body.woocommerce-order-received {
 
         strong {
             @apply font-sans-black text-[44px];
-            font-size: clamp(28px,7vw,40px);
+            font-size: clamp(24px,6.5vw,40px);
             line-height: 1em;
+            font-weight: normal;
 
             @screen md {
                 font-size: clamp(36px,3vw,42px);

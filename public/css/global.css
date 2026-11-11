@@ -2988,8 +2988,8 @@ body.user-menu-open .user-menu-container{
 }
 
 body:not(.page-template-page-editar-perfil) .user-menu-container .go-to-my-programas {
-            display: none;
-        }
+        display: none;
+    }
 
 @media (max-width: 767px) {
 
@@ -5572,10 +5572,14 @@ body.woocommerce-checkout > .checkout-container,
     max-width: 980px;
 }
 
-body.woocommerce-checkout .checkout-container h1.typog-title{
-    margin-top: 40px;
-    margin-bottom: 20px;
-}
+/* Equivale a h1.typog-title (mesma especificidade). Escrito como [class~=] porque, com
+       a classe no seletor, o Tailwind acusa "circular dependency" com o @apply typog-title
+       logo abaixo e o build quebra. */
+
+body.woocommerce-checkout .checkout-container h1[class~="typog-title"] {
+        margin-top: 40px;
+        margin-bottom: 20px;
+    }
 
 body.woocommerce-checkout article.page{
     margin-left: auto;
@@ -5650,9 +5654,9 @@ body.woocommerce-checkout article.page .woocommerce-billing-fields h3,
     margin-top: 50px;
     margin-bottom: 20px;
     font-family: Helvetica Neue Condensed Black, sans-serif;
+    font-size: 26px;
     --tw-text-opacity: 1;
     color: rgb(45 49 63 / var(--tw-text-opacity));
-    font-size: 26px;
 }
 
 body.woocommerce-checkout article.page #place_order{
@@ -5700,7 +5704,7 @@ body.woocommerce-checkout .wc-block-components-checkout-return-to-cart-button{
 }
 
 body.woocommerce-checkout #order_review_heading,
-body.woocommerce-checkout .woocommerce-checkout-review-order-table{
+    body.woocommerce-checkout .woocommerce-checkout-review-order-table{
     display: none;
 }
 
@@ -5777,23 +5781,30 @@ body.woocommerce-checkout #customer_details > .col-1 .woocommerce-billing-fields
 }
 
 body.woocommerce-checkout #customer_details > .col-1 #billing_postcode_field    { order: 1; }
+
 body.woocommerce-checkout #customer_details > .col-1 #billing_country_field     { order: 2; }
+
 body.woocommerce-checkout #customer_details > .col-1 #billing_address_1_field   { order: 3; }
+
 body.woocommerce-checkout #customer_details > .col-1 #billing_number_field      { order: 4; }
+
 body.woocommerce-checkout #customer_details > .col-1 #billing_address_2_field   { order: 5; }
-body.woocommerce-checkout #customer_details > .col-1 #billing_neighborhood_field{ order: 6; }
+
+body.woocommerce-checkout #customer_details > .col-1 #billing_neighborhood_field { order: 6; }
+
 body.woocommerce-checkout #customer_details > .col-1 #billing_city_field        { order: 7; }
+
 body.woocommerce-checkout #customer_details > .col-1 #billing_state_field       { order: 8; }
 
 body.woocommerce-checkout #customer_details > .col-1 #billing_address_2_field .optional,
-body.woocommerce-checkout #customer_details > .col-1 #billing_neighborhood_field .optional{
+        body.woocommerce-checkout #customer_details > .col-1 #billing_neighborhood_field .optional{
     display: none;
 }
 
 body.woocommerce-checkout #payment{
     position: relative;
     margin-top: 120px;
-    padding: 16px;
+        padding: 16px;
 }
 
 body.woocommerce-checkout #payment:before{
@@ -5807,174 +5818,190 @@ body.woocommerce-checkout #payment:before{
 }
 
 body.woocommerce-checkout #payment .wc_payment_methods{
+    margin: 0;
     list-style-type: none;
     padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-auto-rows: auto;
-    column-gap: 20px;
-    row-gap: 10px;
-    border: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-auto-rows: auto;
+            -moz-column-gap: 20px;
+                 column-gap: 20px;
+            row-gap: 10px;
+            border: 0;
 }
 
-body.woocommerce-checkout #payment .wc_payment_method{
-    display: contents;
-}
+body.woocommerce-checkout #payment .wc_payment_method {
+            display: contents;
+        }
 
-body.woocommerce-checkout #payment .wc_payment_method > input[type="radio"]{
-    position: absolute !important;
-    opacity: 0 !important;
-    width: 1px;
-    height: 1px;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    clip: rect(0 0 0 0);
-    pointer-events: none;
-}
+body.woocommerce-checkout #payment .wc_payment_method > input[type="radio"] {
+            position: absolute !important;
+            opacity: 0 !important;
+            width: 1px;
+            height: 1px;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            clip: rect(0 0 0 0);
+            pointer-events: none;
+        }
 
 body.woocommerce-checkout #payment .wc_payment_method > label{
+    margin: 0;
     display: flex;
+    cursor: pointer;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    padding-left: 20px;
+    padding-right: 20px;
     font-family: Helvetica Neue Condensed Black, sans-serif;
     font-size: 20px;
-    padding: 13px 20px 7px;
-    margin: 0;
-    border: 1px solid rgba(45, 49, 63, 0.2);
-    background-color: rgba(45, 49, 63, 0.08);
     --tw-text-opacity: 1;
     color: rgb(45 49 63 / var(--tw-text-opacity));
-    box-sizing: border-box;
-    grid-row: 1;
-    line-height: 1;
+            padding-top: 13px;
+            padding-bottom: 7px;
+            border: 1px solid rgba(45, 49, 63, 0.2);
+            background-color: rgba(45, 49, 63, 0.08);
+            box-sizing: border-box;
+            grid-row: 1;
+            line-height: 1;
 }
 
-body.woocommerce-checkout #payment .wc_payment_method:nth-of-type(1) > label{ grid-column: 1; }
-body.woocommerce-checkout #payment .wc_payment_method:nth-of-type(2) > label{ grid-column: 2; }
+body.woocommerce-checkout #payment .wc_payment_method:nth-of-type(1) > label { grid-column: 1; }
+
+body.woocommerce-checkout #payment .wc_payment_method:nth-of-type(2) > label { grid-column: 2; }
 
 body.woocommerce-checkout #payment .wc_payment_method > label img{
-    display: inline-block;
     margin-left: 10px;
-    max-height: 28px;
-    width: auto;
+    display: inline-block;
+            max-height: 28px;
+            width: auto;
 }
 
-body.woocommerce-checkout #payment .wc_payment_method > input[type="radio"]:checked + label{
-    background-color: rgba(45, 49, 63, 0.28);
-}
+body.woocommerce-checkout #payment .wc_payment_method > input[type="radio"]:checked + label {
+            background-color: rgba(45, 49, 63, 0.28);
+        }
 
-body.woocommerce-checkout #payment .wc_payment_method > input[type="radio"]:focus-visible + label{
-    outline: 2px solid #2d313f;
-    outline-offset: 2px;
-}
+body.woocommerce-checkout #payment .wc_payment_method > input[type="radio"]:focus-visible + label {
+            outline: 2px solid #2d313f;
+            outline-offset: 2px;
+        }
 
-body.woocommerce-checkout #payment .wc_payment_method > .payment_box{
-    grid-column: 1 / -1;
-    grid-row: 2;
-    background: transparent;
-    padding: 15px 0 0;
-    margin: 5px 0 0;
-    border-radius: 0;
-    color: inherit;
-}
+body.woocommerce-checkout #payment .wc_payment_method > .payment_box {
+            grid-column: 1 / -1;
+            grid-row: 2;
+            background: transparent;
+            padding: 15px 0 0;
+            margin: 5px 0 0;
+            border-radius: 0;
+            color: inherit;
+        }
 
-body.woocommerce-checkout #payment .wc_payment_method > .payment_box::before{
-    display: none;
-}
+body.woocommerce-checkout #payment .wc_payment_method > .payment_box::before {
+            display: none;
+        }
 
 body.woocommerce-checkout #payment .wc_payment_method > .payment_box > p:first-of-type{
     display: none;
 }
 
-body.woocommerce-checkout #payment .form-row.place-order{
-    padding: 0;
-    margin-top: 5px;
-}
+body.woocommerce-checkout #payment .form-row.place-order {
+            padding: 0;
+            margin-top: 5px;
+        }
 
 /* ----- Iugu Credit Card form: layout reorder + field styling ----- */
 
-body.woocommerce-checkout #payment .payment_box.payment_method_iugu-credit-card #iugu-credit-card-fields{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 20px;
-    row-gap: 15px;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: 0 !important;
-    min-width: 0;
-}
+body.woocommerce-checkout #payment .payment_box.payment_method_iugu-credit-card #iugu-credit-card-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            -moz-column-gap: 20px;
+                 column-gap: 20px;
+            row-gap: 15px;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: 0 !important;
+            min-width: 0;
+        }
 
-body.woocommerce-checkout #payment #iugu-credit-card-fields > #new-credit-card{
-    display: contents;
-}
+body.woocommerce-checkout #payment #iugu-credit-card-fields > #new-credit-card {
+            display: contents;
+        }
 
-body.woocommerce-checkout #payment #iugu-credit-card-fields .form-row{
-    margin: 0;
-    padding: 0;
-    float: none;
-    width: auto;
-}
+body.woocommerce-checkout #payment #iugu-credit-card-fields .form-row {
+            margin: 0;
+            padding: 0;
+            float: none;
+            width: auto;
+        }
 
 body.woocommerce-checkout #payment #iugu-credit-card-fields .form-row:has(#iugu-card-number)      { grid-column: 1; grid-row: 1; }
-body.woocommerce-checkout #payment #iugu-credit-card-fields .form-row:has(#iugu-card-installments){ grid-column: 2; grid-row: 1; }
+
+body.woocommerce-checkout #payment #iugu-credit-card-fields .form-row:has(#iugu-card-installments) { grid-column: 2; grid-row: 1; }
+
 body.woocommerce-checkout #payment #iugu-credit-card-fields .form-row:has(#iugu-card-holder-name) { grid-column: 1 / -1; grid-row: 2; }
+
 body.woocommerce-checkout #payment #iugu-credit-card-fields .form-row:has(#iugu-card-expiry)      { grid-column: 1; grid-row: 3; }
+
 body.woocommerce-checkout #payment #iugu-credit-card-fields .form-row:has(#iugu-card-cvc)         { grid-column: 2; grid-row: 3; }
 
 body.woocommerce-checkout #payment #iugu-credit-card-fields > .clear,
-body.woocommerce-checkout #payment #iugu-credit-card-fields #new-credit-card > .clear,
-body.woocommerce-checkout #payment #iugu-credit-card-fields > div[style*="margin-bottom"],
-body.woocommerce-checkout #payment #iugu-credit-card-fields .form-row:not(:has(#iugu-card-number)):not(:has(#iugu-card-installments)):not(:has(#iugu-card-holder-name)):not(:has(#iugu-card-expiry)):not(:has(#iugu-card-cvc)){
-    display: none;
-}
+        body.woocommerce-checkout #payment #iugu-credit-card-fields #new-credit-card > .clear,
+        body.woocommerce-checkout #payment #iugu-credit-card-fields > div[style*="margin-bottom"],
+        body.woocommerce-checkout #payment #iugu-credit-card-fields .form-row:not(:has(#iugu-card-number)):not(:has(#iugu-card-installments)):not(:has(#iugu-card-holder-name)):not(:has(#iugu-card-expiry)):not(:has(#iugu-card-cvc)) {
+            display: none;
+        }
+
+/* Inputs / selects inside any payment_box (CC fields, installments, etc.) */
 
 body.woocommerce-checkout #payment .wc_payment_method > .payment_box .input-text,
-body.woocommerce-checkout #payment .wc_payment_method > .payment_box select{
+        body.woocommerce-checkout #payment .wc_payment_method > .payment_box select{
     font-family: Vinila Condensed, sans-serif;
-    padding: 10px 14px !important;
-    box-sizing: border-box;
-    width: 100% !important;
-    border: 1px solid #ccc;
-    border-radius: 0;
-    font-size: 16px !important;
-    line-height: 1.4;
-    height: auto;
-    color: #2d313f;
+            padding: 10px 14px !important;
+            box-sizing: border-box;
+            width: 100% !important;
+            border: 1px solid #ccc;
+            border-radius: 0;
+            font-size: 16px !important;
+            line-height: 1.4;
+            height: auto;
+            color: #2d313f;
 }
+
+/* Override WC's huge font-size for card-number/expiry/cvc */
 
 body.woocommerce-checkout #payment .wc_payment_method > .payment_box .wc-credit-card-form-card-number,
-body.woocommerce-checkout #payment .wc_payment_method > .payment_box .wc-credit-card-form-card-expiry,
-body.woocommerce-checkout #payment .wc_payment_method > .payment_box .wc-credit-card-form-card-cvc{
-    font-size: 16px;
-    padding: 10px 14px;
-}
+        body.woocommerce-checkout #payment .wc_payment_method > .payment_box .wc-credit-card-form-card-expiry,
+        body.woocommerce-checkout #payment .wc_payment_method > .payment_box .wc-credit-card-form-card-cvc {
+            font-size: 16px;
+            padding: 10px 14px;
+        }
 
-body.woocommerce-checkout #payment .wc_payment_method > .payment_box select:has(option[value=""]:checked){
-    color: rgba(45, 49, 63, 0.5);
-}
+/* Placeholder-like color for the empty installments option */
 
-body.woocommerce-checkout #payment .wc_payment_method > .payment_box select option[value=""]{
-    color: rgba(45, 49, 63, 0.5);
-}
+body.woocommerce-checkout #payment .wc_payment_method > .payment_box select:has(option[value=""]:checked) {
+            color: rgba(45, 49, 63, 0.5);
+        }
 
-body.woocommerce-checkout #payment .wc_payment_method > .payment_box select option:not([value=""]){
-    color: #2d313f;
-}
+body.woocommerce-checkout #payment .wc_payment_method > .payment_box select option[value=""] {
+            color: rgba(45, 49, 63, 0.5);
+        }
 
-body.woocommerce-checkout #payment .wc_payment_method > .payment_box label{
-    display: block;
-    font-size: 17px;
-    margin-bottom: 4px;
-    color: #2d313f;
-}
+body.woocommerce-checkout #payment .wc_payment_method > .payment_box select option:not([value=""]) {
+            color: #2d313f;
+        }
 
-body.woocommerce-checkout #payment .wc_payment_method > .payment_box label .required{
-    color: #c00;
-    margin-left: 2px;
-}
+body.woocommerce-checkout #payment .wc_payment_method > .payment_box label {
+            display: block;
+            font-size: 17px;
+            margin-bottom: 4px;
+            color: #2d313f;
+        }
+
+body.woocommerce-checkout #payment .wc_payment_method > .payment_box label .required {
+            color: #c00;
+            margin-left: 2px;
+        }
 
 body.woocommerce-checkout .wc_payment_method.payment_method_iugu-pix .payment_box.payment_method_iugu-pix > p:first-of-type{
     display: none;
@@ -5987,68 +6014,75 @@ body.woocommerce-checkout #iugu-save-card,
 }
 
 body.woocommerce-checkout form.checkout hr,
-body.woocommerce-checkout .woocommerce-privacy-policy-text{
+    body.woocommerce-checkout .woocommerce-privacy-policy-text{
     display: none;
 }
+
+/* Subtle, non-alarming error box for checkout submission errors. */
 
 body.woocommerce-checkout #amrwp-checkout-error-target:empty{
     display: none;
 }
 
-body.woocommerce-checkout #amrwp-checkout-error-target{
-    margin: 0;
-    padding-top: 7px;
-    padding-bottom: 12px;
-}
+body.woocommerce-checkout #amrwp-checkout-error-target {
+        margin: 0;
+        padding-top: 7px;
+        padding-bottom: 12px;
+    }
+
+/* Hide the brief flash of the iugu-injected error inside the CC fields
+       grid before MutationObserver moves it into the target above the button. */
 
 body.woocommerce-checkout #iugu-credit-card-fields > .woocommerce-error{
     display: none;
 }
 
-body.woocommerce-checkout .woocommerce-error{
-    background-color: rgba(220, 53, 69, 0.08);
-    border: 1px solid rgba(220, 53, 69, 0.3);
-    color: #b32d3a;
-    padding: 12px 16px;
-    border-radius: 4px;
-    list-style: none;
-    font-size: 15px;
-    line-height: 1.4;
-    margin: 0;
-    width: 100% !important;
-    max-width: none;
-    box-sizing: border-box;
-}
+body.woocommerce-checkout .woocommerce-error {
+        background-color: rgba(220, 53, 69, 0.08);
+        border: 1px solid rgba(220, 53, 69, 0.3);
+        color: #b32d3a;
+        padding: 12px 16px;
+        border-radius: 4px;
+        list-style: none;
+        font-size: 15px;
+        line-height: 1.4;
+        margin: 0;
+        width: 100% !important;
+        max-width: none;
+        box-sizing: border-box;
+    }
 
 body.woocommerce-checkout .woocommerce-error ul,
-body.woocommerce-checkout .woocommerce-error li{
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    background: none;
-    border: none;
-    color: inherit;
-}
+    body.woocommerce-checkout .woocommerce-error li {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        background: none;
+        border: none;
+        color: inherit;
+    }
 
-body.woocommerce-checkout .woocommerce-error li{
-    padding: 2px 0;
-}
+body.woocommerce-checkout .woocommerce-error li {
+        padding: 2px 0;
+    }
 
 body.woocommerce-checkout .woocommerce-error li::before,
-body.woocommerce-checkout .woocommerce-error::before{
-    display: none;
-    content: none;
-}
+    body.woocommerce-checkout .woocommerce-error::before {
+        display: none;
+        content: none;
+    }
+
+/* Wrappers stay transparent so the inner .woocommerce-error draws the box */
 
 body.woocommerce-checkout .woocommerce-NoticeGroup-checkout,
-body.woocommerce-checkout .woocommerce-NoticeGroup-updateOrderReview{
-    background: none;
-    border: none;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-    color: inherit;
-}
+    body.woocommerce-checkout .woocommerce-NoticeGroup-updateOrderReview {
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        color: inherit;
+    }
 
 @media (min-width: 768px) {
 
@@ -6070,19 +6104,19 @@ body.woocommerce-checkout .woocommerce-NoticeGroup-updateOrderReview{
         margin-top: 0;
     }
 
-                body.woocommerce-checkout #customer_details > .col-1 #billing_email_field {
-                    width: 100%;
-                }
+            body.woocommerce-checkout #customer_details > .col-1 #billing_email_field {
+                width: 100%;
+            }
 
-                body.woocommerce-checkout #customer_details > .col-1 #billing_address_1_field {
-                    width: calc(70% - 4.1vw);
-                    width: calc(70% - clamp(7px, 4.1vw, 70px));
-                }
+            body.woocommerce-checkout #customer_details > .col-1 #billing_address_1_field {
+                width: calc(70% - 4.1vw);
+                width: calc(70% - clamp(7px, 4.1vw, 70px));
+            }
 
-                body.woocommerce-checkout #customer_details > .col-1 #billing_number_field {
-                    width: calc(30% - 1.76vw);
-                    width: calc(30% - clamp(3px, 1.76vw, 30px));
-                }
+            body.woocommerce-checkout #customer_details > .col-1 #billing_number_field {
+                width: calc(30% - 1.76vw);
+                width: calc(30% - clamp(3px, 1.76vw, 30px));
+            }
 
     }
 
@@ -6092,9 +6126,9 @@ body.woocommerce-checkout .woocommerce-NoticeGroup-updateOrderReview{
         flex-direction: column;
     }
 
-                body.woocommerce-checkout #customer_details > .col-1 .woocommerce-billing-fields__field-wrapper > .form-row {
-                    width: 100%;
-                }
+            body.woocommerce-checkout #customer_details > .col-1 .woocommerce-billing-fields__field-wrapper > .form-row {
+                width: 100%;
+            }
 
     }
 
@@ -7761,343 +7795,371 @@ body.woocommerce-order-received .woocommerce-thankyou-page-messages > p,
             padding-left: 0
 
     }
+        }
 
-.md\:fixed{
+/* --- Botões de ação do checkout / thank-you / order-pay --- */
+
+.woocommerce-order .woocommerce-thankyou-page-message-actions,
+.woocommerce-order .woocommerce-thankyou-order-failed-actions {
+    margin: 16px 0;
+}
+
+.woocommerce-order .button.pay {
+    display: inline-block;
+    padding: 14px 28px;
+    background-color: #2d313f;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+.woocommerce-order .button.pay:hover,
+.woocommerce-order .button.pay:focus {
+    background-color: #404658;
+    color: #fff;
+}
+
+@media (min-width: 768px){
+
+    .md\:fixed{
         position: fixed;
     }
 
-.md\:absolute{
+    .md\:absolute{
         position: absolute;
     }
 
-.md\:bottom-0{
+    .md\:bottom-0{
         bottom: 0;
     }
 
-.md\:bottom-\[1\.9vh\]{
+    .md\:bottom-\[1\.9vh\]{
         bottom: 1.9vh;
     }
 
-.md\:bottom-\[18px\]{
+    .md\:bottom-\[18px\]{
         bottom: 18px;
     }
 
-.md\:bottom-\[50\%\]{
+    .md\:bottom-\[50\%\]{
         bottom: 50%;
     }
 
-.md\:right-0{
+    .md\:right-0{
         right: 0;
     }
 
-.md\:right-\[1\.68vw\]{
+    .md\:right-\[1\.68vw\]{
         right: 1.68vw;
     }
 
-.md\:right-\[1\.8vw\]{
+    .md\:right-\[1\.8vw\]{
         right: 1.8vw;
     }
 
-.md\:z-\[10\]{
+    .md\:z-\[10\]{
         z-index: 10;
     }
 
-.md\:mb-\[10px\]{
+    .md\:mb-\[10px\]{
         margin-bottom: 10px;
     }
 
-.md\:mb-\[3\.33vh\]{
+    .md\:mb-\[3\.33vh\]{
         margin-bottom: 3.33vh;
     }
 
-.md\:ml-auto{
+    .md\:ml-auto{
         margin-left: auto;
     }
 
-.md\:mt-\[10px\]{
+    .md\:mt-\[10px\]{
         margin-top: 10px;
     }
 
-.md\:mt-\[20px\]{
+    .md\:mt-\[20px\]{
         margin-top: 20px;
     }
 
-.md\:mt-\[25px\]{
+    .md\:mt-\[25px\]{
         margin-top: 25px;
     }
 
-.md\:mt-\[30px\]{
+    .md\:mt-\[30px\]{
         margin-top: 30px;
     }
 
-.md\:mt-\[40px\]{
+    .md\:mt-\[40px\]{
         margin-top: 40px;
     }
 
-.md\:flex{
+    .md\:flex{
         display: flex;
     }
 
-.md\:inline-flex{
+    .md\:inline-flex{
         display: inline-flex;
     }
 
-.md\:hidden{
+    .md\:hidden{
         display: none;
     }
 
-.md\:h-\[120\%\]{
+    .md\:h-\[120\%\]{
         height: 120%;
     }
 
-.md\:h-auto{
+    .md\:h-auto{
         height: auto;
     }
 
-.md\:w-\[119px\]{
+    .md\:w-\[119px\]{
         width: 119px;
     }
 
-.md\:w-\[14\.5vw\]{
+    .md\:w-\[14\.5vw\]{
         width: 14.5vw;
     }
 
-.md\:w-\[17\.56vw\]{
+    .md\:w-\[17\.56vw\]{
         width: 17.56vw;
     }
 
-.md\:w-\[23\.42vw\]{
+    .md\:w-\[23\.42vw\]{
         width: 23.42vw;
     }
 
-.md\:w-\[23vw\]{
+    .md\:w-\[23vw\]{
         width: 23vw;
     }
 
-.md\:w-\[26\.6vw\]{
+    .md\:w-\[26\.6vw\]{
         width: 26.6vw;
     }
 
-.md\:w-\[26vw\]{
+    .md\:w-\[26vw\]{
         width: 26vw;
     }
 
-.md\:w-\[34\.9\%\]{
+    .md\:w-\[34\.9\%\]{
         width: 34.9%;
     }
 
-.md\:w-\[48\.8vw\]{
+    .md\:w-\[48\.8vw\]{
         width: 48.8vw;
     }
 
-.md\:w-\[50\.3vw\]{
+    .md\:w-\[50\.3vw\]{
         width: 50.3vw;
     }
 
-.md\:w-\[60\.75\%\]{
+    .md\:w-\[60\.75\%\]{
         width: 60.75%;
     }
 
-.md\:w-\[90vw\]{
+    .md\:w-\[90vw\]{
         width: 90vw;
     }
 
-.md\:w-\[clamp\(150px\2c 15\.37vw\2c 275px\)\]{
+    .md\:w-\[clamp\(150px\2c 15\.37vw\2c 275px\)\]{
         width: clamp(150px,15.37vw,275px);
     }
 
-.md\:w-\[clamp\(150px\2c 20\.1vw\2c 275px\)\]{
+    .md\:w-\[clamp\(150px\2c 20\.1vw\2c 275px\)\]{
         width: clamp(150px,20.1vw,275px);
     }
 
-.md\:w-auto{
+    .md\:w-auto{
         width: auto;
     }
 
-.md\:min-w-\[200px\]{
+    .md\:min-w-\[200px\]{
         min-width: 200px;
     }
 
-.md\:max-w-\[210px\]{
+    .md\:max-w-\[210px\]{
         max-width: 210px;
     }
 
-.md\:max-w-\[230px\]{
+    .md\:max-w-\[230px\]{
         max-width: 230px;
     }
 
-.md\:max-w-\[250px\]{
+    .md\:max-w-\[250px\]{
         max-width: 250px;
     }
 
-.md\:max-w-\[330px\]{
+    .md\:max-w-\[330px\]{
         max-width: 330px;
     }
 
-.md\:flex-1{
+    .md\:flex-1{
         flex: 1 1 0%;
     }
 
-.md\:translate-y-\[50\%\]{
+    .md\:translate-y-\[50\%\]{
         --tw-translate-y: 50%;
         transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
     }
 
-.md\:flex-wrap{
+    .md\:flex-wrap{
         flex-wrap: wrap;
     }
 
-.md\:items-center{
+    .md\:items-center{
         align-items: center;
     }
 
-.md\:gap-x-\[2\.78vw\]{
+    .md\:gap-x-\[2\.78vw\]{
         -moz-column-gap: 2.78vw;
              column-gap: 2.78vw;
     }
 
-.md\:gap-x-\[25px\]{
+    .md\:gap-x-\[25px\]{
         -moz-column-gap: 25px;
              column-gap: 25px;
     }
 
-.md\:gap-x-\[8px\]{
+    .md\:gap-x-\[8px\]{
         -moz-column-gap: 8px;
              column-gap: 8px;
     }
 
-.md\:border-b-1{
+    .md\:border-b-1{
         border-bottom-width: 1px;
     }
 
-.md\:bg-\[\#95b2a8\]{
+    .md\:bg-\[\#95b2a8\]{
         --tw-bg-opacity: 1;
         background-color: rgb(149 178 168 / var(--tw-bg-opacity));
     }
 
-.md\:px-\[1\.2vw\]{
+    .md\:px-\[1\.2vw\]{
         padding-left: 1.2vw;
         padding-right: 1.2vw;
     }
 
-.md\:px-\[1\.97vw\]{
+    .md\:px-\[1\.97vw\]{
         padding-left: 1.97vw;
         padding-right: 1.97vw;
     }
 
-.md\:px-\[2\.19vw\]{
+    .md\:px-\[2\.19vw\]{
         padding-left: 2.19vw;
         padding-right: 2.19vw;
     }
 
-.md\:px-\[2\.41vw\]{
+    .md\:px-\[2\.41vw\]{
         padding-left: 2.41vw;
         padding-right: 2.41vw;
     }
 
-.md\:px-\[2\.56vw\]{
+    .md\:px-\[2\.56vw\]{
         padding-left: 2.56vw;
         padding-right: 2.56vw;
     }
 
-.md\:px-\[2vw\]{
+    .md\:px-\[2vw\]{
         padding-left: 2vw;
         padding-right: 2vw;
     }
 
-.md\:py-\[20px\]{
+    .md\:py-\[20px\]{
         padding-top: 20px;
         padding-bottom: 20px;
     }
 
-.md\:py-\[25px\]{
+    .md\:py-\[25px\]{
         padding-top: 25px;
         padding-bottom: 25px;
     }
 
-.md\:py-\[35px\]{
+    .md\:py-\[35px\]{
         padding-top: 35px;
         padding-bottom: 35px;
     }
 
-.md\:py-\[40px\]{
+    .md\:py-\[40px\]{
         padding-top: 40px;
         padding-bottom: 40px;
     }
 
-.md\:py-\[5\.87vh\]{
+    .md\:py-\[5\.87vh\]{
         padding-top: 5.87vh;
         padding-bottom: 5.87vh;
     }
 
-.md\:pb-\[20px\]{
+    .md\:pb-\[20px\]{
         padding-bottom: 20px;
     }
 
-.md\:pb-\[30px\]{
+    .md\:pb-\[30px\]{
         padding-bottom: 30px;
     }
 
-.md\:pb-\[40px\]{
+    .md\:pb-\[40px\]{
         padding-bottom: 40px;
     }
 
-.md\:pl-\[100px\]{
+    .md\:pl-\[100px\]{
         padding-left: 100px;
     }
 
-.md\:pl-\[2\.19vw\]{
+    .md\:pl-\[2\.19vw\]{
         padding-left: 2.19vw;
     }
 
-.md\:pl-\[2\.92vw\]{
+    .md\:pl-\[2\.92vw\]{
         padding-left: 2.92vw;
     }
 
-.md\:pl-\[3\.29vw\]{
+    .md\:pl-\[3\.29vw\]{
         padding-left: 3.29vw;
     }
 
-.md\:pr-\[20vw\]{
+    .md\:pr-\[20vw\]{
         padding-right: 20vw;
     }
 
-.md\:pr-\[25\.5vw\]{
+    .md\:pr-\[25\.5vw\]{
         padding-right: 25.5vw;
     }
 
-.md\:pr-\[42px\]{
+    .md\:pr-\[42px\]{
         padding-right: 42px;
     }
 
-.md\:pt-\[10vh\]{
+    .md\:pt-\[10vh\]{
         padding-top: 10vh;
     }
 
-.md\:pt-\[15px\]{
+    .md\:pt-\[15px\]{
         padding-top: 15px;
     }
 
-.md\:pt-\[2\.77vh\]{
+    .md\:pt-\[2\.77vh\]{
         padding-top: 2.77vh;
     }
 
-.md\:pt-\[3\.29vw\]{
+    .md\:pt-\[3\.29vw\]{
         padding-top: 3.29vw;
     }
 
-.md\:pt-\[40px\]{
+    .md\:pt-\[40px\]{
         padding-top: 40px;
     }
 
-.md\:pt-\[9vh\]{
+    .md\:pt-\[9vh\]{
         padding-top: 9vh;
     }
 
-.md\:text-\[17px\]{
+    .md\:text-\[17px\]{
         font-size: 17px;
     }
-        }
+}
 
 @media (min-width: 1024px){
 
@@ -8576,28 +8638,4 @@ body.woocommerce-order-received .woocommerce-thankyou-page-messages > p,
 
 .\[\&\:not\(\:only-child\)\]\:mb-\[18px\]:not(:only-child){
     margin-bottom: 18px;
-}
-
-/* --- Botões de ação do checkout / thank-you / order-pay --- */
-.woocommerce-order .woocommerce-thankyou-page-message-actions,
-.woocommerce-order .woocommerce-thankyou-order-failed-actions {
-    margin: 16px 0;
-}
-
-.woocommerce-order .button.pay {
-    display: inline-block;
-    padding: 14px 28px;
-    background-color: #2d313f;
-    color: #fff;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    border: none;
-    transition: background-color 0.2s ease;
-}
-
-.woocommerce-order .button.pay:hover,
-.woocommerce-order .button.pay:focus {
-    background-color: #404658;
-    color: #fff;
 }
